@@ -1,190 +1,182 @@
 #!/usr/bin/env python3
 """
 Fetch Historical College Basketball Data
-This script fetches college statistics for players who later entered the NBA.
-Target: Players from major conferences (2000-2024 seasons)
+Fetches college statistics for major-conference players (2000-2024 seasons)
+using the CollegeBasketballData API via direct HTTP requests.
 """
 
 import os
 import sys
 import json
 import time
+import requests
 from typing import List, Dict, Any
-from datetime import datetime
-
-try:
-    import cbbd
-    from cbbd.rest import ApiException
-except ImportError:
-    print("❌ Please install cbbd: pip install cbbd")
-    sys.exit(1)
 
 # Configuration
 API_KEY = os.environ.get('CBBD_API_KEY')
+BASE_URL = 'https://api.collegebasketballdata.com'
 OUTPUT_FILE = '../data/historical_college_stats.json'
 START_YEAR = 2000
 END_YEAR = 2024
 
-# Major conferences to focus on (for draft prospects)
-MAJOR_CONFERENCES = [
-    'ACC', 'Big Ten', 'Big 12', 'SEC', 'Pac-12', 
+# Major conferences to include
+MAJOR_CONFERENCES = {
+    'ACC', 'Big Ten', 'Big 12', 'SEC', 'Pac-12',
     'Big East', 'American', 'Mountain West', 'Atlantic 10',
     'WCC', 'Conference USA'
-]
+}
 
 # Minimum thresholds to filter out low-usage players
 MIN_GAMES = 15
 MIN_MINUTES_PER_GAME = 15.0
 
 
-def setup_api():
-    """Initialize the API client"""
-    if not API_KEY:
-        print("❌ API key not found!")
-        print("Set it with: export CBBD_API_KEY='your_key_here'")
-        sys.exit(1)
-    
-    configuration = cbbd.Configuration()
-    configuration.api_key["Authorization"] = f"Bearer {API_KEY}"
-    return cbbd.ApiClient(configuration)
+def get_headers() -> Dict[str, str]:
+    return {'Authorization': f'Bearer {API_KEY}'}
 
 
-def fetch_season_stats(api_client, season: int, conference: str = None) -> List[Dict]:
-    """
-    Fetch player statistics for a specific season
-    
-    Args:
-        api_client: CBBD API client
-        season: Year (e.g., 2024)
-        conference: Optional conference filter
-    
-    Returns:
-        List of player stat dictionaries
-    """
-    stats_api = cbbd.StatsApi(api_client)
-    
+def fetch_season_stats(season: int) -> List[Dict]:
+    """Fetch all player stats for a season in one request."""
+    url = f'{BASE_URL}/stats/player/season'
     try:
-        print(f"  Fetching {season} season", end='')
-        if conference:
-            print(f" - {conference}", end='')
-        print("...", end='', flush=True)
-        
-        stats = stats_api.get_player_season_stats(
-            season=season,
-            conference=conference
-        )
-        
-        print(f" ✅ {len(stats)} players")
-        return stats
-        
-    except ApiException as e:
-        print(f" ❌ API Error: {e}")
-        return []
-    except Exception as e:
-        print(f" ❌ Error: {e}")
+        print(f'  Fetching {season}...', end='', flush=True)
+        resp = requests.get(url, params={'season': season}, headers=get_headers(), timeout=30)
+        resp.raise_for_status()
+        data = resp.json()
+        print(f' {len(data)} players')
+        return data
+    except requests.RequestException as e:
+        print(f' ERROR: {e}')
         return []
 
 
-def filter_prospects(stats_list: List[Any]) -> List[Dict]:
+def normalize_player(raw: Dict, season: int) -> Dict:
     """
-    Filter for legitimate prospects (remove low-usage players)
-    
-    Args:
-        stats_list: Raw stats from API
-    
-    Returns:
-        Filtered list of player dictionaries
+    Convert a raw API record (totals) into a normalized per-game stat dict.
+    The API returns season totals; we compute per-game averages here.
     """
-    filtered = []
-    
-    for stat in stats_list:
-        # Convert API object to dict
-        player_data = {
-            'name': getattr(stat, 'player', 'Unknown'),
-            'team': getattr(stat, 'team', 'Unknown'),
-            'season': getattr(stat, 'season', None),
-            'conference': getattr(stat, 'conference', 'Unknown'),
-            'games': getattr(stat, 'games', 0),
-            'minutes_per_game': getattr(stat, 'minutes_per_game', 0) or getattr(stat, 'mpg', 0),
-            'points_per_game': getattr(stat, 'points_per_game', 0) or getattr(stat, 'ppg', 0),
-            'rebounds_per_game': getattr(stat, 'rebounds_per_game', 0) or getattr(stat, 'rpg', 0),
-            'assists_per_game': getattr(stat, 'assists_per_game', 0) or getattr(stat, 'apg', 0),
-            'steals_per_game': getattr(stat, 'steals_per_game', 0) or getattr(stat, 'spg', 0),
-            'blocks_per_game': getattr(stat, 'blocks_per_game', 0) or getattr(stat, 'bpg', 0),
-            'turnovers_per_game': getattr(stat, 'turnovers_per_game', 0) or getattr(stat, 'tov', 0),
-            'field_goal_percentage': getattr(stat, 'field_goal_percentage', 0) or getattr(stat, 'fg_pct', 0),
-            'three_point_percentage': getattr(stat, 'three_point_percentage', 0) or getattr(stat, 'three_pct', 0),
-            'free_throw_percentage': getattr(stat, 'free_throw_percentage', 0) or getattr(stat, 'ft_pct', 0),
-        }
-        
-        # Apply filters
-        games = player_data['games']
-        mpg = player_data['minutes_per_game']
-        
+    games = raw.get('games') or 1  # avoid division by zero
+    minutes = raw.get('minutes') or 0
+
+    fg = raw.get('fieldGoals') or {}
+    three = raw.get('threePointFieldGoals') or {}
+    ft = raw.get('freeThrows') or {}
+    reb = raw.get('rebounds') or {}
+    ws = raw.get('winShares') or {}
+
+    return {
+        'name': raw.get('name', 'Unknown'),
+        'team': raw.get('team', 'Unknown'),
+        'season': season,
+        'conference': raw.get('conference', 'Unknown'),
+        'position': raw.get('position', 'Unknown'),
+        'athlete_id': raw.get('athleteId'),
+
+        # Volume stats (per game)
+        'games': games,
+        'minutes_per_game': round(minutes / games, 1),
+        'points_per_game': round((raw.get('points') or 0) / games, 1),
+        'rebounds_per_game': round((reb.get('total') or 0) / games, 1),
+        'offensive_rebounds_per_game': round((reb.get('offensive') or 0) / games, 1),
+        'defensive_rebounds_per_game': round((reb.get('defensive') or 0) / games, 1),
+        'assists_per_game': round((raw.get('assists') or 0) / games, 1),
+        'steals_per_game': round((raw.get('steals') or 0) / games, 1),
+        'blocks_per_game': round((raw.get('blocks') or 0) / games, 1),
+        'turnovers_per_game': round((raw.get('turnovers') or 0) / games, 1),
+
+        # Shooting percentages (already rates, not totals)
+        'field_goal_percentage': fg.get('pct') or 0,
+        'three_point_percentage': three.get('pct') or 0,
+        'free_throw_percentage': ft.get('pct') or 0,
+        'three_point_attempts_per_game': round((three.get('attempted') or 0) / games, 1),
+
+        # Advanced stats
+        'true_shooting_percentage': raw.get('trueShootingPct') or 0,
+        'effective_field_goal_percentage': raw.get('effectiveFieldGoalPct') or 0,
+        'usage_rate': raw.get('usage') or 0,
+        'offensive_rating': raw.get('offensiveRating') or 0,
+        'defensive_rating': raw.get('defensiveRating') or 0,
+        'net_rating': raw.get('netRating') or 0,
+        'win_shares': ws.get('total') or 0,
+        'win_shares_per_40': ws.get('totalPer40') or 0,
+        'assists_turnover_ratio': raw.get('assistsTurnoverRatio') or 0,
+        'offensive_rebound_pct': raw.get('offensiveReboundPct') or 0,
+        'free_throw_rate': raw.get('freeThrowRate') or 0,
+        'porpag': raw.get('PORPAG') or 0,
+    }
+
+
+def filter_and_normalize(raw_list: List[Dict], season: int) -> List[Dict]:
+    """Filter for major conferences and minimum thresholds, then normalize."""
+    results = []
+    for raw in raw_list:
+        conf = raw.get('conference', '')
+        if conf not in MAJOR_CONFERENCES:
+            continue
+
+        games = raw.get('games') or 0
+        minutes = raw.get('minutes') or 0
+        mpg = minutes / games if games > 0 else 0
+
         if games >= MIN_GAMES and mpg >= MIN_MINUTES_PER_GAME:
-            filtered.append(player_data)
-    
-    return filtered
+            results.append(normalize_player(raw, season))
+
+    return results
 
 
 def main():
-    """Main execution function"""
-    print("=" * 60)
-    print("HISTORICAL COLLEGE BASKETBALL DATA COLLECTOR")
-    print("=" * 60)
-    print(f"Target seasons: {START_YEAR}-{END_YEAR}")
-    print(f"Conferences: {', '.join(MAJOR_CONFERENCES)}")
-    print(f"Filters: Min {MIN_GAMES} games, {MIN_MINUTES_PER_GAME} MPG")
+    if not API_KEY:
+        print('ERROR: CBBD_API_KEY environment variable not set.')
+        print('Set it with: export CBBD_API_KEY="your_key_here"')
+        sys.exit(1)
+
+    print('=' * 60)
+    print('HISTORICAL COLLEGE BASKETBALL DATA COLLECTOR')
+    print('=' * 60)
+    print(f'Target seasons: {START_YEAR}-{END_YEAR}')
+    print(f'Conferences: {len(MAJOR_CONFERENCES)} major conferences')
+    print(f'Filters: min {MIN_GAMES} games, {MIN_MINUTES_PER_GAME} MPG')
+    print(f'Strategy: 1 request/season ({END_YEAR - START_YEAR + 1} total)')
     print()
-    
-    # Setup
-    api_client = setup_api()
-    all_players = []
-    
-    # Create data directory if it doesn't exist
+
     os.makedirs('../data', exist_ok=True)
-    
-    # Fetch data year by year
-    print("Fetching data...")
-    print("-" * 60)
-    
+
+    all_players = []
+
     for year in range(START_YEAR, END_YEAR + 1):
-        print(f"\n📅 Season {year}:")
-        
-        # Strategy: Fetch by conference to manage rate limits
-        for conf in MAJOR_CONFERENCES:
-            stats = fetch_season_stats(api_client, year, conf)
-            
-            if stats:
-                filtered = filter_prospects(stats)
-                all_players.extend(filtered)
-            
-            # Rate limiting: Small delay between requests
-            time.sleep(0.5)
-        
-        print(f"  Total players for {year}: {len([p for p in all_players if p['season'] == year])}")
-        
-        # Save progress after each year (in case of interruption)
+        raw_data = fetch_season_stats(year)
+
+        if raw_data:
+            season_players = filter_and_normalize(raw_data, year)
+            all_players.extend(season_players)
+            print(f'    -> {len(season_players)} qualifying players from major conferences')
+
+        # Save progress after each year
         with open(OUTPUT_FILE, 'w') as f:
             json.dump(all_players, f, indent=2)
-    
-    # Final summary
-    print("\n" + "=" * 60)
-    print("DATA COLLECTION COMPLETE")
-    print("=" * 60)
-    print(f"Total players collected: {len(all_players)}")
-    print(f"Seasons covered: {END_YEAR - START_YEAR + 1}")
-    print(f"Output file: {OUTPUT_FILE}")
+
+        # Polite delay between requests
+        time.sleep(0.5)
+
     print()
-    
-    # Show sample
+    print('=' * 60)
+    print('DATA COLLECTION COMPLETE')
+    print('=' * 60)
+    print(f'Total qualifying player-seasons: {len(all_players)}')
+    unique = len(set(p['name'] for p in all_players))
+    print(f'Unique player names: {unique}')
+    print(f'Output: {OUTPUT_FILE}')
+
     if all_players:
-        print("Sample player:")
-        print(json.dumps(all_players[0], indent=2))
-    
-    print("\n✅ Data saved successfully!")
-    print("\n💡 Next step: Run fetch_nba_data.py to get NBA career stats")
+        print('\nSample record:')
+        sample = all_players[0]
+        print(f'  {sample["name"]} | {sample["team"]} | {sample["season"]}')
+        print(f'  {sample["points_per_game"]} PPG, {sample["rebounds_per_game"]} RPG, {sample["assists_per_game"]} APG')
+        print(f'  FG: {sample["field_goal_percentage"]}%, 3P: {sample["three_point_percentage"]}%, FT: {sample["free_throw_percentage"]}%')
+        print(f'  TS%: {sample["true_shooting_percentage"]}, Usage: {sample["usage_rate"]}%, WS: {sample["win_shares"]}')
+
+    print('\nNext step: Run fetch_nba_data.py to match NBA career stats')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

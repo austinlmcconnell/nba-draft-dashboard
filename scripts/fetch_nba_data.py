@@ -1,275 +1,336 @@
 #!/usr/bin/env python3
 """
-Fetch NBA Career Statistics
-This script fetches NBA career stats for all players in the historical database.
-Uses the free nba_api package.
+Fetch NBA Career Statistics + Physical Attributes from Basketball Reference.
+
+Strategy (46 total HTTP requests):
+  1. Scrape BBRef player index pages a-z (26 pages) → name, height, weight, position
+  2. Scrape BBRef draft pages 2005-2024 (20 pages) → pick, career stats per player
+  3. Match college players to BBRef players by name
+  4. Enrich college stats with per-36 minute stats
 """
 
 import json
-import time
+import os
+import re
 import sys
-from typing import Dict, List, Any, Optional
+import time
+import requests
+from bs4 import BeautifulSoup
+from typing import Dict, List, Optional
 
-try:
-    from nba_api.stats.static import players
-    from nba_api.stats.endpoints import playercareerstats, commonplayerinfo
-except ImportError:
-    print("❌ Please install nba_api: pip install nba_api")
-    sys.exit(1)
-
-# Configuration
 COLLEGE_DATA_FILE = '../data/historical_college_stats.json'
 OUTPUT_FILE = '../data/nba_career_stats.json'
-RATE_LIMIT_DELAY = 0.6  # Seconds between requests (be nice to NBA.com)
+BBREF_BASE = 'https://www.basketball-reference.com'
+HEADERS = {'User-Agent': 'Mozilla/5.0 (research / educational project)'}
+DELAY = 1.2   # seconds between requests — stay polite
 
 
-def load_college_players() -> List[Dict]:
-    """Load the college players data"""
-    try:
-        with open(COLLEGE_DATA_FILE, 'r') as f:
-            return json.load(f)
-    except FileNotFoundError:
-        print(f"❌ College data file not found: {COLLEGE_DATA_FILE}")
-        print("   Run fetch_college_data.py first!")
-        sys.exit(1)
-
-
-def get_all_nba_players() -> List[Dict]:
-    """Get list of all NBA players (past and present)"""
-    print("Fetching NBA player list...")
-    all_players = players.get_players()
-    print(f"✅ Found {len(all_players)} NBA players in database")
-    return all_players
-
-
-def find_nba_player(college_name: str, nba_players: List[Dict]) -> Optional[Dict]:
-    """
-    Try to match a college player name to an NBA player
-    
-    Args:
-        college_name: Name from college stats
-        nba_players: List of NBA player dictionaries
-    
-    Returns:
-        Matching NBA player dict or None
-    """
-    # Normalize the college name
-    college_name_norm = college_name.lower().strip()
-    
-    # Try exact match on full name
-    for nba_player in nba_players:
-        if nba_player['full_name'].lower() == college_name_norm:
-            return nba_player
-    
-    # Try matching last name + first initial
-    # (Some college databases use abbreviated names)
-    college_parts = college_name_norm.split()
-    if len(college_parts) >= 2:
-        last_name = college_parts[-1]
-        first_initial = college_parts[0][0] if college_parts[0] else ''
-        
-        for nba_player in nba_players:
-            nba_name_lower = nba_player['full_name'].lower()
-            nba_parts = nba_name_lower.split()
-            
-            if len(nba_parts) >= 2:
-                nba_last = nba_parts[-1]
-                nba_first_initial = nba_parts[0][0] if nba_parts[0] else ''
-                
-                if last_name == nba_last and first_initial == nba_first_initial:
-                    return nba_player
-    
+def get(url: str) -> Optional[BeautifulSoup]:
+    for attempt in range(3):
+        try:
+            r = requests.get(url, headers=HEADERS, timeout=20)
+            r.raise_for_status()
+            return BeautifulSoup(r.text, 'html.parser')
+        except requests.RequestException as e:
+            wait = 2 ** attempt
+            print(f'    retrying {url} in {wait}s ({e})')
+            time.sleep(wait)
     return None
 
 
-def fetch_player_career(player_id: int) -> Optional[Dict]:
-    """
-    Fetch career statistics for a specific NBA player
-    
-    Args:
-        player_id: NBA player ID
-    
-    Returns:
-        Dictionary with career stats or None if error
-    """
-    try:
-        # Get career stats
-        career = playercareerstats.PlayerCareerStats(
-            player_id=str(player_id),
-            timeout=30
-        )
-        
-        career_dict = career.get_dict()
-        
-        if not career_dict or 'resultSets' not in career_dict:
-            return None
-        
-        result_sets = career_dict['resultSets']
-        if not result_sets or len(result_sets) == 0:
-            return None
-        
-        # Extract career totals (regular season)
-        career_totals = result_sets[0]
-        if 'rowSet' not in career_totals or not career_totals['rowSet']:
-            return None
-        
-        headers = career_totals['headers']
-        rows = career_totals['rowSet']
-        
-        # Calculate career averages
-        total_games = 0
-        total_points = 0
-        total_rebounds = 0
-        total_assists = 0
-        total_steals = 0
-        total_blocks = 0
-        total_turnovers = 0
-        seasons_played = len(rows)
-        
-        for row in rows:
-            stats = dict(zip(headers, row))
-            games = stats.get('GP', 0)
-            
-            total_games += games
-            total_points += stats.get('PTS', 0)
-            total_rebounds += stats.get('REB', 0)
-            total_assists += stats.get('AST', 0)
-            total_steals += stats.get('STL', 0)
-            total_blocks += stats.get('BLK', 0)
-            total_turnovers += stats.get('TOV', 0)
-        
-        if total_games == 0:
-            return None
-        
-        # Calculate career averages
-        career_stats = {
-            'player_id': player_id,
-            'seasons_played': seasons_played,
-            'games_played': total_games,
-            'career_ppg': round(total_points / total_games, 1),
-            'career_rpg': round(total_rebounds / total_games, 1),
-            'career_apg': round(total_assists / total_games, 1),
-            'career_spg': round(total_steals / total_games, 1),
-            'career_bpg': round(total_blocks / total_games, 1),
-            'career_tov': round(total_turnovers / total_games, 1),
-        }
-        
-        # Get additional player info (All-Star selections, etc.)
-        try:
-            player_info = commonplayerinfo.CommonPlayerInfo(player_id=str(player_id))
-            info_dict = player_info.get_dict()
-            
-            # This would require parsing the player info response
-            # For now, we'll leave these as 0 and can enhance later
-            career_stats['all_star_selections'] = 0
-            career_stats['all_nba_selections'] = 0
-            career_stats['championships'] = 0
-            
-        except:
-            pass
-        
-        return career_stats
-        
-    except Exception as e:
-        print(f"    ❌ Error fetching stats: {e}")
-        return None
+# ---------------------------------------------------------------------------
+# Step 1 — Build player registry from BBRef player index (a-z)
+# Returns: dict[normalized_name] → {height_inches, weight_pounds, position, bbref_id}
+# ---------------------------------------------------------------------------
+def build_player_registry() -> Dict[str, dict]:
+    registry: Dict[str, dict] = {}
+    letters = 'abcdefghijklmnopqrstuvwxyz'
+
+    print(f'Building player registry from BBRef index ({len(letters)} pages)...')
+    for letter in letters:
+        soup = get(f'{BBREF_BASE}/players/{letter}/')
+        if not soup:
+            continue
+
+        table = soup.find('table', {'id': 'players'})
+        if not table:
+            continue
+
+        for row in table.find('tbody').find_all('tr'):
+            cells = {td.get('data-stat'): td for td in row.find_all(['td', 'th'])}
+            player_cell = cells.get('player')
+            if not player_cell or not player_cell.text.strip():
+                continue
+
+            name = player_cell.text.strip()
+            link = player_cell.find('a')
+            bbref_id = ''
+            if link and link.get('href'):
+                m = re.search(r'/players/\w+/(\w+)\.html', link['href'])
+                if m:
+                    bbref_id = m.group(1)
+
+            def parse_height(s: str) -> Optional[int]:
+                m = re.match(r'(\d+)-(\d+)', s or '')
+                return int(m.group(1)) * 12 + int(m.group(2)) if m else None
+
+            registry[name.lower()] = {
+                'name': name,
+                'bbref_id': bbref_id,
+                'height_inches': parse_height(cells.get('height', {}).text.strip() if cells.get('height') else ''),
+                'weight_pounds': int(cells['weight'].text.strip()) if cells.get('weight') and cells['weight'].text.strip().isdigit() else None,
+                'position': cells.get('pos', {}).text.strip() if cells.get('pos') else '',
+                'birth_date': cells.get('birth_date', {}).text.strip() if cells.get('birth_date') else '',
+                'year_min': int(cells['year_min'].text) if cells.get('year_min') and cells['year_min'].text.isdigit() else None,
+                'year_max': int(cells['year_max'].text) if cells.get('year_max') and cells['year_max'].text.isdigit() else None,
+            }
+
+        count = len(registry)
+        print(f'  /players/{letter}/ — registry total: {count}')
+        time.sleep(DELAY)
+
+    print(f'Registry complete: {len(registry)} NBA players\n')
+    return registry
 
 
+# ---------------------------------------------------------------------------
+# Step 2 — Scrape BBRef draft pages 2005-2024 for career stats
+# Returns: dict[normalized_name] → career stats dict
+# ---------------------------------------------------------------------------
+def fetch_draft_career_stats(start: int = 2005, end: int = 2024) -> Dict[str, dict]:
+    career_by_name: Dict[str, dict] = {}
+
+    print(f'Fetching draft career stats ({start}–{end})...')
+    for year in range(start, end + 1):
+        soup = get(f'{BBREF_BASE}/draft/NBA_{year}.html')
+        if not soup:
+            print(f'  {year}: failed')
+            continue
+
+        table = soup.find('table', {'id': 'stats'})
+        if not table:
+            print(f'  {year}: table not found')
+            continue
+
+        count = 0
+        for row in table.find('tbody').find_all('tr'):
+            if 'thead' in (row.get('class') or []):
+                continue
+            cells = {td.get('data-stat'): td.text.strip() for td in row.find_all(['td', 'th'])}
+            name = cells.get('player', '').strip()
+            if not name:
+                continue
+
+            def safe_float(v):
+                try:
+                    return float(v) if v else None
+                except ValueError:
+                    return None
+
+            def safe_int(v):
+                try:
+                    return int(v) if v else None
+                except ValueError:
+                    return None
+
+            career_by_name[name.lower()] = {
+                'name': name,
+                'draft_year': year,
+                'draft_pick': safe_int(cells.get('pick_overall')),
+                'college': cells.get('college_name', ''),
+                'nba_career': {
+                    'seasons_played': safe_int(cells.get('seasons')) or 0,
+                    'games_played': safe_int(cells.get('g')) or 0,
+                    'career_ppg': safe_float(cells.get('pts_per_g')) or 0,
+                    'career_rpg': safe_float(cells.get('trb_per_g')) or 0,
+                    'career_apg': safe_float(cells.get('ast_per_g')) or 0,
+                    'career_fg_pct': safe_float(cells.get('fg_pct')) or 0,
+                    'career_3p_pct': safe_float(cells.get('fg3_pct')) or 0,
+                    'career_ft_pct': safe_float(cells.get('ft_pct')) or 0,
+                    'career_spg': None,  # not on draft page
+                    'career_bpg': None,
+                    'career_tov': None,
+                    'win_shares': safe_float(cells.get('ws')) or 0,
+                    'ws_per_48': safe_float(cells.get('ws_per_48')) or 0,
+                    'bpm': safe_float(cells.get('bpm')),
+                    'vorp': safe_float(cells.get('vorp')),
+                    'is_active': False,  # will be inferred from year_max
+                },
+            }
+            count += 1
+
+        print(f'  {year}: {count} drafted players')
+        time.sleep(DELAY)
+
+    print(f'Draft data complete: {len(career_by_name)} total\n')
+    return career_by_name
+
+
+# ---------------------------------------------------------------------------
+# Step 3 — Name matching (exact → last+first-initial fallback)
+# ---------------------------------------------------------------------------
+def match_name(college_name: str, lookup: Dict[str, dict]) -> Optional[dict]:
+    normed = college_name.lower().strip()
+
+    if normed in lookup:
+        return lookup[normed]
+
+    parts = normed.split()
+    if len(parts) >= 2:
+        last = parts[-1]
+        fi = parts[0][0]
+        for key, val in lookup.items():
+            kparts = key.split()
+            if len(kparts) >= 2 and kparts[-1] == last and kparts[0][0] == fi:
+                return val
+
+    return None
+
+
+# ---------------------------------------------------------------------------
+# Step 4 — Per-36 enrichment for college stats
+# ---------------------------------------------------------------------------
+def enrich_per36(stats: dict) -> dict:
+    """Add per-36 minute keys to a stats dict (mutates and returns)."""
+    mpg = stats.get('minutes_per_game') or 0
+    if mpg <= 0:
+        for key in ['pts_per36', 'reb_per36', 'ast_per36', 'stl_per36', 'blk_per36', 'tov_per36']:
+            stats[key] = 0
+        return stats
+
+    scale = 36.0 / mpg
+    for base, key36 in [
+        ('points_per_game',   'pts_per36'),
+        ('rebounds_per_game', 'reb_per36'),
+        ('assists_per_game',  'ast_per36'),
+        ('steals_per_game',   'stl_per36'),
+        ('blocks_per_game',   'blk_per36'),
+        ('turnovers_per_game','tov_per36'),
+    ]:
+        stats[key36] = round((stats.get(base) or 0) * scale, 1)
+
+    # Alias field names to match TypeScript types
+    stats['true_shooting_pct'] = stats.pop('true_shooting_percentage', 0) or 0
+    stats['effective_fg_pct']  = stats.pop('effective_field_goal_percentage', 0) or 0
+    stats['net_rating']        = stats.pop('net_rating', 0) or 0
+    stats['win_shares_per40']  = stats.pop('win_shares_per_40', 0) or 0
+    stats['three_pt_attempts_per_game'] = stats.pop('three_point_attempts_per_game', 0) or 0
+    stats['ast_tov_ratio']     = stats.pop('assists_turnover_ratio', 0) or 0
+    stats['oreb_pct']          = stats.pop('offensive_rebound_pct', 0) or 0
+    stats['offensive_rating']  = stats.pop('offensive_rating', 0) or 0
+    stats['defensive_rating']  = stats.pop('defensive_rating', 0) or 0
+    # usage_rate, porpag, free_throw_rate already correctly named
+
+    # Keep per-game shooting fields under TypeScript names
+    stats['field_goal_percentage']    = stats.get('field_goal_percentage', 0) or 0
+    stats['three_point_percentage']   = stats.get('three_point_percentage', 0) or 0
+    stats['free_throw_percentage']    = stats.get('free_throw_percentage', 0) or 0
+    return stats
+
+
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
 def main():
-    """Main execution function"""
-    print("=" * 60)
-    print("NBA CAREER STATISTICS COLLECTOR")
-    print("=" * 60)
-    print()
-    
+    print('=' * 60)
+    print('NBA DATA COLLECTOR (Basketball Reference)')
+    print('=' * 60)
+
+    os.makedirs('../data', exist_ok=True)
+
     # Load college data
-    college_players = load_college_players()
-    print(f"Loaded {len(college_players)} college player records")
-    print()
-    
-    # Get NBA player list
-    nba_players = get_all_nba_players()
-    print()
-    
-    # Match and fetch stats
-    print("Matching college players to NBA careers...")
-    print("-" * 60)
-    
-    matched_players = []
-    unmatched_count = 0
-    processed = 0
-    
-    # Get unique college player names
-    unique_players = {}
+    try:
+        with open(COLLEGE_DATA_FILE) as f:
+            college_players = json.load(f)
+    except FileNotFoundError:
+        print(f'ERROR: {COLLEGE_DATA_FILE} not found. Run fetch_college_data.py first.')
+        sys.exit(1)
+
+    print(f'Loaded {len(college_players)} college player-seasons')
+
+    # Pick best (highest-minutes) season per unique player
+    best: Dict[str, dict] = {}
     for cp in college_players:
         name = cp['name']
-        if name not in unique_players:
-            unique_players[name] = cp
-    
-    total_unique = len(unique_players)
-    print(f"Processing {total_unique} unique players...\n")
-    
-    for idx, (name, college_data) in enumerate(unique_players.items(), 1):
-        if idx % 10 == 0:
-            print(f"Progress: {idx}/{total_unique} ({idx*100//total_unique}%)")
-        
-        # Find matching NBA player
-        nba_player = find_nba_player(name, nba_players)
-        
-        if not nba_player:
-            unmatched_count += 1
+        if name not in best or (cp.get('minutes_per_game') or 0) > (best[name].get('minutes_per_game') or 0):
+            best[name] = cp
+    unique = list(best.values())
+    print(f'Unique players: {len(unique)}\n')
+
+    # Step 1: Build player registry
+    registry = build_player_registry()
+
+    # Step 2: Fetch draft career stats
+    draft_stats = fetch_draft_career_stats(2005, 2024)
+
+    # Step 3 & 4: Match and assemble
+    print('Matching and assembling records...')
+    matched = []
+    unmatched = 0
+
+    for cp in unique:
+        name = cp['name']
+
+        # Try to find in draft stats (primary source for career data)
+        draft_match = match_name(name, draft_stats)
+        if not draft_match:
+            unmatched += 1
             continue
-        
-        print(f"  ✅ {name} → NBA ID: {nba_player['id']}")
-        
-        # Fetch career stats
-        career_stats = fetch_player_career(nba_player['id'])
-        
-        if career_stats:
-            # Combine college and NBA data
-            matched_data = {
-                'name': name,
-                'nba_player_id': nba_player['id'],
-                'college_team': college_data['team'],
-                'college_season': college_data['season'],
-                'college_stats': college_data,
-                'nba_career': career_stats,
-                'is_active': nba_player.get('is_active', False)
-            }
-            
-            matched_players.append(matched_data)
-        
-        # Rate limiting
-        time.sleep(RATE_LIMIT_DELAY)
-        processed += 1
-    
-    # Save results
-    print("\n" + "=" * 60)
-    print("DATA COLLECTION COMPLETE")
-    print("=" * 60)
-    print(f"Total unique college players: {total_unique}")
-    print(f"Matched to NBA: {len(matched_players)}")
-    print(f"Unmatched: {unmatched_count}")
-    print(f"Match rate: {len(matched_players)*100//total_unique}%")
-    print(f"Output file: {OUTPUT_FILE}")
-    print()
-    
-    # Save to file
+
+        # Enrich with physical from registry
+        reg_match = match_name(name, registry)
+        physical = {
+            'height_inches': reg_match['height_inches'] if reg_match else None,
+            'weight_pounds': reg_match['weight_pounds'] if reg_match else None,
+            'wingspan_inches': None,
+            'age_at_season_start': None,
+        }
+
+        # Infer is_active from registry year_max
+        career = dict(draft_match['nba_career'])
+        if reg_match and reg_match.get('year_max'):
+            career['is_active'] = reg_match['year_max'] >= 2024
+
+        # Build enriched college stats
+        enriched = enrich_per36(dict(cp))
+
+        record = {
+            'id': f"hist_{name.replace(' ', '_').lower()}_{draft_match['draft_year']}",
+            'name': name,
+            'college_team': cp.get('team'),
+            'college_season': cp.get('season'),
+            'college_stats': enriched,
+            'physical': physical,
+            'nba_career': career,
+            'draft_year': draft_match.get('draft_year'),
+            'draft_round': None,  # not on draft page we scraped
+            'draft_pick': draft_match.get('draft_pick'),
+        }
+        matched.append(record)
+
+    print(f'\nMatched:   {len(matched)}')
+    print(f'Unmatched: {unmatched}')
+    rate = len(matched) * 100 // (len(matched) + unmatched) if (matched or unmatched) else 0
+    print(f'Rate:      {rate}%')
+
+    # Also enrich all college players with per-36 stats (for prospect pool)
+    print('\nEnriching all college player-seasons with per-36 stats...')
+    enriched_all = [enrich_per36(dict(cp)) for cp in college_players]
+    with open('../data/historical_college_stats.json', 'w') as f:
+        json.dump(enriched_all, f, indent=2)
+    print(f'Updated {len(enriched_all)} records in historical_college_stats.json')
+
     with open(OUTPUT_FILE, 'w') as f:
-        json.dump(matched_players, f, indent=2)
-    
-    # Show sample
-    if matched_players:
-        print("Sample matched player:")
-        sample = matched_players[0]
-        print(f"  Name: {sample['name']}")
-        print(f"  College: {sample['college_team']} ({sample['college_season']})")
-        print(f"  College PPG: {sample['college_stats']['points_per_game']}")
-        print(f"  NBA Career PPG: {sample['nba_career']['career_ppg']}")
-    
-    print("\n✅ Data saved successfully!")
-    print("\n💡 Next step: Use this data to build the comparison algorithm")
+        json.dump(matched, f, indent=2)
+    print(f'\nSaved {len(matched)} matched players to {OUTPUT_FILE}')
+
+    if matched:
+        s = matched[0]
+        print(f'\nSample: {s["name"]} | {s["college_team"]} {s["college_season"]}')
+        print(f'  College: {s["college_stats"].get("points_per_game")} PPG, {s["college_stats"].get("pts_per36")} Pts/36')
+        print(f'  NBA:     {s["nba_career"]["career_ppg"]} PPG over {s["nba_career"]["seasons_played"]} seasons')
+        print(f'  Height:  {s["physical"]["height_inches"]} inches')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

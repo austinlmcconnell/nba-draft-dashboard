@@ -1,256 +1,219 @@
 /**
  * Player Comparison Algorithm
- * Matches current prospects to historical players using weighted Euclidean distance
+ *
+ * Three comparison lenses per prospect:
+ *
+ *   statistical — Who produced the most similarly on the court?
+ *     Per-36 stats + efficiency rates, z-score normalised across the dataset.
+ *     Five basketball-analytics facets (evidence-based weights):
+ *       Scoring efficiency  (TS%, usage, FT rate, 3PT attempt rate)  28%
+ *       Scoring volume      (Pts/36)                                  18%
+ *       Playmaking          (Ast/36, AST/TOV, TOV/36)                 22%
+ *       Rebounding          (Reb/36, ORB%)                            16%
+ *       Defense             (Stl/36, Blk/36)                          16%
+ *
+ *   physical — Who shared the most similar physical profile?
+ *     Height 55%, weight 45% (wingspan 20% when available, redistributed).
+ *
+ *   overall — Best single comparable blending both dimensions.
+ *     Statistical 65% + physical 35%.
+ *     Falls back to statistical-only when prospect has no physical data.
  */
 
 import type {
-  CollegePlayer,
+  CollegeStats,
   HistoricalPlayer,
+  PhysicalAttributes,
   PlayerComparison,
-  ComparisonWeights,
-  NormalizedStats,
-  DatasetStats,
-  Position,
-} from '../types/player';
+  ProspectComparisons,
+  DatasetNorms,
+  NormParams,
+  ComparisonType,
+} from '../../types/player';
 
-import { normalizePlayerStats } from './normalize';
+// ---------------------------------------------------------------------------
+// Normalization
+// ---------------------------------------------------------------------------
 
-/**
- * Default weights for comparison categories
- * Adjust these to emphasize different aspects of player comparison
- */
-export const DEFAULT_WEIGHTS: ComparisonWeights = {
-  scoring: 1.5,      // PPG, FG%, 3P%, FT%
-  rebounding: 1.0,   // RPG
-  playmaking: 1.2,   // APG, TOV
-  defense: 1.1,      // SPG, BPG
-  physical: 0.8,     // Height, Weight, Age
-  efficiency: 1.3,   // Advanced metrics (if available)
-};
-
-/**
- * Position compatibility matrix
- * Determines which positions can be compared to each other
- */
-const POSITION_COMPATIBILITY: Record<Position, Position[]> = {
-  'PG': ['PG', 'G'],
-  'SG': ['SG', 'G', 'SF'],
-  'SF': ['SF', 'SG', 'PF', 'F'],
-  'PF': ['PF', 'SF', 'C', 'F'],
-  'C': ['C', 'PF'],
-  'G': ['PG', 'SG', 'G'],
-  'F': ['SF', 'PF', 'F'],
-};
-
-/**
- * Check if two positions are compatible for comparison
- */
-export function arePositionsCompatible(pos1: Position, pos2: Position): boolean {
-  return POSITION_COMPATIBILITY[pos1]?.includes(pos2) ?? false;
+function zScore(value: number, p: NormParams): number {
+  return p.std_dev === 0 ? 0 : (value - p.mean) / p.std_dev;
 }
 
-/**
- * Calculate weighted Euclidean distance between two normalized stat sets
- */
-function calculateDistance(
-  prospect: NormalizedStats,
-  historical: NormalizedStats,
-  weights: ComparisonWeights
-): number {
-  // Scoring distance (PPG, FG%, 3P%, FT%)
-  const scoringDist = Math.sqrt(
-    Math.pow(prospect.points_per_game - historical.points_per_game, 2) +
-    Math.pow(prospect.field_goal_percentage - historical.field_goal_percentage, 2) +
-    Math.pow(prospect.three_point_percentage - historical.three_point_percentage, 2) +
-    Math.pow(prospect.free_throw_percentage - historical.free_throw_percentage, 2)
-  ) * weights.scoring;
-
-  // Rebounding distance
-  const reboundingDist = Math.abs(prospect.rebounds_per_game - historical.rebounds_per_game) * weights.rebounding;
-
-  // Playmaking distance (APG and turnovers)
-  const playmakingDist = Math.sqrt(
-    Math.pow(prospect.assists_per_game - historical.assists_per_game, 2) +
-    Math.pow(prospect.turnovers_per_game - historical.turnovers_per_game, 2)
-  ) * weights.playmaking;
-
-  // Defense distance
-  const defenseDist = Math.sqrt(
-    Math.pow(prospect.steals_per_game - historical.steals_per_game, 2) +
-    Math.pow(prospect.blocks_per_game - historical.blocks_per_game, 2)
-  ) * weights.defense;
-
-  // Physical distance
-  const physicalDist = Math.sqrt(
-    Math.pow(prospect.height_inches - historical.height_inches, 2) +
-    Math.pow(prospect.weight_pounds - historical.weight_pounds, 2) +
-    Math.pow(prospect.age_at_season_start - historical.age_at_season_start, 2)
-  ) * weights.physical;
-
-  // Advanced metrics distance (if available)
-  let efficiencyDist = 0;
-  if (prospect.true_shooting_percentage && historical.true_shooting_percentage) {
-    efficiencyDist = Math.abs(prospect.true_shooting_percentage - historical.true_shooting_percentage) * weights.efficiency;
-  }
-
-  // Total weighted distance
-  return scoringDist + reboundingDist + playmakingDist + defenseDist + physicalDist + efficiencyDist;
+function makeParams(vals: number[]): NormParams {
+  if (vals.length === 0) return { mean: 0, std_dev: 1 };
+  const mean = vals.reduce((a, b) => a + b, 0) / vals.length;
+  const std_dev = Math.sqrt(vals.reduce((a, b) => a + (b - mean) ** 2, 0) / vals.length) || 1;
+  return { mean, std_dev };
 }
 
-/**
- * Calculate category-specific similarity scores (0-100)
- */
-function calculateCategorySimilarities(
-  prospect: NormalizedStats,
-  historical: NormalizedStats
-): PlayerComparison['stat_breakdown'] {
-  // Helper: convert distance to similarity percentage (0-100)
-  const distanceToSimilarity = (distance: number): number => {
-    // Smaller distance = higher similarity
-    // Using exponential decay: similarity = 100 * e^(-distance)
-    return Math.max(0, Math.min(100, 100 * Math.exp(-distance)));
-  };
+export function buildDatasetNorms(players: HistoricalPlayer[]): DatasetNorms {
+  const get = (fn: (s: CollegeStats) => number) =>
+    makeParams(players.map(p => fn(p.college_stats)).filter(v => isFinite(v) && v != null));
 
-  const scoringSimilarity = distanceToSimilarity(
-    Math.sqrt(
-      Math.pow(prospect.points_per_game - historical.points_per_game, 2) +
-      Math.pow(prospect.field_goal_percentage - historical.field_goal_percentage, 2)
-    )
-  );
-
-  const reboundingSimilarity = distanceToSimilarity(
-    Math.abs(prospect.rebounds_per_game - historical.rebounds_per_game)
-  );
-
-  const playmakingSimilarity = distanceToSimilarity(
-    Math.abs(prospect.assists_per_game - historical.assists_per_game)
-  );
-
-  const defenseSimilarity = distanceToSimilarity(
-    Math.sqrt(
-      Math.pow(prospect.steals_per_game - historical.steals_per_game, 2) +
-      Math.pow(prospect.blocks_per_game - historical.blocks_per_game, 2)
-    )
-  );
-
-  const physicalSimilarity = distanceToSimilarity(
-    Math.sqrt(
-      Math.pow(prospect.height_inches - historical.height_inches, 2) / 100 +
-      Math.pow(prospect.weight_pounds - historical.weight_pounds, 2) / 1000
-    )
-  );
-
-  const efficiencySimilarity = distanceToSimilarity(
-    Math.abs((prospect.field_goal_percentage - historical.field_goal_percentage))
-  );
+  const heights = players.map(p => p.physical?.height_inches).filter((v): v is number => v != null && v > 0);
+  const weights = players.map(p => p.physical?.weight_pounds).filter((v): v is number => v != null && v > 0);
 
   return {
-    scoring_similarity: Math.round(scoringSimilarity),
-    rebounding_similarity: Math.round(reboundingSimilarity),
-    playmaking_similarity: Math.round(playmakingSimilarity),
-    defense_similarity: Math.round(defenseSimilarity),
-    physical_similarity: Math.round(physicalSimilarity),
-    efficiency_similarity: Math.round(efficiencySimilarity),
+    pts_per36:                  get(s => s.pts_per36),
+    reb_per36:                  get(s => s.reb_per36),
+    ast_per36:                  get(s => s.ast_per36),
+    stl_per36:                  get(s => s.stl_per36),
+    blk_per36:                  get(s => s.blk_per36),
+    tov_per36:                  get(s => s.tov_per36),
+    true_shooting_pct:          get(s => s.true_shooting_pct),
+    usage_rate:                 get(s => s.usage_rate),
+    free_throw_rate:            get(s => s.free_throw_rate),
+    three_pt_attempts_per_game: get(s => s.three_pt_attempts_per_game),
+    ast_tov_ratio:              get(s => s.ast_tov_ratio),
+    oreb_pct:                   get(s => s.oreb_pct),
+    win_shares_per40:           get(s => s.win_shares_per40),
+    net_rating:                 get(s => s.net_rating),
+    height_inches:              makeParams(heights),
+    weight_pounds:              makeParams(weights),
   };
 }
 
-/**
- * Find the most similar historical players for a given prospect
- */
-export function findSimilarPlayers(
-  prospect: CollegePlayer,
-  historicalPlayers: HistoricalPlayer[],
-  datasetStats: DatasetStats,
-  options: {
-    topN?: number;
-    weights?: ComparisonWeights;
-    requireSamePosition?: boolean;
-  } = {}
-): PlayerComparison[] {
-  const {
-    topN = 10,
-    weights = DEFAULT_WEIGHTS,
-    requireSamePosition = false,
-  } = options;
+// ---------------------------------------------------------------------------
+// Statistical distance
+// ---------------------------------------------------------------------------
 
-  // Normalize prospect stats
-  const prospectNormalized = normalizePlayerStats(prospect, datasetStats);
+interface StatVec {
+  ts_pct: number; usage: number; ft_rate: number; three_rate: number;
+  pts36: number;
+  ast36: number; ast_tov: number; tov36: number;
+  reb36: number; oreb_pct: number;
+  stl36: number; blk36: number;
+}
 
-  // Calculate distances to all historical players
-  const comparisons: PlayerComparison[] = [];
+function toStatVec(s: CollegeStats, n: DatasetNorms): StatVec {
+  return {
+    ts_pct:     zScore(s.true_shooting_pct,          n.true_shooting_pct),
+    usage:      zScore(s.usage_rate,                 n.usage_rate),
+    ft_rate:    zScore(s.free_throw_rate,            n.free_throw_rate),
+    three_rate: zScore(s.three_pt_attempts_per_game, n.three_pt_attempts_per_game),
+    pts36:      zScore(s.pts_per36,                  n.pts_per36),
+    ast36:      zScore(s.ast_per36,                  n.ast_per36),
+    ast_tov:    zScore(s.ast_tov_ratio,              n.ast_tov_ratio),
+    tov36:      zScore(s.tov_per36,                  n.tov_per36),
+    reb36:      zScore(s.reb_per36,                  n.reb_per36),
+    oreb_pct:   zScore(s.oreb_pct,                   n.oreb_pct),
+    stl36:      zScore(s.stl_per36,                  n.stl_per36),
+    blk36:      zScore(s.blk_per36,                  n.blk_per36),
+  };
+}
 
-  for (const historical of historicalPlayers) {
-    // Position filter
-    if (requireSamePosition && !arePositionsCompatible(prospect.position, historical.college_profile.position)) {
-      continue;
-    }
+function sq(a: number, b: number) { return (a - b) ** 2; }
 
-    // Normalize historical player stats
-    const historicalNormalized = normalizePlayerStats(historical.college_profile, datasetStats);
+function statDistance(a: StatVec, b: StatVec) {
+  const eff  = Math.sqrt(sq(a.ts_pct, b.ts_pct) + sq(a.usage, b.usage) + sq(a.ft_rate, b.ft_rate) + sq(a.three_rate, b.three_rate));
+  const vol  = Math.abs(a.pts36 - b.pts36);
+  const play = Math.sqrt(sq(a.ast36, b.ast36) + sq(a.ast_tov, b.ast_tov) + sq(a.tov36, b.tov36));
+  const reb  = Math.sqrt(sq(a.reb36, b.reb36) + sq(a.oreb_pct, b.oreb_pct));
+  const def  = Math.sqrt(sq(a.stl36, b.stl36) + sq(a.blk36, b.blk36));
 
-    // Calculate distance
-    const distance = calculateDistance(prospectNormalized, historicalNormalized, weights);
+  // Weighted total (analytics-informed, sums to 1.0)
+  const total = eff * 0.28 + vol * 0.18 + play * 0.22 + reb * 0.16 + def * 0.16;
 
-    // Convert distance to similarity score (0-100)
-    // Using: similarity = 100 * e^(-distance/10)
-    const similarityScore = Math.max(0, Math.min(100, 100 * Math.exp(-distance / 10)));
+  return { total, eff, vol, play, reb, def };
+}
 
-    // Calculate category breakdowns
-    const statBreakdown = calculateCategorySimilarities(prospectNormalized, historicalNormalized);
+// ---------------------------------------------------------------------------
+// Physical distance
+// ---------------------------------------------------------------------------
 
-    comparisons.push({
-      historical_player: historical,
-      similarity_score: Math.round(similarityScore * 10) / 10, // Round to 1 decimal
-      distance,
-      stat_breakdown: statBreakdown,
-    });
+function physDistance(a: PhysicalAttributes, b: PhysicalAttributes, n: DatasetNorms) {
+  const h1 = a.height_inches != null ? zScore(a.height_inches, n.height_inches) : 0;
+  const h2 = b.height_inches != null ? zScore(b.height_inches, n.height_inches) : 0;
+  const w1 = a.weight_pounds != null ? zScore(a.weight_pounds, n.weight_pounds) : 0;
+  const w2 = b.weight_pounds != null ? zScore(b.weight_pounds, n.weight_pounds) : 0;
+
+  if (a.wingspan_inches != null && b.wingspan_inches != null) {
+    const ws1 = zScore(a.wingspan_inches, n.height_inches);
+    const ws2 = zScore(b.wingspan_inches, n.height_inches);
+    return Math.sqrt(0.40 * sq(h1, h2) + 0.30 * sq(w1, w2) + 0.20 * sq(ws1, ws2));
   }
 
-  // Sort by similarity (highest first) and return top N
-  return comparisons
-    .sort((a, b) => b.similarity_score - a.similarity_score)
-    .slice(0, topN);
+  return Math.sqrt(0.55 * sq(h1, h2) + 0.45 * sq(w1, w2));
 }
 
-/**
- * Get a single best match for a prospect
- */
-export function getBestMatch(
-  prospect: CollegePlayer,
-  historicalPlayers: HistoricalPlayer[],
-  datasetStats: DatasetStats,
-  weights?: ComparisonWeights
-): PlayerComparison | null {
-  const matches = findSimilarPlayers(prospect, historicalPlayers, datasetStats, {
-    topN: 1,
-    weights,
-  });
-
-  return matches[0] ?? null;
+// ---------------------------------------------------------------------------
+// Distance → 0-100 similarity score
+// similarity = 100 × e^(−dist / k)
+// ---------------------------------------------------------------------------
+function sim(dist: number, k = 3): number {
+  return Math.max(0, Math.min(100, 100 * Math.exp(-dist / k)));
 }
 
-/**
- * Find players similar in a specific category
- */
-export function findSimilarByCategory(
-  prospect: CollegePlayer,
-  historicalPlayers: HistoricalPlayer[],
-  datasetStats: DatasetStats,
-  category: keyof ComparisonWeights,
-  topN: number = 5
-): PlayerComparison[] {
-  // Create weights that heavily favor the specified category
-  const categoryWeights: ComparisonWeights = {
-    scoring: category === 'scoring' ? 3.0 : 0.3,
-    rebounding: category === 'rebounding' ? 3.0 : 0.3,
-    playmaking: category === 'playmaking' ? 3.0 : 0.3,
-    defense: category === 'defense' ? 3.0 : 0.3,
-    physical: category === 'physical' ? 3.0 : 0.3,
-    efficiency: category === 'efficiency' ? 3.0 : 0.3,
+// ---------------------------------------------------------------------------
+// Public: compute all three comparisons for a prospect
+// ---------------------------------------------------------------------------
+
+export function getProspectComparisons(
+  prospectStats: CollegeStats,
+  prospectPhysical: PhysicalAttributes | undefined | null,
+  pool: HistoricalPlayer[],
+  norms: DatasetNorms
+): ProspectComparisons {
+  const pVec = toStatVec(prospectStats, norms);
+  const hasPhys = (p: PhysicalAttributes | undefined | null): p is PhysicalAttributes =>
+    !!p && (p.height_inches != null || p.weight_pounds != null);
+
+  type Row = {
+    player: HistoricalPlayer;
+    sDist: number; sEff: number; sVol: number; sPlay: number; sReb: number; sDef: number;
+    pDist: number | null;
+    oDist: number;
   };
 
-  return findSimilarPlayers(prospect, historicalPlayers, datasetStats, {
-    topN,
-    weights: categoryWeights,
+  const rows: Row[] = pool.map(hist => {
+    const hVec = toStatVec(hist.college_stats, norms);
+    const s = statDistance(pVec, hVec);
+
+    let pDist: number | null = null;
+    if (hasPhys(prospectPhysical) && hasPhys(hist.physical)) {
+      pDist = physDistance(prospectPhysical, hist.physical, norms);
+    }
+
+    const oDist = pDist != null ? s.total * 0.65 + pDist * 0.35 : s.total;
+
+    return {
+      player: hist,
+      sDist: s.total, sEff: s.eff, sVol: s.vol, sPlay: s.play, sReb: s.reb, sDef: s.def,
+      pDist,
+      oDist,
+    };
   });
+
+  function make(row: Row, type: ComparisonType, score: number): PlayerComparison {
+    return {
+      historical_player: row.player,
+      comparison_type: type,
+      similarity_score: Math.round(score * 10) / 10,
+      breakdown: {
+        scoring_efficiency: Math.round(sim(row.sEff)),
+        scoring_volume:     Math.round(sim(row.sVol, 2)),
+        playmaking:         Math.round(sim(row.sPlay)),
+        rebounding:         Math.round(sim(row.sReb)),
+        defense:            Math.round(sim(row.sDef)),
+        physical:           row.pDist != null ? Math.round(sim(row.pDist, 1.5)) : 0,
+      },
+    };
+  }
+
+  const byStat    = [...rows].sort((a, b) => a.sDist - b.sDist)[0];
+  const byOverall = [...rows].sort((a, b) => a.oDist - b.oDist)[0];
+
+  let physical: PlayerComparison | null = null;
+  if (hasPhys(prospectPhysical)) {
+    const withPhys = rows.filter(r => r.pDist != null).sort((a, b) => a.pDist! - b.pDist!);
+    if (withPhys.length > 0) {
+      physical = make(withPhys[0], 'physical', sim(withPhys[0].pDist!, 1.5));
+    }
+  }
+
+  return {
+    statistical: make(byStat,    'statistical', sim(byStat.sDist)),
+    physical,
+    overall:     make(byOverall, 'overall',     sim(byOverall.oDist)),
+  };
 }

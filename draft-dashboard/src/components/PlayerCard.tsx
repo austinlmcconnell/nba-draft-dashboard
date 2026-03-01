@@ -4,7 +4,6 @@
  */
 
 import React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import type { CollegePlayer } from '@/types/player';
 
@@ -16,11 +15,9 @@ interface PlayerCardProps {
 export function PlayerCard({ player, className = '' }: PlayerCardProps) {
   const { name, team, position, stats, physical } = player;
 
-  // Format height from inches to feet-inches
-  const formatHeight = (inches: number): string => {
-    const feet = Math.floor(inches / 12);
-    const remainingInches = inches % 12;
-    return `${feet}'${remainingInches}"`;
+  const formatHeight = (inches: number | null | undefined): string => {
+    if (!inches) return '—';
+    return `${Math.floor(inches / 12)}'${inches % 12}"`;
   };
 
   return (
@@ -69,27 +66,25 @@ export function PlayerCard({ player, className = '' }: PlayerCardProps) {
             {team} • {player.conference}
           </p>
 
-          {/* Physical Stats */}
-          <div className="flex gap-4 mb-4 pb-4 border-b border-gray-100">
-            <div>
-              <p className="text-xs text-gray-500 uppercase">Height</p>
-              <p className="text-lg font-semibold text-gray-900">
-                {formatHeight(physical.height_inches)}
-              </p>
+          {/* Physical Stats — shown only when available */}
+          {physical && (physical.height_inches || physical.weight_pounds) && (
+            <div className="flex gap-4 mb-4 pb-4 border-b border-gray-100">
+              <div>
+                <p className="text-xs text-gray-500 uppercase">Height</p>
+                <p className="text-lg font-semibold text-gray-900">
+                  {formatHeight(physical.height_inches)}
+                </p>
+              </div>
+              {physical.weight_pounds && (
+                <div>
+                  <p className="text-xs text-gray-500 uppercase">Weight</p>
+                  <p className="text-lg font-semibold text-gray-900">
+                    {physical.weight_pounds} lbs
+                  </p>
+                </div>
+              )}
             </div>
-            <div>
-              <p className="text-xs text-gray-500 uppercase">Weight</p>
-              <p className="text-lg font-semibold text-gray-900">
-                {physical.weight_pounds} lbs
-              </p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 uppercase">Age</p>
-              <p className="text-lg font-semibold text-gray-900">
-                {physical.age_at_season_start}
-              </p>
-            </div>
-          </div>
+          )}
 
           {/* Key Stats */}
           <div className="grid grid-cols-3 gap-3">
