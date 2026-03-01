@@ -363,7 +363,10 @@ def main():
     if pre_dedup != len(matched):
         print(f'Deduplicated: {pre_dedup} → {len(matched)} (removed {pre_dedup - len(matched)} collisions)')
 
-    # Also enrich all college players with per-36 stats (for prospect pool)
+    # Enrich all college players with per-36 stats (for prospect pool).
+    # NOTE: run fetch_physical_data.py AFTER this script — it adds
+    # athlete_id, height_inches, weight_pounds for the current season and
+    # must not be overwritten by this step.
     print('\nEnriching all college player-seasons with per-36 stats...')
     enriched_all = [enrich_per36(dict(cp)) for cp in college_players]
     with open('../data/historical_college_stats.json', 'w') as f:

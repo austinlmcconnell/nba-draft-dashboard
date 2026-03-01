@@ -29,7 +29,10 @@ export default function ProspectDetailPage() {
         if (!p) { setError('Prospect not found'); setIsLoading(false); return; }
         if (!norms || historical.length === 0) { setError('Historical data unavailable'); setIsLoading(false); return; }
 
-        const comps = getProspectComparisons(p.stats, p.physical ?? null, historical, norms);
+        // Only compare against players from PREVIOUS seasons to avoid
+        // self-comparison and comparisons against current-season teammates.
+        const compPool = historical.filter(h => h.college_season < p.season);
+        const comps = getProspectComparisons(p.stats, p.physical ?? null, compPool, norms);
         setProspect(p);
         setComparisons(comps);
       } catch (e) {
