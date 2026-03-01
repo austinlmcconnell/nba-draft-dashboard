@@ -14,86 +14,64 @@ interface StatTableProps {
 export function StatTable({ player, className = '' }: StatTableProps) {
   const { stats } = player;
 
-  // Group stats by category
   const statCategories = [
     {
       title: 'Scoring',
       stats: [
-        { label: 'Points Per Game', value: stats.points_per_game.toFixed(1) },
-        { label: 'Field Goal %', value: `${stats.field_goal_percentage.toFixed(1)}%` },
-        { label: '3-Point %', value: `${stats.three_point_percentage.toFixed(1)}%` },
-        { label: 'Free Throw %', value: `${stats.free_throw_percentage.toFixed(1)}%` },
-        ...(stats.true_shooting_percentage
-          ? [{ label: 'True Shooting %', value: `${stats.true_shooting_percentage.toFixed(1)}%` }]
-          : []),
+        { label: 'Points Per Game',  value: stats.points_per_game.toFixed(1) },
+        { label: 'Pts / 36 min',     value: stats.pts_per36.toFixed(1) },
+        { label: 'Field Goal %',     value: `${stats.field_goal_percentage.toFixed(1)}%` },
+        { label: '3-Point %',        value: `${stats.three_point_percentage.toFixed(1)}%` },
+        { label: 'Free Throw %',     value: `${stats.free_throw_percentage.toFixed(1)}%` },
+        { label: 'True Shooting %',  value: `${stats.true_shooting_pct.toFixed(1)}%` },
+        { label: 'Effective FG %',   value: `${stats.effective_fg_pct.toFixed(1)}%` },
+        { label: 'FT Rate',          value: stats.free_throw_rate.toFixed(1) },
       ],
     },
     {
       title: 'Playmaking',
       stats: [
-        { label: 'Assists Per Game', value: stats.assists_per_game.toFixed(1) },
-        { label: 'Turnovers Per Game', value: stats.turnovers_per_game.toFixed(1) },
-        {
-          label: 'Assist/Turnover Ratio',
-          value: (stats.assists_per_game / stats.turnovers_per_game).toFixed(2),
-        },
-        ...(stats.usage_rate
-          ? [{ label: 'Usage Rate', value: `${stats.usage_rate.toFixed(1)}%` }]
-          : []),
+        { label: 'Assists Per Game',  value: stats.assists_per_game.toFixed(1) },
+        { label: 'Ast / 36 min',      value: stats.ast_per36.toFixed(1) },
+        { label: 'Turnovers Per Game',value: stats.turnovers_per_game.toFixed(1) },
+        { label: 'AST/TOV Ratio',     value: stats.ast_tov_ratio.toFixed(2) },
+        { label: 'Usage Rate',        value: `${stats.usage_rate.toFixed(1)}%` },
       ],
     },
     {
       title: 'Rebounding',
       stats: [
         { label: 'Rebounds Per Game', value: stats.rebounds_per_game.toFixed(1) },
-        ...(stats.offensive_rebounds_per_game
-          ? [{ label: 'Offensive RPG', value: stats.offensive_rebounds_per_game.toFixed(1) }]
-          : []),
-        ...(stats.defensive_rebounds_per_game
-          ? [{ label: 'Defensive RPG', value: stats.defensive_rebounds_per_game.toFixed(1) }]
-          : []),
+        { label: 'Reb / 36 min',      value: stats.reb_per36.toFixed(1) },
+        { label: 'Off. Reb %',        value: `${stats.oreb_pct.toFixed(1)}%` },
       ],
     },
     {
       title: 'Defense',
       stats: [
-        { label: 'Steals Per Game', value: stats.steals_per_game.toFixed(1) },
-        { label: 'Blocks Per Game', value: stats.blocks_per_game.toFixed(1) },
-        {
-          label: 'Defensive Actions/Game',
-          value: (stats.steals_per_game + stats.blocks_per_game).toFixed(1),
-        },
+        { label: 'Steals Per Game',   value: stats.steals_per_game.toFixed(1) },
+        { label: 'Stl / 36 min',      value: stats.stl_per36.toFixed(1) },
+        { label: 'Blocks Per Game',   value: stats.blocks_per_game.toFixed(1) },
+        { label: 'Blk / 36 min',      value: stats.blk_per36.toFixed(1) },
+      ],
+    },
+    {
+      title: 'Advanced Metrics',
+      stats: [
+        { label: 'Win Shares / 40',   value: stats.win_shares_per40.toFixed(3) },
+        { label: 'Net Rating',        value: stats.net_rating.toFixed(1) },
+        { label: 'Off. Rating',       value: stats.offensive_rating.toFixed(1) },
+        { label: 'Def. Rating',       value: stats.defensive_rating.toFixed(1) },
+        { label: 'PORPAG',            value: stats.porpag.toFixed(2) },
       ],
     },
     {
       title: 'Playing Time',
       stats: [
-        { label: 'Minutes Per Game', value: stats.minutes_per_game.toFixed(1) },
-        { label: 'Games Played', value: stats.games.toString() },
-        ...(stats.games_started !== undefined
-          ? [{ label: 'Games Started', value: stats.games_started.toString() }]
-          : []),
+        { label: 'Minutes Per Game',  value: stats.minutes_per_game.toFixed(1) },
+        { label: 'Games Played',      value: stats.games.toString() },
       ],
     },
-    ...(stats.player_efficiency_rating
-      ? [
-          {
-            title: 'Advanced Metrics',
-            stats: [
-              {
-                label: 'Player Efficiency Rating',
-                value: stats.player_efficiency_rating.toFixed(1),
-              },
-              ...(stats.offensive_rating
-                ? [{ label: 'Offensive Rating', value: stats.offensive_rating.toFixed(1) }]
-                : []),
-              ...(stats.defensive_rating
-                ? [{ label: 'Defensive Rating', value: stats.defensive_rating.toFixed(1) }]
-                : []),
-            ],
-          },
-        ]
-      : []),
   ];
 
   return (
