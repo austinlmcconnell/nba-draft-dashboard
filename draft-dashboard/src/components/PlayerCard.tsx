@@ -10,6 +10,7 @@ import type { CollegePlayer } from '@/types/player';
 
 interface PlayerCardProps {
   player: CollegePlayer;
+  rank?: number;
   className?: string;
 }
 
@@ -35,7 +36,7 @@ const formatHeight = (inches: number | null | undefined): string => {
   return `${Math.floor(inches / 12)}'${inches % 12}"`;
 };
 
-export function PlayerCard({ player, className = '' }: PlayerCardProps) {
+export function PlayerCard({ player, rank, className = '' }: PlayerCardProps) {
   const { name, team, position, stats, physical } = player;
   const [headErr, setHeadErr] = useState(false);
   const [logoErr, setLogoErr] = useState(false);
@@ -98,8 +99,13 @@ export function PlayerCard({ player, className = '' }: PlayerCardProps) {
             )}
           </div>
 
-          {/* Position Badge */}
-          <div className="absolute top-4 left-4">
+          {/* Position + Rank Badges */}
+          <div className="absolute top-4 left-4 flex flex-col gap-1.5">
+            {rank !== undefined && (
+              <span className="px-2.5 py-0.5 bg-yellow-400 text-yellow-900 text-xs font-black rounded-full shadow">
+                #{rank}
+              </span>
+            )}
             <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-blue-900 text-xs font-bold rounded-full">
               {position}
             </span>

@@ -211,7 +211,36 @@ function HeroSection({ prospect }: { prospect: CollegePlayer }) {
         </div>
         <h1 className="text-4xl font-bold text-white truncate">{prospect.name}</h1>
         <p className="text-blue-200 mt-1">{prospect.team} · {prospect.season} season</p>
+        <PhysicalBadges physical={prospect.physical} />
       </div>
+    </div>
+  );
+}
+
+function formatHeight(inches: number | null | undefined): string {
+  if (!inches) return '';
+  return `${Math.floor(inches / 12)}'${inches % 12}"`;
+}
+
+function PhysicalBadges({ physical }: { physical: CollegePlayer['physical'] }) {
+  if (!physical) return null;
+  const { height_inches, weight_pounds, wingspan_inches, age_at_season_start } = physical;
+  if (!height_inches && !weight_pounds && !wingspan_inches && !age_at_season_start) return null;
+
+  const items = [
+    height_inches   ? formatHeight(height_inches)           : null,
+    weight_pounds   ? `${weight_pounds} lbs`                : null,
+    wingspan_inches ? `${formatHeight(wingspan_inches)} ws`  : null,
+    age_at_season_start ? `Age ${age_at_season_start}`       : null,
+  ].filter(Boolean);
+
+  return (
+    <div className="flex flex-wrap gap-2 mt-2">
+      {items.map(item => (
+        <span key={item} className="px-2 py-0.5 bg-white/15 text-white text-xs rounded-full border border-white/20">
+          {item}
+        </span>
+      ))}
     </div>
   );
 }

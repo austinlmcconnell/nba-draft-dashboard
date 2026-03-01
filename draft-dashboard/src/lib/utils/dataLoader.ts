@@ -12,6 +12,7 @@ import type {
   HistoricalPlayer,
   PhysicalAttributes,
   DatasetNorms,
+  DraftRanking,
 } from '@/types/player';
 
 import { buildDatasetNorms } from './comparison';
@@ -19,6 +20,7 @@ import { buildDatasetNorms } from './comparison';
 let historicalCache: HistoricalPlayer[] | null = null;
 let prospectsCache: CollegePlayer[] | null = null;
 let normsCache: DatasetNorms | null = null;
+let rankingsCache: DraftRanking[] | null = null;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function toCollegeStats(raw: any): CollegeStats {
@@ -148,8 +150,22 @@ export async function getProspectById(id: string): Promise<CollegePlayer | null>
   return prospects.find(p => p.id === id) ?? null;
 }
 
+export async function loadDraftRankings(): Promise<DraftRanking[]> {
+  if (rankingsCache) return rankingsCache;
+  try {
+    const res = await fetch('/data/draft_rankings.json');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    rankingsCache = await res.json();
+    return rankingsCache!;
+  } catch (e) {
+    console.error('Failed to load draft rankings:', e);
+    return [];
+  }
+}
+
 export function clearDataCache() {
   historicalCache = null;
   prospectsCache  = null;
   normsCache      = null;
+  rankingsCache   = null;
 }

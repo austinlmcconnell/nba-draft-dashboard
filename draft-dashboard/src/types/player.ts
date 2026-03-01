@@ -149,6 +149,19 @@ export interface ProspectComparisons {
 }
 
 // ---------------------------------------------------------------------------
+// Draft Rankings (scraped from Tankathon)
+// ---------------------------------------------------------------------------
+export interface DraftRanking {
+  rank: number;
+  name: string;
+  position: string;
+  school: string;
+  height: string | null;
+  weight: number | null;
+  class: string | null;
+}
+
+// ---------------------------------------------------------------------------
 // Normalization helpers (used internally by the comparison algorithm)
 // ---------------------------------------------------------------------------
 export interface NormParams {
