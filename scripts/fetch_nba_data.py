@@ -370,16 +370,57 @@ def main():
         json.dump(enriched_all, f, indent=2)
     print(f'Updated {len(enriched_all)} records in historical_college_stats.json')
 
+    # Add undrafted historical players as additional comps.
+    # Any player who wasn't matched to a draft pick but had a real college
+    # career (≥15 MPG, ≥10 games) is still a valid comparison target —
+    # they'll appear as "Undrafted" with zero NBA career stats.
+    print('\nAdding undrafted historical players ...')
+    MIN_MPG, MIN_GAMES = 15.0, 10
+    matched_norms = {_norm(r['name']) for r in matched}
+
+    undrafted = []
+    seen_undrafted: set = set()
+    for cp in unique:
+        norm = _norm(cp['name'])
+        if norm in matched_norms or norm in seen_undrafted:
+            continue
+        mpg   = cp.get('minutes_per_game') or 0
+        games = cp.get('games') or 0
+        if mpg < MIN_MPG or games < MIN_GAMES:
+            continue
+        reg_match = match_name(cp['name'], registry, normed_registry)
+        physical = {
+            'height_inches':       reg_match['height_inches']  if reg_match else None,
+            'weight_pounds':       reg_match['weight_pounds']  if reg_match else None,
+            'wingspan_inches':     None,
+            'age_at_season_start': None,
+        }
+        enriched = enrich_per36(dict(cp))
+        undrafted.append({
+            'id':             f"hist_{cp['name'].replace(' ', '_').lower()}_{cp.get('season', 'unk')}",
+            'name':           cp['name'],
+            'college_team':   cp.get('team'),
+            'college_season': cp.get('season'),
+            'college_stats':  enriched,
+            'physical':       physical,
+            'nba_career': {
+                'career_ppg': 0.0, 'career_rpg': 0.0, 'career_apg': 0.0,
+                'seasons_played': 0, 'is_active': False,
+            },
+            'draft_year':  None,
+            'draft_round': None,
+            'draft_pick':  None,
+        })
+        seen_undrafted.add(norm)
+
+    print(f'Undrafted players added: {len(undrafted)} '
+          f'(min {MIN_MPG} mpg / {MIN_GAMES} games)')
+    matched.extend(undrafted)
+
     with open(OUTPUT_FILE, 'w') as f:
         json.dump(matched, f, indent=2)
-    print(f'\nSaved {len(matched)} matched players to {OUTPUT_FILE}')
-
-    if matched:
-        s = matched[0]
-        print(f'\nSample: {s["name"]} | {s["college_team"]} {s["college_season"]}')
-        print(f'  College: {s["college_stats"].get("points_per_game")} PPG, {s["college_stats"].get("pts_per36")} Pts/36')
-        print(f'  NBA:     {s["nba_career"]["career_ppg"]} PPG over {s["nba_career"]["seasons_played"]} seasons')
-        print(f'  Height:  {s["physical"]["height_inches"]} inches')
+    print(f'\nSaved {len(matched)} total players to {OUTPUT_FILE} '
+          f'({len(matched) - len(undrafted)} drafted + {len(undrafted)} undrafted)')
 
 
 if __name__ == '__main__':
