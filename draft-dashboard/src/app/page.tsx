@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import { PlayerCard, PlayerCardSkeleton } from '@/components/PlayerCard';
 import type { CollegePlayer, DraftRanking } from '@/types/player';
 import { loadProspects, loadDraftRankings } from '@/lib/utils/dataLoader';
@@ -114,6 +115,7 @@ export default function DashboardPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [positionFilter, setPositionFilter] = useState('all');
   const [conferenceFilter, setConferenceFilter] = useState('all');
+  const [schoolFilter, setSchoolFilter] = useState('all');
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -129,7 +131,7 @@ export default function DashboardPage() {
     [prospects, rankings],
   );
 
-  const isSearching = searchTerm.trim().length > 0 || positionFilter !== 'all' || conferenceFilter !== 'all';
+  const isSearching = searchTerm.trim().length > 0 || positionFilter !== 'all' || conferenceFilter !== 'all' || schoolFilter !== 'all';
 
   const displayList = useMemo(() => {
     const pool = isSearching ? all : ranked;
@@ -143,12 +145,14 @@ export default function DashboardPage() {
         p.position.toLowerCase().includes(q);
       const matchesPosition   = positionFilter   === 'all' || p.position === positionFilter;
       const matchesConference = conferenceFilter === 'all' || p.conference === conferenceFilter;
-      return matchesSearch && matchesPosition && matchesConference;
+      const matchesSchool     = schoolFilter     === 'all' || p.team === schoolFilter;
+      return matchesSearch && matchesPosition && matchesConference && matchesSchool;
     });
   }, [isSearching, all, ranked, searchTerm, positionFilter, conferenceFilter]);
 
   const positions   = useMemo(() => ['all', ...Array.from(new Set(prospects.map(p => p.position))).sort()], [prospects]);
   const conferences = useMemo(() => ['all', ...Array.from(new Set(prospects.map(p => p.conference))).sort()], [prospects]);
+  const schools     = useMemo(() => ['all', ...Array.from(new Set(prospects.map(p => p.team))).sort()], [prospects]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
@@ -163,6 +167,9 @@ export default function DashboardPage() {
             <div className="text-right">
               <p className="text-sm text-gray-500">2025–26 Season</p>
               <p className="text-2xl font-bold text-blue-600">{prospects.length} Prospects</p>
+              <Link href="/methodology" className="text-xs text-blue-500 hover:underline mt-1 inline-block">
+                How comparisons work →
+              </Link>
             </div>
           </div>
         </div>
@@ -222,10 +229,20 @@ export default function DashboardPage() {
                 {conferences.map(c => <option key={c} value={c}>{c === 'all' ? 'All' : c}</option>)}
               </select>
             </div>
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-600 whitespace-nowrap">School</label>
+              <select
+                value={schoolFilter}
+                onChange={e => setSchoolFilter(e.target.value)}
+                className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                {schools.map(s => <option key={s} value={s}>{s === 'all' ? 'All' : s}</option>)}
+              </select>
+            </div>
 
             {isSearching && (
               <button
-                onClick={() => { setSearchTerm(''); setPositionFilter('all'); setConferenceFilter('all'); }}
+                onClick={() => { setSearchTerm(''); setPositionFilter('all'); setConferenceFilter('all'); setSchoolFilter('all'); }}
                 className="ml-auto text-sm text-blue-600 hover:text-blue-700 font-medium"
               >
                 Clear filters
@@ -293,7 +310,8 @@ export default function DashboardPage() {
       <footer className="mt-12 bg-white border-t border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <p className="text-center text-sm text-gray-500">
-            Stats from CollegeBasketballData.com · Basketball Reference · Rankings from Tankathon
+            Stats from CollegeBasketballData.com · Basketball Reference · Rankings from Tankathon ·{' '}
+            <Link href="/methodology" className="text-blue-500 hover:underline">Comparison methodology</Link>
           </p>
         </div>
       </footer>
