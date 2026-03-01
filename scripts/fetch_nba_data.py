@@ -167,21 +167,49 @@ def fetch_draft_career_stats(start: int = 2005, end: int = 2024) -> Dict[str, di
 
 
 # ---------------------------------------------------------------------------
-# Step 3 — Name matching (exact → last+first-initial fallback)
+# Step 3 — Name matching (exact → last + first-3-chars fallback)
 # ---------------------------------------------------------------------------
-def match_name(college_name: str, lookup: Dict[str, dict]) -> Optional[dict]:
-    normed = college_name.lower().strip()
+import re as _re
+_SUFFIX_RE = _re.compile(r'\s*\b(jr\.?|sr\.?|ii|iii|iv|v)\b\.?\s*$', _re.IGNORECASE)
+_PUNCT_RE  = _re.compile(r"[,\.']")
 
-    if normed in lookup:
-        return lookup[normed]
 
+def _norm(name: str) -> str:
+    """Strip name suffixes (Jr/Sr/II/III), punctuation, lowercase."""
+    name = _SUFFIX_RE.sub('', name)
+    name = _PUNCT_RE.sub('', name)
+    return ' '.join(name.lower().split())
+
+
+def build_normed_lookup(lookup: Dict[str, dict]) -> Dict[str, dict]:
+    """Return a new dict keyed by normalised name."""
+    result: Dict[str, dict] = {}
+    for k, v in lookup.items():
+        nk = _norm(k)
+        if nk not in result:          # first occurrence wins on collision
+            result[nk] = v
+    return result
+
+
+def match_name(college_name: str, lookup: Dict[str, dict],
+               normed_lookup: Optional[Dict[str, dict]] = None) -> Optional[dict]:
+    if normed_lookup is None:
+        normed_lookup = build_normed_lookup(lookup)
+
+    normed = _norm(college_name)
+
+    # Exact match on normalised key
+    if normed in normed_lookup:
+        return normed_lookup[normed]
+
+    # Fallback: last name + first 3 chars of first name
     parts = normed.split()
     if len(parts) >= 2:
         last = parts[-1]
-        fi = parts[0][0]
-        for key, val in lookup.items():
+        fp   = parts[0][:3]
+        for key, val in normed_lookup.items():
             kparts = key.split()
-            if len(kparts) >= 2 and kparts[-1] == last and kparts[0][0] == fi:
+            if len(kparts) >= 2 and kparts[-1] == last and kparts[0][:3] == fp:
                 return val
 
     return None
@@ -265,6 +293,10 @@ def main():
 
     # Step 3 & 4: Match and assemble
     print('Matching and assembling records...')
+    # Pre-build normalised lookups once (avoids O(n²) re-normalisation)
+    normed_draft    = build_normed_lookup(draft_stats)
+    normed_registry = build_normed_lookup(registry)
+
     matched = []
     unmatched = 0
 
@@ -272,13 +304,13 @@ def main():
         name = cp['name']
 
         # Try to find in draft stats (primary source for career data)
-        draft_match = match_name(name, draft_stats)
+        draft_match = match_name(name, draft_stats, normed_draft)
         if not draft_match:
             unmatched += 1
             continue
 
         # Enrich with physical from registry
-        reg_match = match_name(name, registry)
+        reg_match = match_name(name, registry, normed_registry)
         physical = {
             'height_inches': reg_match['height_inches'] if reg_match else None,
             'weight_pounds': reg_match['weight_pounds'] if reg_match else None,

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ComparisonCard, ComparisonCardSkeleton } from '@/components/ComparisonCard';
 import type { CollegePlayer, ProspectComparisons } from '@/types/player';
 import { getProspectComparisons } from '@/lib/utils/comparison';
@@ -62,21 +63,7 @@ export default function ProspectDetailPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Profile hero */}
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div className="relative h-52 bg-gradient-to-br from-blue-600 to-blue-900 flex items-center px-8 gap-6">
-            <div className="w-28 h-28 rounded-full bg-white/10 border-4 border-white/20 flex items-center justify-center flex-shrink-0">
-              <span className="text-5xl font-bold text-white/70">
-                {prospect.name.split(' ').map(n => n[0]).join('')}
-              </span>
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="px-2 py-0.5 bg-white/90 text-blue-900 text-xs font-bold rounded-full">{prospect.position}</span>
-                <span className="px-2 py-0.5 bg-white/90 text-blue-900 text-xs font-bold rounded-full">{prospect.conference}</span>
-              </div>
-              <h1 className="text-4xl font-bold text-white truncate">{prospect.name}</h1>
-              <p className="text-blue-200 mt-1">{prospect.team} · {prospect.season} season</p>
-            </div>
-          </div>
+          <HeroSection prospect={prospect} />
 
           {/* Stat strip */}
           <div className="px-8 py-6">
@@ -150,6 +137,78 @@ export default function ProspectDetailPage() {
           </div>
         )}
       </main>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// HeroSection — team-branded gradient, ESPN logo + headshot
+// ---------------------------------------------------------------------------
+function teamGradient(primary?: string, secondary?: string): string {
+  const p = primary   ? `#${primary.replace('#', '')}`   : '#1d4ed8';
+  const s = secondary ? `#${secondary.replace('#', '')}` : '#1e3a8a';
+  return `linear-gradient(135deg, ${p}, ${s})`;
+}
+
+function HeroSection({ prospect }: { prospect: CollegePlayer }) {
+  const [headErr, setHeadErr] = useState(false);
+  const [logoErr, setLogoErr] = useState(false);
+
+  const headshotSrc = prospect.athlete_id
+    ? `https://a.espncdn.com/combiner/i?img=/i/headshots/mens-college-basketball/players/full/${prospect.athlete_id}.png`
+    : null;
+  const logoSrc = prospect.espn_team_id
+    ? `https://a.espncdn.com/i/teamlogos/ncaa/500/${prospect.espn_team_id}.png`
+    : null;
+
+  return (
+    <div
+      className="relative h-52 flex items-center px-8 gap-6"
+      style={{ background: teamGradient(prospect.team_primary_color, prospect.team_secondary_color) }}
+    >
+      {/* Team logo — top right */}
+      {logoSrc && !logoErr && (
+        <div className="absolute top-4 right-4 w-14 h-14 bg-white rounded-full shadow-lg flex items-center justify-center overflow-hidden p-1">
+          <Image
+            src={logoSrc}
+            alt={prospect.team}
+            width={48}
+            height={48}
+            className="object-contain"
+            onError={() => setLogoErr(true)}
+            unoptimized
+          />
+        </div>
+      )}
+
+      {/* Headshot or initials */}
+      <div className="w-28 h-28 rounded-full bg-white/10 border-4 border-white/20 flex items-center justify-center flex-shrink-0 overflow-hidden">
+        {headshotSrc && !headErr ? (
+          <Image
+            src={headshotSrc}
+            alt={prospect.name}
+            width={112}
+            height={112}
+            className="w-full h-full object-cover"
+            onError={() => setHeadErr(true)}
+            unoptimized
+          />
+        ) : (
+          <span className="text-5xl font-bold text-white/70">
+            {prospect.name.split(' ').map(n => n[0]).join('')}
+          </span>
+        )}
+      </div>
+
+      {/* Name / team / badges */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="px-2 py-0.5 bg-white/90 text-blue-900 text-xs font-bold rounded-full">{prospect.position}</span>
+          <span className="px-2 py-0.5 bg-white/90 text-blue-900 text-xs font-bold rounded-full">{prospect.conference}</span>
+        </div>
+        <h1 className="text-4xl font-bold text-white truncate">{prospect.name}</h1>
+        <p className="text-blue-200 mt-1">{prospect.team} · {prospect.season} season</p>
+      </div>
     </div>
   );
 }

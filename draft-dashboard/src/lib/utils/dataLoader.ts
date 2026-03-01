@@ -126,7 +126,7 @@ export async function loadProspects(season = 2024): Promise<CollegePlayer[]> {
         team_primary_color:   r.team_primary_color ?? undefined,
         team_secondary_color: r.team_secondary_color ?? undefined,
         stats:                toCollegeStats(r),
-        physical:             undefined,
+        physical:             (r.height_inches != null || r.weight_pounds != null) ? toPhysical(r) : undefined,
       }));
     return prospectsCache;
   } catch (e) {
