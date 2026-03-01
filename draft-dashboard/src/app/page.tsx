@@ -13,7 +13,7 @@ export default function DashboardPage() {
   const [conferenceFilter, setConferenceFilter] = useState('all');
 
   useEffect(() => {
-    loadProspects(2024).then(data => {
+    loadProspects(2026).then(data => {
       setProspects(data);
       setIsLoading(false);
     });
@@ -42,7 +42,7 @@ export default function DashboardPage() {
               <p className="mt-1 text-gray-600">Compare prospects to their closest historical NBA player matches</p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-gray-500">2023-24 Season</p>
+              <p className="text-sm text-gray-500">2025-26 Season</p>
               <p className="text-2xl font-bold text-blue-600">{prospects.length} Prospects</p>
             </div>
           </div>
