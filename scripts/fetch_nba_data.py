@@ -202,14 +202,15 @@ def match_name(college_name: str, lookup: Dict[str, dict],
     if normed in normed_lookup:
         return normed_lookup[normed]
 
-    # Fallback: last name + first 3 chars of first name
+    # Fallback: last name + first 4 chars of first name (4 prevents
+    # Jarrius/Jaren, Antoine/Anthony, Marshall/Markel collisions)
     parts = normed.split()
     if len(parts) >= 2:
         last = parts[-1]
-        fp   = parts[0][:3]
+        fp   = parts[0][:4]
         for key, val in normed_lookup.items():
             kparts = key.split()
-            if len(kparts) >= 2 and kparts[-1] == last and kparts[0][:3] == fp:
+            if len(kparts) >= 2 and kparts[-1] == last and kparts[0][:4] == fp:
                 return val
 
     return None
@@ -344,6 +345,23 @@ def main():
     print(f'Unmatched: {unmatched}')
     rate = len(matched) * 100 // (len(matched) + unmatched) if (matched or unmatched) else 0
     print(f'Rate:      {rate}%')
+
+    # Deduplicate: if multiple college players matched the same NBA pick,
+    # keep the one with more college minutes (more likely the real match).
+    seen: Dict[tuple, dict] = {}
+    for rec in matched:
+        slot = (rec.get('draft_year'), rec.get('draft_pick'))
+        if slot not in seen:
+            seen[slot] = rec
+        else:
+            prev_mpg = seen[slot]['college_stats'].get('minutes_per_game', 0) or 0
+            this_mpg = rec['college_stats'].get('minutes_per_game', 0) or 0
+            if this_mpg > prev_mpg:
+                seen[slot] = rec
+    pre_dedup = len(matched)
+    matched = list(seen.values())
+    if pre_dedup != len(matched):
+        print(f'Deduplicated: {pre_dedup} → {len(matched)} (removed {pre_dedup - len(matched)} collisions)')
 
     # Also enrich all college players with per-36 stats (for prospect pool)
     print('\nEnriching all college player-seasons with per-36 stats...')

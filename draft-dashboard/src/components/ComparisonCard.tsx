@@ -78,12 +78,11 @@ export function ComparisonCard({ comparison, className = '' }: Props) {
           <span>{h.college_team}</span>
           <span>·</span>
           <span>{h.college_season}</span>
-          {h.draft_pick != null && (
-            <>
-              <span>·</span>
-              <span className="font-semibold text-blue-600">{ordinal(h.draft_pick)} pick ({h.draft_year})</span>
-            </>
-          )}
+          <span>·</span>
+          {h.draft_pick != null
+            ? <span className="font-semibold text-blue-600">{ordinal(h.draft_pick)} pick ({h.draft_year})</span>
+            : <span className="font-semibold text-gray-400 italic">Undrafted</span>
+          }
           {h.physical.height_inches && (
             <>
               <span>·</span>
