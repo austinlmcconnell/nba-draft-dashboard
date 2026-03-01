@@ -40,7 +40,7 @@ export default function ProspectDetailPage() {
         // self-comparison and comparisons against current-season teammates.
         const compPool = historical.filter(h => h.college_season < p.season);
         const comps = getProspectComparisons(p.stats, p.physical ?? null, compPool, norms);
-        const avg = await getSeasonAverages(p.season);
+        const avg = await getSeasonAverages(p.season, p.position);
         setProspect(p);
         setComparisons(comps);
         setSeasonAvg(avg);
@@ -79,7 +79,10 @@ export default function ProspectDetailPage() {
 
           {/* Stat strip */}
           <div className="px-8 py-6">
-            <h2 className="text-lg font-bold text-gray-800 mb-4">Season Stats</h2>
+            <h2 className="text-lg font-bold text-gray-800 mb-1">Season Stats</h2>
+            <p className="text-xs text-gray-400 mb-4">
+              Shading compares to same-position peers · darker = better · hover for averages
+            </p>
             <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
               {[
                 { label: 'PPG',  value: s.points_per_game.toFixed(1),   norm: seasonAvg?.points_per_game,   raw: s.points_per_game },
@@ -96,7 +99,6 @@ export default function ProspectDetailPage() {
                   norm={stat.norm}
                   raw={stat.raw}
                   primary={prospect.team_primary_color}
-                  secondary={prospect.team_secondary_color}
                 />
               ))}
             </div>
@@ -115,7 +117,6 @@ export default function ProspectDetailPage() {
                   norm={stat.norm}
                   raw={stat.raw}
                   primary={prospect.team_primary_color}
-                  secondary={prospect.team_secondary_color}
                 />
               ))}
             </div>
@@ -278,7 +279,7 @@ function PhysicalBadges({ physical }: { physical: CollegePlayer['physical'] }) {
 // Sub-components
 // ---------------------------------------------------------------------------
 
-/** Parse a hex color string → [r, g, b], returns null on failure. */
+/** Parse a 3-6-char hex string → [r, g, b]. Returns null on failure. */
 function parseHex(hex: string | undefined): [number, number, number] | null {
   if (!hex) return null;
   const h = hex.replace('#', '');
@@ -291,57 +292,81 @@ function parseHex(hex: string | undefined): [number, number, number] | null {
 }
 
 /**
- * Convert z-score to a 0–1 intensity:
- *   z ≤ -2 → ~0.10 (very muted)  z = 0 → 0.50 (midpoint)  z ≥ +2 → ~0.90 (vivid)
+ * Darken (factor < 1) or lighten toward white (factor > 1) an RGB triplet.
+ *   factor = 0.70  → 30 % darker than input
+ *   factor = 1.00  → unchanged
+ *   factor = 1.40  → 40 % of the way to white
  */
-function zToIntensity(z: number): number {
-  return 0.50 + 0.40 * Math.tanh(z * 0.65);
+function adjustColor(
+  rgb: [number, number, number],
+  factor: number,
+): [number, number, number] {
+  if (factor <= 1) {
+    return [Math.round(rgb[0] * factor), Math.round(rgb[1] * factor), Math.round(rgb[2] * factor)];
+  }
+  const t = Math.min(factor - 1, 1); // 0 = primary, 1 = white
+  return [
+    Math.round(rgb[0] + (255 - rgb[0]) * t),
+    Math.round(rgb[1] + (255 - rgb[1]) * t),
+    Math.round(rgb[2] + (255 - rgb[2]) * t),
+  ];
 }
 
-function statBoxStyle(
-  primary: string | undefined,
-  secondary: string | undefined,
-  intensity: number,  // 0–1
-): React.CSSProperties {
-  const p = parseHex(primary)  ?? [29,  78, 216];   // blue-700 fallback
-  const s = parseHex(secondary) ?? [30,  58, 138];   // blue-900 fallback
+/**
+ * WCAG relative luminance — used to pick a legible text colour.
+ * Returns a value in [0, 1] where 1 = white, 0 = black.
+ */
+function luminance([r, g, b]: [number, number, number]): number {
+  return [r, g, b].reduce((acc, c, i) => {
+    const s = c / 255;
+    const lin = s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+    return acc + lin * [0.2126, 0.7152, 0.0722][i];
+  }, 0);
+}
 
-  // Lerp: low intensity → secondary colour, high → primary colour
-  const lerp = (a: number, b: number) => Math.round(a + (b - a) * intensity);
-  const [r, g, b] = [lerp(s[0], p[0]), lerp(s[1], p[1]), lerp(s[2], p[2])];
-
-  // Darken slightly for the gradient end
-  const dim = (v: number) => Math.max(0, v - 22);
-  return {
-    background: `linear-gradient(135deg, rgb(${r},${g},${b}) 0%, rgb(${dim(r)},${dim(g)},${dim(b)}) 100%)`,
-  };
+/**
+ * Map z-score to a brightness adjustment factor.
+ * Rule: darker = better, lighter = worse.
+ *   z ≥ +2.5  → factor ≈ 0.625  (darkened primary)
+ *   z =  0    → factor = 1.000  (primary as-is)
+ *   z ≤ −2.5  → factor ≈ 1.375  (lightened toward white)
+ */
+function zToFactor(z: number): number {
+  return 1.0 - 0.15 * Math.max(-2.5, Math.min(2.5, z));
 }
 
 function StatBox({
-  label, value, norm, raw, primary, secondary,
+  label, value, norm, raw, primary,
 }: {
   label: string;
   value: string;
   norm?: NormParams;
   raw: number;
   primary?: string;
-  secondary?: string;
 }) {
   const z = norm && norm.std_dev > 0 ? (raw - norm.mean) / norm.std_dev : 0;
-  const intensity = norm ? zToIntensity(z) : 0.5;
-  const style = statBoxStyle(primary, secondary, intensity);
+  const base    = parseHex(primary) ?? [29, 78, 216];   // Tailwind blue-700 fallback
+  const factor  = norm ? zToFactor(z) : 1.0;
+  const bgColor = adjustColor(base, factor);
+  // Gradient end: always slightly darker than the base for depth
+  const endColor = adjustColor(bgColor, 0.88);
+  const textColor = luminance(bgColor) > 0.179 ? '#1f2937' : '#ffffff';
 
-  // Small indicator dot: top 25% = bright ring, bottom 25% = dim
-  const ringClass = z > 0.67 ? 'ring-2 ring-white/40' : z < -0.67 ? 'ring-1 ring-white/10' : '';
+  const tooltipLabel = norm
+    ? `vs same-position peers — avg: ${norm.mean.toFixed(1)}, z: ${z >= 0 ? '+' : ''}${z.toFixed(2)}`
+    : undefined;
 
   return (
     <div
-      className={`rounded-lg p-3 text-center shadow-sm ${ringClass}`}
-      style={style}
-      title={norm ? `League avg: ${norm.mean.toFixed(1)} · z-score: ${z.toFixed(2)}` : undefined}
+      className="rounded-lg p-3 text-center shadow-sm"
+      style={{
+        background: `linear-gradient(135deg, rgb(${bgColor[0]},${bgColor[1]},${bgColor[2]}) 0%, rgb(${endColor[0]},${endColor[1]},${endColor[2]}) 100%)`,
+        color: textColor,
+      }}
+      title={tooltipLabel}
     >
-      <p className="text-white/75 text-xs uppercase tracking-wide">{label}</p>
-      <p className="text-white text-2xl font-bold">{value}</p>
+      <p className="text-xs uppercase tracking-wide opacity-75">{label}</p>
+      <p className="text-2xl font-bold">{value}</p>
     </div>
   );
 }

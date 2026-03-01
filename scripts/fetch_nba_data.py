@@ -268,6 +268,77 @@ def enrich_per36(stats: dict) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# Step 5 — NBA Draft Combine wingspan (stats.nba.com)
+# The NBA publishes combine measurements each May.  The API covers 2001-2024.
+# ---------------------------------------------------------------------------
+_NBA_STATS_HEADERS = {
+    'User-Agent': (
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+        'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    ),
+    'Referer':              'https://www.nba.com/',
+    'Origin':               'https://www.nba.com',
+    'Accept':               'application/json, text/plain, */*',
+    'x-nba-stats-origin':   'stats',
+    'x-nba-stats-token':    'true',
+}
+
+
+def fetch_combine_wingspans(start: int = 2001, end: int = 2024) -> Dict[str, float]:
+    """Return a dict of {normalized_player_name: wingspan_inches} from the
+    NBA Draft Combine API.  Covers draft years *start* through *end*.
+
+    The API SeasonYear format is the post-draft NBA season, e.g. draft year
+    2024 → SeasonYear 2024-25.  Some early years may return empty data.
+    """
+    wingspans: Dict[str, float] = {}
+    print(f'Fetching NBA Draft Combine wingspans ({start}–{end})...')
+
+    for draft_year in range(start, end + 1):
+        season = f'{draft_year}-{str(draft_year + 1)[-2:]}'
+        url = (
+            'https://stats.nba.com/stats/draftcombinestats'
+            f'?LeagueID=00&SeasonYear={season}'
+        )
+        try:
+            resp = requests.get(url, headers=_NBA_STATS_HEADERS, timeout=20)
+            if resp.status_code in (400, 404):
+                time.sleep(DELAY * 0.5)
+                continue
+            resp.raise_for_status()
+            data = resp.json()
+
+            rs = (data.get('resultSets') or [{}])[0]
+            hdrs = rs.get('headers', [])
+            rows = rs.get('rowSet', [])
+
+            if 'PLAYER_NAME' not in hdrs or 'WINGSPAN' not in hdrs:
+                time.sleep(DELAY)
+                continue
+
+            ni = hdrs.index('PLAYER_NAME')
+            wi = hdrs.index('WINGSPAN')
+
+            found = 0
+            for row in rows:
+                name = row[ni] if ni < len(row) else None
+                ws   = row[wi] if wi < len(row) else None
+                # Sanity: wingspan should be > 60 inches (5 ft) and < 108 (9 ft)
+                if name and isinstance(ws, (int, float)) and 60 < ws < 108:
+                    wingspans[_norm(str(name))] = float(ws)
+                    found += 1
+
+            print(f'  Combine {season}: {found} wingspans')
+        except Exception as e:
+            print(f'  Combine {season}: {e}')
+
+        time.sleep(DELAY)
+
+    print(f'Total combine wingspans collected: {len(wingspans)}\n')
+    return wingspans
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 def main():
@@ -520,6 +591,23 @@ def main():
 
     print(f'Undrafted NBA players enriched: {enriched_undrafted}')
     matched.extend(undrafted)
+
+    # -----------------------------------------------------------------------
+    # Wingspan enrichment — NBA Draft Combine measurements.
+    # Adds wingspan_inches to all players where available.
+    # -----------------------------------------------------------------------
+    wingspans = fetch_combine_wingspans()
+    if wingspans:
+        wing_count = 0
+        for rec in matched:
+            normed = _norm(rec['name'])
+            if normed in wingspans:
+                if rec.get('physical') is None:
+                    rec['physical'] = {'height_inches': None, 'weight_pounds': None,
+                                       'wingspan_inches': None, 'age_at_season_start': None}
+                rec['physical']['wingspan_inches'] = wingspans[normed]
+                wing_count += 1
+        print(f'Wingspan enriched: {wing_count} players')
 
     with open(OUTPUT_FILE, 'w') as f:
         json.dump(matched, f, indent=2)

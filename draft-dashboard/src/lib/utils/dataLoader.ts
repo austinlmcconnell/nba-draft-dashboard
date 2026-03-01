@@ -191,7 +191,7 @@ export async function loadDraftRankings(): Promise<DraftRanking[]> {
 
 // ---------------------------------------------------------------------------
 // Season averages — used by the profile page to shade stat boxes relative
-// to the current-season peer group.
+// to same-position peers in the current season.
 // ---------------------------------------------------------------------------
 export interface StatAverages {
   points_per_game:       NormParams;
@@ -214,11 +214,43 @@ function normOf(vals: number[]): NormParams {
   return { mean, std_dev };
 }
 
-export async function getSeasonAverages(season: number): Promise<StatAverages | null> {
-  const prospects = await loadProspects(season);
-  if (prospects.length === 0) return null;
+/**
+ * Group positions into three broad buckets so per-position samples are large
+ * enough to produce meaningful norms.
+ *   G  → PG, SG, G
+ *   F  → SF, PF, F
+ *   C  → C
+ */
+export function positionGroup(pos: string): 'G' | 'F' | 'C' {
+  if (['PG', 'SG', 'G'].includes(pos)) return 'G';
+  if (['SF', 'PF', 'F'].includes(pos)) return 'F';
+  return 'C';
+}
+
+const MIN_POOL_SIZE = 20; // fall back to full dataset if position group is too small
+
+/**
+ * Compute stat norms for a season, optionally filtered to the same position
+ * group (G / F / C). Falls back to all positions if the group has fewer than
+ * MIN_POOL_SIZE players so the stats are still meaningful.
+ */
+export async function getSeasonAverages(
+  season: number,
+  position?: string,
+): Promise<StatAverages | null> {
+  const all = await loadProspects(season);
+  if (all.length === 0) return null;
+
+  let pool = all;
+  if (position) {
+    const group  = positionGroup(position);
+    const byPos  = all.filter(p => positionGroup(p.position) === group);
+    pool = byPos.length >= MIN_POOL_SIZE ? byPos : all;
+  }
+
   const pick = (fn: (s: CollegeStats) => number) =>
-    normOf(prospects.map(p => fn(p.stats)).filter(v => isFinite(v) && v > 0));
+    normOf(pool.map(p => fn(p.stats)).filter(v => isFinite(v) && v > 0));
+
   return {
     points_per_game:        pick(s => s.points_per_game),
     rebounds_per_game:      pick(s => s.rebounds_per_game),

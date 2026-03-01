@@ -6,17 +6,21 @@
  *   statistical — Who produced the most similarly on the court?
  *     Per-36 stats + efficiency rates, z-score normalised across the dataset.
  *     Five basketball-analytics facets (evidence-based weights):
- *       Scoring efficiency  (TS%, usage, FT rate, 3P%)               28%
- *       Scoring volume      (Pts/36)                                  18%
- *       Playmaking          (Ast/36, AST/TOV, TOV/36)                 22%
- *       Rebounding          (Reb/36, ORB%)                            16%
- *       Defense             (Stl/36, Blk/36)                          16%
+ *       Scoring efficiency  (TS%, usage, FT rate, 3P%)               25%
+ *       Scoring volume      (Pts/36)                                  16%
+ *       Playmaking          (Ast/36, AST/TOV, TOV/36)                 20%
+ *       Rebounding          (Reb/36, ORB%)                            19%
+ *       Defense             (Stl/36, Blk/36)                          20%
  *
  *   physical — Who shared the most similar physical profile?
- *     Height 55%, weight 45% (wingspan 20% when available, redistributed).
+ *     Height 55%, weight 45% (wingspan redistributes: h 40%, w 30%, ws 20%
+ *     when available from NBA Draft Combine).
  *
  *   overall — Best single comparable blending both dimensions.
- *     Statistical 70% + physical 30%.
+ *     Scored as: 70% × stat_sim + 25% × phys_sim + 5% × age_sim
+ *     Searched by maximising this blended score so that no single dimension
+ *     (e.g. a physically-identical but statistically-dissimilar player) can
+ *     dominate the result.
  *     Falls back to statistical-only when prospect has no physical data.
  */
 
@@ -52,24 +56,26 @@ export function buildDatasetNorms(players: HistoricalPlayer[]): DatasetNorms {
 
   const heights = players.map(p => p.physical?.height_inches).filter((v): v is number => v != null && v > 0);
   const weights = players.map(p => p.physical?.weight_pounds).filter((v): v is number => v != null && v > 0);
+  const ages    = players.map(p => p.physical?.age_at_season_start).filter((v): v is number => v != null && v > 10);
 
   return {
-    pts_per36:                  get(s => s.pts_per36),
-    reb_per36:                  get(s => s.reb_per36),
-    ast_per36:                  get(s => s.ast_per36),
-    stl_per36:                  get(s => s.stl_per36),
-    blk_per36:                  get(s => s.blk_per36),
-    tov_per36:                  get(s => s.tov_per36),
-    true_shooting_pct:          get(s => s.true_shooting_pct),
-    usage_rate:                 get(s => s.usage_rate),
-    free_throw_rate:            get(s => s.free_throw_rate),
-    three_point_pct:            get(s => s.three_point_percentage),
-    ast_tov_ratio:              get(s => s.ast_tov_ratio),
-    oreb_pct:                   get(s => s.oreb_pct),
-    win_shares_per40:           get(s => s.win_shares_per40),
-    net_rating:                 get(s => s.net_rating),
-    height_inches:              makeParams(heights),
-    weight_pounds:              makeParams(weights),
+    pts_per36:              get(s => s.pts_per36),
+    reb_per36:              get(s => s.reb_per36),
+    ast_per36:              get(s => s.ast_per36),
+    stl_per36:              get(s => s.stl_per36),
+    blk_per36:              get(s => s.blk_per36),
+    tov_per36:              get(s => s.tov_per36),
+    true_shooting_pct:      get(s => s.true_shooting_pct),
+    usage_rate:             get(s => s.usage_rate),
+    free_throw_rate:        get(s => s.free_throw_rate),
+    three_point_pct:        get(s => s.three_point_percentage),
+    ast_tov_ratio:          get(s => s.ast_tov_ratio),
+    oreb_pct:               get(s => s.oreb_pct),
+    win_shares_per40:       get(s => s.win_shares_per40),
+    net_rating:             get(s => s.net_rating),
+    height_inches:          makeParams(heights),
+    weight_pounds:          makeParams(weights),
+    age_at_season_start:    makeParams(ages),
   };
 }
 
@@ -87,18 +93,18 @@ interface StatVec {
 
 function toStatVec(s: CollegeStats, n: DatasetNorms): StatVec {
   return {
-    ts_pct:    zScore(s.true_shooting_pct,    n.true_shooting_pct),
-    usage:     zScore(s.usage_rate,           n.usage_rate),
-    ft_rate:   zScore(s.free_throw_rate,      n.free_throw_rate),
+    ts_pct:    zScore(s.true_shooting_pct,      n.true_shooting_pct),
+    usage:     zScore(s.usage_rate,             n.usage_rate),
+    ft_rate:   zScore(s.free_throw_rate,        n.free_throw_rate),
     three_pct: zScore(s.three_point_percentage, n.three_point_pct),
-    pts36:      zScore(s.pts_per36,                  n.pts_per36),
-    ast36:      zScore(s.ast_per36,                  n.ast_per36),
-    ast_tov:    zScore(s.ast_tov_ratio,              n.ast_tov_ratio),
-    tov36:      zScore(s.tov_per36,                  n.tov_per36),
-    reb36:      zScore(s.reb_per36,                  n.reb_per36),
-    oreb_pct:   zScore(s.oreb_pct,                   n.oreb_pct),
-    stl36:      zScore(s.stl_per36,                  n.stl_per36),
-    blk36:      zScore(s.blk_per36,                  n.blk_per36),
+    pts36:     zScore(s.pts_per36,              n.pts_per36),
+    ast36:     zScore(s.ast_per36,              n.ast_per36),
+    ast_tov:   zScore(s.ast_tov_ratio,          n.ast_tov_ratio),
+    tov36:     zScore(s.tov_per36,              n.tov_per36),
+    reb36:     zScore(s.reb_per36,              n.reb_per36),
+    oreb_pct:  zScore(s.oreb_pct,               n.oreb_pct),
+    stl36:     zScore(s.stl_per36,              n.stl_per36),
+    blk36:     zScore(s.blk_per36,              n.blk_per36),
   };
 }
 
@@ -111,8 +117,9 @@ function statDistance(a: StatVec, b: StatVec) {
   const reb  = Math.sqrt(sq(a.reb36, b.reb36) + sq(a.oreb_pct, b.oreb_pct));
   const def  = Math.sqrt(sq(a.stl36, b.stl36) + sq(a.blk36, b.blk36));
 
-  // Weighted total (analytics-informed, sums to 1.0)
-  const total = eff * 0.28 + vol * 0.18 + play * 0.22 + reb * 0.16 + def * 0.16;
+  // Weighted total — defence and rebounding raised to better discriminate
+  // positional roles; scoring efficiency reduced slightly (sums to 1.0)
+  const total = eff * 0.25 + vol * 0.16 + play * 0.20 + reb * 0.19 + def * 0.20;
 
   return { total, eff, vol, play, reb, def };
 }
@@ -128,7 +135,7 @@ function physDistance(a: PhysicalAttributes, b: PhysicalAttributes, n: DatasetNo
   const w2 = b.weight_pounds != null ? zScore(b.weight_pounds, n.weight_pounds) : 0;
 
   if (a.wingspan_inches != null && b.wingspan_inches != null) {
-    const ws1 = zScore(a.wingspan_inches, n.height_inches);
+    const ws1 = zScore(a.wingspan_inches, n.height_inches); // same scale as height
     const ws2 = zScore(b.wingspan_inches, n.height_inches);
     return Math.sqrt(0.40 * sq(h1, h2) + 0.30 * sq(w1, w2) + 0.20 * sq(ws1, ws2));
   }
@@ -158,29 +165,60 @@ export function getProspectComparisons(
   const hasPhys = (p: PhysicalAttributes | undefined | null): p is PhysicalAttributes =>
     !!p && (p.height_inches != null || p.weight_pounds != null);
 
+  const prospectAge = prospectPhysical?.age_at_season_start;
+
   type Row = {
     player: HistoricalPlayer;
+    // Statistical facets
     sDist: number; sEff: number; sVol: number; sPlay: number; sReb: number; sDef: number;
+    sSim: number;   // 0-100 statistical similarity (sim(sDist))
+    // Physical
     pDist: number | null;
-    oDist: number;
+    pSim:  number;  // 0-100 physical similarity, 0 when unavailable
+    // Age
+    ageSim: number; // 0-100, defaults to 100 when age data is missing (neutral)
+    // Overall blended score (used for search AND as displayed score)
+    oSim: number;
   };
 
   const rows: Row[] = pool.map(hist => {
     const hVec = toStatVec(hist.college_stats, norms);
-    const s = statDistance(pVec, hVec);
+    const s    = statDistance(pVec, hVec);
+    const sSim = sim(s.total);
 
     let pDist: number | null = null;
+    let pSim  = 0;
     if (hasPhys(prospectPhysical) && hasPhys(hist.physical)) {
       pDist = physDistance(prospectPhysical, hist.physical, norms);
+      pSim  = sim(pDist, 1.5);
     }
 
-    const oDist = pDist != null ? s.total * 0.70 + pDist * 0.30 : s.total;
+    // Age similarity — only meaningful when both players have the field.
+    // When missing, default to 100 (no penalty) so existing age data still
+    // helps distinguish comps without penalising players with no data.
+    let ageSim = 100;
+    const histAge = hist.physical?.age_at_season_start;
+    if (
+      prospectAge != null && histAge != null &&
+      norms.age_at_season_start && norms.age_at_season_start.std_dev > 0
+    ) {
+      const zA = zScore(prospectAge, norms.age_at_season_start);
+      const zB = zScore(histAge,     norms.age_at_season_start);
+      ageSim = sim(Math.abs(zA - zB), 1.5); // 1 year apart ≈ notable difference
+    }
+
+    // Overall blended similarity: maximising this is fairer than minimising a
+    // blended distance because each dimension's exponential decay is applied
+    // before combining — a physically-perfect-but-statistically-different
+    // player can no longer beat a well-rounded match.
+    const oSim = pDist != null
+      ? 0.70 * sSim + 0.25 * pSim + 0.05 * ageSim
+      : sSim;
 
     return {
       player: hist,
       sDist: s.total, sEff: s.eff, sVol: s.vol, sPlay: s.play, sReb: s.reb, sDef: s.def,
-      pDist,
-      oDist,
+      sSim, pDist, pSim, ageSim, oSim,
     };
   });
 
@@ -195,36 +233,39 @@ export function getProspectComparisons(
         playmaking:         Math.round(sim(row.sPlay)),
         rebounding:         Math.round(sim(row.sReb)),
         defense:            Math.round(sim(row.sDef)),
-        physical:           row.pDist != null ? Math.round(sim(row.pDist, 1.5)) : 0,
+        physical:           row.pDist != null ? Math.round(row.pSim) : 0,
       },
     };
   }
 
+  // Statistical: minimum stat distance
   const byStat = [...rows].sort((a, b) => a.sDist - b.sDist)[0];
 
   let physical: PlayerComparison | null = null;
   let byOverall: Row;
 
   if (hasPhys(prospectPhysical)) {
-    // Restrict physical and overall searches to historical players that ALSO
-    // have physical data.  Without this, overall collapses into statistical
-    // because players lacking measurements all get oDist = sDist.
+    // Restrict physical and overall to players with physical data — without
+    // this, unmeasured players all get pDist=null → oSim collapses to sSim.
     const withPhys = rows.filter(r => r.pDist != null);
 
     if (withPhys.length > 0) {
+      // Physical: minimum physical distance
       const sortedPhys = withPhys.slice().sort((a, b) => a.pDist! - b.pDist!);
-      physical = make(sortedPhys[0], 'physical', sim(sortedPhys[0].pDist!, 1.5));
-      byOverall = withPhys.slice().sort((a, b) => a.oDist - b.oDist)[0];
+      physical = make(sortedPhys[0], 'physical', sortedPhys[0].pSim);
+
+      // Overall: maximum blended similarity score (search by sim, not distance)
+      byOverall = withPhys.slice().sort((a, b) => b.oSim - a.oSim)[0];
     } else {
-      byOverall = [...rows].sort((a, b) => a.oDist - b.oDist)[0];
+      byOverall = [...rows].sort((a, b) => b.oSim - a.oSim)[0];
     }
   } else {
-    byOverall = [...rows].sort((a, b) => a.oDist - b.oDist)[0];
+    byOverall = [...rows].sort((a, b) => b.oSim - a.oSim)[0];
   }
 
   return {
-    statistical: make(byStat,    'statistical', sim(byStat.sDist)),
+    statistical: make(byStat,    'statistical', byStat.sSim),
     physical,
-    overall:     make(byOverall, 'overall',     sim(byOverall.oDist)),
+    overall:     make(byOverall, 'overall',     byOverall.oSim),
   };
 }

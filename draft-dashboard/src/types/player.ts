@@ -189,4 +189,5 @@ export interface DatasetNorms {
   // Physical
   height_inches: NormParams;
   weight_pounds: NormParams;
+  age_at_season_start: NormParams;
 }
