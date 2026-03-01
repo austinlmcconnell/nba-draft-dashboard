@@ -119,6 +119,12 @@ export default function DashboardPage() {
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    // Initialise school filter from ?school= URL param (allows direct-linking
+    // from the prospect profile school-logo tap)
+    const params = new URLSearchParams(window.location.search);
+    const school = params.get('school');
+    if (school) setSchoolFilter(school);
+
     Promise.all([loadProspects(2026), loadDraftRankings()]).then(([data, ranks]) => {
       setProspects(data);
       setRankings(ranks);
@@ -148,7 +154,7 @@ export default function DashboardPage() {
       const matchesSchool     = schoolFilter     === 'all' || p.team === schoolFilter;
       return matchesSearch && matchesPosition && matchesConference && matchesSchool;
     });
-  }, [isSearching, all, ranked, searchTerm, positionFilter, conferenceFilter]);
+  }, [isSearching, all, ranked, searchTerm, positionFilter, conferenceFilter, schoolFilter]);
 
   const positions   = useMemo(() => ['all', ...Array.from(new Set(prospects.map(p => p.position))).sort()], [prospects]);
   const conferences = useMemo(() => ['all', ...Array.from(new Set(prospects.map(p => p.conference))).sort()], [prospects]);

@@ -13,6 +13,7 @@ import type {
   PhysicalAttributes,
   DatasetNorms,
   DraftRanking,
+  NormParams,
 } from '@/types/player';
 
 import { buildDatasetNorms } from './comparison';
@@ -186,6 +187,51 @@ export async function loadDraftRankings(): Promise<DraftRanking[]> {
     console.error('Failed to load draft rankings:', e);
     return [];
   }
+}
+
+// ---------------------------------------------------------------------------
+// Season averages — used by the profile page to shade stat boxes relative
+// to the current-season peer group.
+// ---------------------------------------------------------------------------
+export interface StatAverages {
+  points_per_game:       NormParams;
+  rebounds_per_game:     NormParams;
+  assists_per_game:      NormParams;
+  steals_per_game:       NormParams;
+  blocks_per_game:       NormParams;
+  minutes_per_game:      NormParams;
+  field_goal_percentage: NormParams;
+  three_point_percentage:NormParams;
+  free_throw_percentage: NormParams;
+  true_shooting_pct:     NormParams;
+  usage_rate:            NormParams;
+}
+
+function normOf(vals: number[]): NormParams {
+  if (vals.length === 0) return { mean: 0, std_dev: 1 };
+  const mean = vals.reduce((a, b) => a + b, 0) / vals.length;
+  const std_dev = Math.sqrt(vals.reduce((a, b) => a + (b - mean) ** 2, 0) / vals.length) || 1;
+  return { mean, std_dev };
+}
+
+export async function getSeasonAverages(season: number): Promise<StatAverages | null> {
+  const prospects = await loadProspects(season);
+  if (prospects.length === 0) return null;
+  const pick = (fn: (s: CollegeStats) => number) =>
+    normOf(prospects.map(p => fn(p.stats)).filter(v => isFinite(v) && v > 0));
+  return {
+    points_per_game:        pick(s => s.points_per_game),
+    rebounds_per_game:      pick(s => s.rebounds_per_game),
+    assists_per_game:       pick(s => s.assists_per_game),
+    steals_per_game:        pick(s => s.steals_per_game),
+    blocks_per_game:        pick(s => s.blocks_per_game),
+    minutes_per_game:       pick(s => s.minutes_per_game),
+    field_goal_percentage:  pick(s => s.field_goal_percentage),
+    three_point_percentage: pick(s => s.three_point_percentage),
+    free_throw_percentage:  pick(s => s.free_throw_percentage),
+    true_shooting_pct:      pick(s => s.true_shooting_pct),
+    usage_rate:             pick(s => s.usage_rate),
+  };
 }
 
 export function clearDataCache() {

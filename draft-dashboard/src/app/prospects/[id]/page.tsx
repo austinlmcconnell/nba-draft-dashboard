@@ -5,15 +5,22 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ComparisonCard, ComparisonCardSkeleton } from '@/components/ComparisonCard';
-import type { CollegePlayer, ProspectComparisons } from '@/types/player';
+import type { CollegePlayer, ProspectComparisons, NormParams } from '@/types/player';
 import { getProspectComparisons } from '@/lib/utils/comparison';
-import { loadHistoricalPlayers, getDatasetNorms, getProspectById } from '@/lib/utils/dataLoader';
+import {
+  loadHistoricalPlayers,
+  getDatasetNorms,
+  getProspectById,
+  getSeasonAverages,
+  type StatAverages,
+} from '@/lib/utils/dataLoader';
 
 export default function ProspectDetailPage() {
   const { id } = useParams<{ id: string }>();
 
   const [prospect, setProspect] = useState<CollegePlayer | null>(null);
   const [comparisons, setComparisons] = useState<ProspectComparisons | null>(null);
+  const [seasonAvg, setSeasonAvg] = useState<StatAverages | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,8 +40,10 @@ export default function ProspectDetailPage() {
         // self-comparison and comparisons against current-season teammates.
         const compPool = historical.filter(h => h.college_season < p.season);
         const comps = getProspectComparisons(p.stats, p.physical ?? null, compPool, norms);
+        const avg = await getSeasonAverages(p.season);
         setProspect(p);
         setComparisons(comps);
+        setSeasonAvg(avg);
       } catch (e) {
         setError(String(e));
       } finally {
@@ -73,25 +82,41 @@ export default function ProspectDetailPage() {
             <h2 className="text-lg font-bold text-gray-800 mb-4">Season Stats</h2>
             <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
               {[
-                { label: 'PPG',  value: s.points_per_game.toFixed(1),   color: 'blue' },
-                { label: 'RPG',  value: s.rebounds_per_game.toFixed(1), color: 'green' },
-                { label: 'APG',  value: s.assists_per_game.toFixed(1),  color: 'purple' },
-                { label: 'SPG',  value: s.steals_per_game.toFixed(1),   color: 'yellow' },
-                { label: 'BPG',  value: s.blocks_per_game.toFixed(1),   color: 'red' },
-                { label: 'MPG',  value: s.minutes_per_game.toFixed(1),  color: 'gray' },
+                { label: 'PPG',  value: s.points_per_game.toFixed(1),   norm: seasonAvg?.points_per_game,   raw: s.points_per_game },
+                { label: 'RPG',  value: s.rebounds_per_game.toFixed(1), norm: seasonAvg?.rebounds_per_game, raw: s.rebounds_per_game },
+                { label: 'APG',  value: s.assists_per_game.toFixed(1),  norm: seasonAvg?.assists_per_game,  raw: s.assists_per_game },
+                { label: 'SPG',  value: s.steals_per_game.toFixed(1),   norm: seasonAvg?.steals_per_game,   raw: s.steals_per_game },
+                { label: 'BPG',  value: s.blocks_per_game.toFixed(1),   norm: seasonAvg?.blocks_per_game,   raw: s.blocks_per_game },
+                { label: 'MPG',  value: s.minutes_per_game.toFixed(1),  norm: seasonAvg?.minutes_per_game,  raw: s.minutes_per_game },
               ].map(stat => (
-                <StatBox key={stat.label} {...stat} />
+                <StatBox
+                  key={stat.label}
+                  label={stat.label}
+                  value={stat.value}
+                  norm={stat.norm}
+                  raw={stat.raw}
+                  primary={prospect.team_primary_color}
+                  secondary={prospect.team_secondary_color}
+                />
               ))}
             </div>
             <div className="mt-4 grid grid-cols-2 sm:grid-cols-5 gap-3">
               {[
-                { label: 'FG%',  value: `${s.field_goal_percentage.toFixed(1)}%`,  color: 'indigo' },
-                { label: '3P%',  value: `${s.three_point_percentage.toFixed(1)}%`, color: 'pink' },
-                { label: 'FT%',  value: `${s.free_throw_percentage.toFixed(1)}%`,  color: 'teal' },
-                { label: 'TS%',  value: `${s.true_shooting_pct.toFixed(1)}%`,      color: 'orange' },
-                { label: 'USG%', value: `${s.usage_rate.toFixed(1)}%`,             color: 'cyan' },
+                { label: 'FG%',  value: `${s.field_goal_percentage.toFixed(1)}%`,  norm: seasonAvg?.field_goal_percentage,  raw: s.field_goal_percentage },
+                { label: '3P%',  value: `${s.three_point_percentage.toFixed(1)}%`, norm: seasonAvg?.three_point_percentage, raw: s.three_point_percentage },
+                { label: 'FT%',  value: `${s.free_throw_percentage.toFixed(1)}%`,  norm: seasonAvg?.free_throw_percentage,  raw: s.free_throw_percentage },
+                { label: 'TS%',  value: `${s.true_shooting_pct.toFixed(1)}%`,      norm: seasonAvg?.true_shooting_pct,      raw: s.true_shooting_pct },
+                { label: 'USG%', value: `${s.usage_rate.toFixed(1)}%`,             norm: seasonAvg?.usage_rate,             raw: s.usage_rate },
               ].map(stat => (
-                <StatBox key={stat.label} {...stat} />
+                <StatBox
+                  key={stat.label}
+                  label={stat.label}
+                  value={stat.value}
+                  norm={stat.norm}
+                  raw={stat.raw}
+                  primary={prospect.team_primary_color}
+                  secondary={prospect.team_secondary_color}
+                />
               ))}
             </div>
             {/* Per-36 row */}
@@ -169,9 +194,13 @@ function HeroSection({ prospect }: { prospect: CollegePlayer }) {
       className="relative h-52 flex items-center px-8 gap-6"
       style={{ background: teamGradient(prospect.team_primary_color, prospect.team_secondary_color) }}
     >
-      {/* Team logo — top right */}
+      {/* Team logo — top right, links back to dashboard filtered by this school */}
       {logoSrc && !logoErr && (
-        <div className="absolute top-4 right-4 w-14 h-14 bg-white rounded-full shadow-lg flex items-center justify-center overflow-hidden p-1">
+        <Link
+          href={`/?school=${encodeURIComponent(prospect.team)}`}
+          className="absolute top-4 right-4 w-14 h-14 bg-white rounded-full shadow-lg flex items-center justify-center overflow-hidden p-1 hover:scale-105 transition-transform"
+          title={`View all ${prospect.team} prospects`}
+        >
           <Image
             src={logoSrc}
             alt={prospect.team}
@@ -181,7 +210,7 @@ function HeroSection({ prospect }: { prospect: CollegePlayer }) {
             onError={() => setLogoErr(true)}
             unoptimized
           />
-        </div>
+        </Link>
       )}
 
       {/* Headshot or initials */}
@@ -210,7 +239,7 @@ function HeroSection({ prospect }: { prospect: CollegePlayer }) {
           <span className="px-2 py-0.5 bg-white/90 text-blue-900 text-xs font-bold rounded-full">{prospect.conference}</span>
         </div>
         <h1 className="text-4xl font-bold text-white truncate">{prospect.name}</h1>
-        <p className="text-blue-200 mt-1">{prospect.team} · {prospect.season} season</p>
+        <p className="text-blue-200 mt-1">{prospect.team}</p>
         <PhysicalBadges physical={prospect.physical} />
       </div>
     </div>
@@ -249,24 +278,69 @@ function PhysicalBadges({ physical }: { physical: CollegePlayer['physical'] }) {
 // Sub-components
 // ---------------------------------------------------------------------------
 
-const COLORS: Record<string, string> = {
-  blue:   'from-blue-500 to-blue-600',
-  green:  'from-green-500 to-green-600',
-  purple: 'from-purple-500 to-purple-600',
-  yellow: 'from-yellow-500 to-yellow-600',
-  red:    'from-red-500 to-red-600',
-  indigo: 'from-indigo-500 to-indigo-600',
-  pink:   'from-pink-500 to-pink-600',
-  cyan:   'from-cyan-500 to-cyan-600',
-  gray:   'from-gray-500 to-gray-600',
-  orange: 'from-orange-500 to-orange-600',
-  teal:   'from-teal-500 to-teal-600',
-};
+/** Parse a hex color string → [r, g, b], returns null on failure. */
+function parseHex(hex: string | undefined): [number, number, number] | null {
+  if (!hex) return null;
+  const h = hex.replace('#', '');
+  if (h.length !== 6) return null;
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  if (isNaN(r) || isNaN(g) || isNaN(b)) return null;
+  return [r, g, b];
+}
 
-function StatBox({ label, value, color }: { label: string; value: string; color: string }) {
+/**
+ * Convert z-score to a 0–1 intensity:
+ *   z ≤ -2 → ~0.10 (very muted)  z = 0 → 0.50 (midpoint)  z ≥ +2 → ~0.90 (vivid)
+ */
+function zToIntensity(z: number): number {
+  return 0.50 + 0.40 * Math.tanh(z * 0.65);
+}
+
+function statBoxStyle(
+  primary: string | undefined,
+  secondary: string | undefined,
+  intensity: number,  // 0–1
+): React.CSSProperties {
+  const p = parseHex(primary)  ?? [29,  78, 216];   // blue-700 fallback
+  const s = parseHex(secondary) ?? [30,  58, 138];   // blue-900 fallback
+
+  // Lerp: low intensity → secondary colour, high → primary colour
+  const lerp = (a: number, b: number) => Math.round(a + (b - a) * intensity);
+  const [r, g, b] = [lerp(s[0], p[0]), lerp(s[1], p[1]), lerp(s[2], p[2])];
+
+  // Darken slightly for the gradient end
+  const dim = (v: number) => Math.max(0, v - 22);
+  return {
+    background: `linear-gradient(135deg, rgb(${r},${g},${b}) 0%, rgb(${dim(r)},${dim(g)},${dim(b)}) 100%)`,
+  };
+}
+
+function StatBox({
+  label, value, norm, raw, primary, secondary,
+}: {
+  label: string;
+  value: string;
+  norm?: NormParams;
+  raw: number;
+  primary?: string;
+  secondary?: string;
+}) {
+  const z = norm && norm.std_dev > 0 ? (raw - norm.mean) / norm.std_dev : 0;
+  const intensity = norm ? zToIntensity(z) : 0.5;
+  const style = statBoxStyle(primary, secondary, intensity);
+
+  // Small indicator dot: top 25% = bright ring, bottom 25% = dim
+  const ringClass = z > 0.67 ? 'ring-2 ring-white/40' : z < -0.67 ? 'ring-1 ring-white/10' : '';
+
   return (
-    <div className={`bg-gradient-to-br ${COLORS[color] ?? COLORS.gray} rounded-lg p-3 text-center shadow-sm`}>
-      <p className="text-white/75 text-xs uppercase">{label}</p>
+    <div
+      className={`rounded-lg p-3 text-center shadow-sm ${ringClass}`}
+      style={style}
+      title={norm ? `League avg: ${norm.mean.toFixed(1)} · z-score: ${z.toFixed(2)}` : undefined}
+    >
+      <p className="text-white/75 text-xs uppercase tracking-wide">{label}</p>
       <p className="text-white text-2xl font-bold">{value}</p>
     </div>
   );

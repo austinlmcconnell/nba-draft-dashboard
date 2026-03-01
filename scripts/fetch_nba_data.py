@@ -24,6 +24,16 @@ BBREF_BASE = 'https://www.basketball-reference.com'
 HEADERS = {'User-Agent': 'Mozilla/5.0 (research / educational project)'}
 DELAY = 1.2   # seconds between requests — stay polite
 
+# ---------------------------------------------------------------------------
+# Manual name-correction table.
+# Some college stats sources (CBBD) use a different first name than BBRef.
+# Format: { college_db_name: bbref_name }
+# ---------------------------------------------------------------------------
+DRAFT_NAME_CORRECTIONS: dict = {
+    # Add entries here when a player shows as "Undrafted" but should be drafted.
+    # Example: 'Nique Clifford': 'Dominique Clifford',
+}
+
 
 def get(url: str) -> Optional[BeautifulSoup]:
     for attempt in range(3):
@@ -304,8 +314,11 @@ def main():
     for cp in unique:
         name = cp['name']
 
+        # Apply manual name corrections before matching (handles CBBD ↔ BBRef mismatches)
+        lookup_name = DRAFT_NAME_CORRECTIONS.get(name, name)
+
         # Try to find in draft stats (primary source for career data)
-        draft_match = match_name(name, draft_stats, normed_draft)
+        draft_match = match_name(lookup_name, draft_stats, normed_draft)
         if not draft_match:
             unmatched += 1
             continue
@@ -418,6 +431,94 @@ def main():
 
     print(f'Undrafted players added: {len(undrafted)} '
           f'(min {MIN_MPG} mpg / {MIN_GAMES} games)')
+
+    # -----------------------------------------------------------------------
+    # Extra step: enrich undrafted-but-NBA-playing players with career stats.
+    # Any undrafted player who appears in the BBRef registry (year_min set)
+    # actually played in the NBA — fetch their per-game career stats from
+    # their BBRef player page so they don't incorrectly show 0 career PPG.
+    # -----------------------------------------------------------------------
+    print('\nEnriching undrafted NBA players with BBRef career stats...')
+    enriched_undrafted = 0
+    for rec in undrafted:
+        reg_match = match_name(rec['name'], registry, normed_registry)
+        if not reg_match or not reg_match.get('bbref_id') or not reg_match.get('year_min'):
+            continue  # not in BBRef index → genuinely never played in NBA
+
+        bbref_id = reg_match['bbref_id']
+        letter   = bbref_id[0]
+        soup     = get(f'{BBREF_BASE}/players/{letter}/{bbref_id}.html')
+        if not soup:
+            time.sleep(DELAY)
+            continue
+
+        # The per-game career summary is in a table#per_g, last row with class "partial_table" or the tfoot
+        per_g = soup.find('table', {'id': 'per_game'})
+        if not per_g:
+            time.sleep(DELAY)
+            continue
+
+        # Look for the "Career" row
+        career_row = None
+        for row in per_g.find_all('tr'):
+            th = row.find('th')
+            if th and th.text.strip() == 'Career':
+                career_row = row
+                break
+
+        if not career_row:
+            time.sleep(DELAY)
+            continue
+
+        def safe_float(td_id):
+            td = career_row.find('td', {'data-stat': td_id})
+            try:
+                return float(td.text.strip()) if td and td.text.strip() else None
+            except ValueError:
+                return None
+
+        def safe_int(td_id):
+            td = career_row.find('td', {'data-stat': td_id})
+            try:
+                return int(td.text.strip()) if td and td.text.strip() else None
+            except ValueError:
+                return None
+
+        seasons  = safe_int('season')
+        games    = safe_int('g')
+        ppg      = safe_float('pts_per_g')
+        rpg      = safe_float('trb_per_g')
+        apg      = safe_float('ast_per_g')
+        fg_pct   = safe_float('fg_pct')
+        fg3_pct  = safe_float('fg3_pct')
+        ft_pct   = safe_float('ft_pct')
+
+        if ppg is None and rpg is None:
+            time.sleep(DELAY)
+            continue
+
+        rec['nba_career'] = {
+            'seasons_played': seasons or 0,
+            'games_played':   games   or 0,
+            'career_ppg':     ppg     or 0,
+            'career_rpg':     rpg     or 0,
+            'career_apg':     apg     or 0,
+            'career_fg_pct':  fg_pct  or 0,
+            'career_3p_pct':  fg3_pct or 0,
+            'career_ft_pct':  ft_pct  or 0,
+            'career_spg':     None,
+            'career_bpg':     None,
+            'career_tov':     None,
+            'win_shares':     None,
+            'ws_per_48':      None,
+            'bpm':            None,
+            'vorp':           None,
+            'is_active':      (reg_match.get('year_max') or 0) >= 2024,
+        }
+        enriched_undrafted += 1
+        time.sleep(DELAY)
+
+    print(f'Undrafted NBA players enriched: {enriched_undrafted}')
     matched.extend(undrafted)
 
     with open(OUTPUT_FILE, 'w') as f:

@@ -6,7 +6,7 @@
  *   statistical — Who produced the most similarly on the court?
  *     Per-36 stats + efficiency rates, z-score normalised across the dataset.
  *     Five basketball-analytics facets (evidence-based weights):
- *       Scoring efficiency  (TS%, usage, FT rate, 3PT attempt rate)  28%
+ *       Scoring efficiency  (TS%, usage, FT rate, 3P%)               28%
  *       Scoring volume      (Pts/36)                                  18%
  *       Playmaking          (Ast/36, AST/TOV, TOV/36)                 22%
  *       Rebounding          (Reb/36, ORB%)                            16%
@@ -16,7 +16,7 @@
  *     Height 55%, weight 45% (wingspan 20% when available, redistributed).
  *
  *   overall — Best single comparable blending both dimensions.
- *     Statistical 65% + physical 35%.
+ *     Statistical 70% + physical 30%.
  *     Falls back to statistical-only when prospect has no physical data.
  */
 
@@ -63,7 +63,7 @@ export function buildDatasetNorms(players: HistoricalPlayer[]): DatasetNorms {
     true_shooting_pct:          get(s => s.true_shooting_pct),
     usage_rate:                 get(s => s.usage_rate),
     free_throw_rate:            get(s => s.free_throw_rate),
-    three_pt_attempts_per_game: get(s => s.three_pt_attempts_per_game),
+    three_point_pct:            get(s => s.three_point_percentage),
     ast_tov_ratio:              get(s => s.ast_tov_ratio),
     oreb_pct:                   get(s => s.oreb_pct),
     win_shares_per40:           get(s => s.win_shares_per40),
@@ -78,7 +78,7 @@ export function buildDatasetNorms(players: HistoricalPlayer[]): DatasetNorms {
 // ---------------------------------------------------------------------------
 
 interface StatVec {
-  ts_pct: number; usage: number; ft_rate: number; three_rate: number;
+  ts_pct: number; usage: number; ft_rate: number; three_pct: number;
   pts36: number;
   ast36: number; ast_tov: number; tov36: number;
   reb36: number; oreb_pct: number;
@@ -87,10 +87,10 @@ interface StatVec {
 
 function toStatVec(s: CollegeStats, n: DatasetNorms): StatVec {
   return {
-    ts_pct:     zScore(s.true_shooting_pct,          n.true_shooting_pct),
-    usage:      zScore(s.usage_rate,                 n.usage_rate),
-    ft_rate:    zScore(s.free_throw_rate,            n.free_throw_rate),
-    three_rate: zScore(s.three_pt_attempts_per_game, n.three_pt_attempts_per_game),
+    ts_pct:    zScore(s.true_shooting_pct,    n.true_shooting_pct),
+    usage:     zScore(s.usage_rate,           n.usage_rate),
+    ft_rate:   zScore(s.free_throw_rate,      n.free_throw_rate),
+    three_pct: zScore(s.three_point_percentage, n.three_point_pct),
     pts36:      zScore(s.pts_per36,                  n.pts_per36),
     ast36:      zScore(s.ast_per36,                  n.ast_per36),
     ast_tov:    zScore(s.ast_tov_ratio,              n.ast_tov_ratio),
@@ -105,7 +105,7 @@ function toStatVec(s: CollegeStats, n: DatasetNorms): StatVec {
 function sq(a: number, b: number) { return (a - b) ** 2; }
 
 function statDistance(a: StatVec, b: StatVec) {
-  const eff  = Math.sqrt(sq(a.ts_pct, b.ts_pct) + sq(a.usage, b.usage) + sq(a.ft_rate, b.ft_rate) + sq(a.three_rate, b.three_rate));
+  const eff  = Math.sqrt(sq(a.ts_pct, b.ts_pct) + sq(a.usage, b.usage) + sq(a.ft_rate, b.ft_rate) + sq(a.three_pct, b.three_pct));
   const vol  = Math.abs(a.pts36 - b.pts36);
   const play = Math.sqrt(sq(a.ast36, b.ast36) + sq(a.ast_tov, b.ast_tov) + sq(a.tov36, b.tov36));
   const reb  = Math.sqrt(sq(a.reb36, b.reb36) + sq(a.oreb_pct, b.oreb_pct));
@@ -174,7 +174,7 @@ export function getProspectComparisons(
       pDist = physDistance(prospectPhysical, hist.physical, norms);
     }
 
-    const oDist = pDist != null ? s.total * 0.65 + pDist * 0.35 : s.total;
+    const oDist = pDist != null ? s.total * 0.70 + pDist * 0.30 : s.total;
 
     return {
       player: hist,
