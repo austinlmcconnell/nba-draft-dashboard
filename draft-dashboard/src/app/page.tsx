@@ -7,12 +7,26 @@ import { loadProspects, loadDraftRankings } from '@/lib/utils/dataLoader';
 
 // ---------------------------------------------------------------------------
 // Name-matching helpers
-// Tankathon names may differ slightly from the DB (e.g. "AJ" vs "A.J.")
+// Tankathon names may differ slightly from the DB:
+//   "Darius Acuff" vs "Darius Acuff Jr."
+//   "Johann Grünloh" vs "Johann Grunloh"
 // ---------------------------------------------------------------------------
+const ACCENT_MAP: Record<string, string> = {
+  à:'a',á:'a',â:'a',ã:'a',ä:'a',å:'a',
+  è:'e',é:'e',ê:'e',ë:'e',
+  ì:'i',í:'i',î:'i',ï:'i',
+  ò:'o',ó:'o',ô:'o',õ:'o',ö:'o',ø:'o',
+  ù:'u',ú:'u',û:'u',ü:'u',
+  ñ:'n',ç:'c',ý:'y',
+};
+const SUFFIX_RE = /\s+\b(jr|sr|ii|iii|iv|v)\b\.?\s*$/i;
+
 function normalizeName(name: string): string {
   return name
     .toLowerCase()
-    .replace(/[^a-z\s]/g, '')   // strip punctuation
+    .replace(/[àáâãäåèéêëìíîïòóôõöøùúûüñçý]/g, c => ACCENT_MAP[c] ?? c)
+    .replace(SUFFIX_RE, '')       // strip Jr./Sr./II suffixes
+    .replace(/[^a-z\s]/g, '')     // strip remaining punctuation
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -21,13 +35,11 @@ function nameSimilar(a: string, b: string): boolean {
   const na = normalizeName(a);
   const nb = normalizeName(b);
   if (na === nb) return true;
-  // last-name + first-initial match
   const partsA = na.split(' ');
   const partsB = nb.split(' ');
   if (partsA.length >= 2 && partsB.length >= 2) {
-    const lastA = partsA[partsA.length - 1];
-    const lastB = partsB[partsB.length - 1];
-    if (lastA === lastB && partsA[0][0] === partsB[0][0]) return true;
+    // Last name + first 3 chars of first name
+    if (partsA.at(-1) === partsB.at(-1) && partsA[0].slice(0, 3) === partsB[0].slice(0, 3)) return true;
   }
   return false;
 }

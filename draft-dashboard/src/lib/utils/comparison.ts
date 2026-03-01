@@ -200,15 +200,26 @@ export function getProspectComparisons(
     };
   }
 
-  const byStat    = [...rows].sort((a, b) => a.sDist - b.sDist)[0];
-  const byOverall = [...rows].sort((a, b) => a.oDist - b.oDist)[0];
+  const byStat = [...rows].sort((a, b) => a.sDist - b.sDist)[0];
 
   let physical: PlayerComparison | null = null;
+  let byOverall: Row;
+
   if (hasPhys(prospectPhysical)) {
-    const withPhys = rows.filter(r => r.pDist != null).sort((a, b) => a.pDist! - b.pDist!);
+    // Restrict physical and overall searches to historical players that ALSO
+    // have physical data.  Without this, overall collapses into statistical
+    // because players lacking measurements all get oDist = sDist.
+    const withPhys = rows.filter(r => r.pDist != null);
+
     if (withPhys.length > 0) {
-      physical = make(withPhys[0], 'physical', sim(withPhys[0].pDist!, 1.5));
+      const sortedPhys = withPhys.slice().sort((a, b) => a.pDist! - b.pDist!);
+      physical = make(sortedPhys[0], 'physical', sim(sortedPhys[0].pDist!, 1.5));
+      byOverall = withPhys.slice().sort((a, b) => a.oDist - b.oDist)[0];
+    } else {
+      byOverall = [...rows].sort((a, b) => a.oDist - b.oDist)[0];
     }
+  } else {
+    byOverall = [...rows].sort((a, b) => a.oDist - b.oDist)[0];
   }
 
   return {
