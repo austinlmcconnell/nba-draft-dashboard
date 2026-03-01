@@ -1,9 +1,14 @@
 /**
  * ComparisonCard — shows one historical player comparison result.
  * Handles all three comparison types: statistical, physical, overall.
+ *
+ * Displays a school-colored gradient header with the team logo and player
+ * headshot (via ESPN CDN), plus age in the player metadata row.
  */
+'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
+import Image from 'next/image';
 import type { PlayerComparison } from '@/types/player';
 
 interface Props {
@@ -44,9 +49,25 @@ function ordinal(n: number): string {
   return `${n}th`;
 }
 
+function cardGradient(primary?: string, secondary?: string): string {
+  const p = primary   ? `#${primary.replace('#', '')}` : '#1d4ed8';
+  const s = secondary ? `#${secondary.replace('#', '')}` : '#1e3a8a';
+  return `linear-gradient(135deg, ${p} 0%, ${s} 100%)`;
+}
+
 export function ComparisonCard({ comparison, className = '' }: Props) {
+  const [headErr, setHeadErr] = useState(false);
+  const [logoErr, setLogoErr] = useState(false);
+
   const { historical_player: h, comparison_type, similarity_score, breakdown } = comparison;
   const typeStyle = TYPE_LABELS[comparison_type];
+
+  const headshotSrc = h.athlete_id
+    ? `https://a.espncdn.com/combiner/i?img=/i/headshots/mens-college-basketball/players/full/${h.athlete_id}.png`
+    : null;
+  const logoSrc = h.espn_team_id
+    ? `https://a.espncdn.com/i/teamlogos/ncaa/500/${h.espn_team_id}.png`
+    : null;
 
   const facets = [
     { label: 'Scoring Eff.',  score: breakdown.scoring_efficiency },
@@ -60,21 +81,64 @@ export function ComparisonCard({ comparison, className = '' }: Props) {
   ];
 
   return (
-    <div className={`relative bg-white rounded-xl shadow-md border border-gray-200 hover:shadow-lg transition-shadow duration-300 ${className}`}>
-      {/* Type badge */}
-      <div className={`absolute -top-3 left-4 px-3 py-1 rounded-full text-xs font-bold border ${typeStyle.bg} ${typeStyle.color}`}>
-        {typeStyle.label} Comp
+    <div className={`relative bg-white rounded-xl shadow-md border border-gray-200 hover:shadow-lg transition-shadow duration-300 overflow-hidden ${className}`}>
+
+      {/* School-colored gradient header */}
+      <div
+        className="relative h-20 px-4 pt-3"
+        style={{ background: cardGradient(h.team_primary_color, h.team_secondary_color) }}
+      >
+        {/* Type + similarity badges */}
+        <div className="flex items-center gap-2">
+          <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${typeStyle.bg} ${typeStyle.color}`}>
+            {typeStyle.label} Comp
+          </span>
+          <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${similarityColor(similarity_score)}`}>
+            {similarity_score.toFixed(1)}% match
+          </span>
+        </div>
+
+        {/* Team logo — top right */}
+        {logoSrc && !logoErr && (
+          <div className="absolute top-2 right-3 w-10 h-10 bg-white/90 rounded-full shadow-md flex items-center justify-center p-1.5">
+            <Image
+              src={logoSrc}
+              alt={h.college_team}
+              width={28}
+              height={28}
+              className="object-contain w-full h-full"
+              onError={() => setLogoErr(true)}
+              unoptimized
+            />
+          </div>
+        )}
       </div>
 
-      {/* Similarity score */}
-      <div className={`absolute -top-3 right-4 px-3 py-1 rounded-full text-xs font-bold border ${similarityColor(similarity_score)}`}>
-        {similarity_score.toFixed(1)}% match
+      {/* Player headshot overlapping header / body */}
+      <div className="px-4 -mt-7 mb-1">
+        <div className="w-14 h-14 rounded-full bg-gray-100 border-4 border-white shadow-md flex items-center justify-center overflow-hidden">
+          {headshotSrc && !headErr ? (
+            <Image
+              src={headshotSrc}
+              alt={h.name}
+              width={56}
+              height={56}
+              className="w-full h-full object-cover"
+              onError={() => setHeadErr(true)}
+              unoptimized
+            />
+          ) : (
+            <span className="text-lg font-bold text-gray-400">
+              {h.name.split(' ').map((n: string) => n[0]).join('')}
+            </span>
+          )}
+        </div>
       </div>
 
-      <div className="p-6 pt-8">
+      <div className="px-4 pb-5">
         {/* Player name + meta */}
         <h3 className="text-xl font-bold text-gray-900 mb-1">{h.name}</h3>
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-gray-500 mb-5">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-gray-500 mb-4">
           <span>{h.college_team}</span>
           <span>·</span>
           <span>{h.college_season}</span>
@@ -89,17 +153,23 @@ export function ComparisonCard({ comparison, className = '' }: Props) {
               <span>{fmtHeight(h.physical.height_inches)}{h.physical.weight_pounds ? `, ${h.physical.weight_pounds} lbs` : ''}</span>
             </>
           )}
+          {h.physical.age_at_season_start && (
+            <>
+              <span>·</span>
+              <span>Age {h.physical.age_at_season_start}</span>
+            </>
+          )}
         </div>
 
         {/* College ↔ NBA stats */}
-        <div className="grid grid-cols-2 gap-4 mb-5">
+        <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">College</p>
             <div className="space-y-1 text-sm">
               <StatLine label="PPG" value={h.college_stats.points_per_game.toFixed(1)} />
               <StatLine label="RPG" value={h.college_stats.rebounds_per_game.toFixed(1)} />
               <StatLine label="APG" value={h.college_stats.assists_per_game.toFixed(1)} />
-              <StatLine label="TS%" value={`${h.college_stats.true_shooting_pct.toFixed(1)}%`} />
+              <StatLine label="TS%"  value={`${h.college_stats.true_shooting_pct.toFixed(1)}%`} />
               <StatLine label="USG" value={`${h.college_stats.usage_rate.toFixed(1)}%`} />
             </div>
           </div>
@@ -151,19 +221,25 @@ function StatLine({ label, value, bold = false }: { label: string; value: string
 
 export function ComparisonCardSkeleton() {
   return (
-    <div className="bg-white rounded-xl shadow-md border border-gray-200 p-6 animate-pulse">
-      <div className="h-6 bg-gray-200 rounded w-2/3 mb-2" />
-      <div className="h-4 bg-gray-200 rounded w-1/2 mb-5" />
-      <div className="grid grid-cols-2 gap-4 mb-5">
-        <div className="space-y-2">
-          {[...Array(5)].map((_, i) => <div key={i} className="h-4 bg-gray-200 rounded" />)}
-        </div>
-        <div className="space-y-2">
-          {[...Array(5)].map((_, i) => <div key={i} className="h-4 bg-gray-200 rounded" />)}
-        </div>
+    <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden animate-pulse">
+      <div className="h-20 bg-gray-200" />
+      <div className="px-4 -mt-7 mb-1">
+        <div className="w-14 h-14 rounded-full bg-gray-300 border-4 border-white" />
       </div>
-      <div className="space-y-2">
-        {[...Array(5)].map((_, i) => <div key={i} className="h-3 bg-gray-200 rounded" />)}
+      <div className="px-4 pb-5">
+        <div className="h-6 bg-gray-200 rounded w-2/3 mb-2" />
+        <div className="h-4 bg-gray-200 rounded w-1/2 mb-4" />
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="space-y-2">
+            {[...Array(5)].map((_, i) => <div key={i} className="h-4 bg-gray-200 rounded" />)}
+          </div>
+          <div className="space-y-2">
+            {[...Array(5)].map((_, i) => <div key={i} className="h-4 bg-gray-200 rounded" />)}
+          </div>
+        </div>
+        <div className="space-y-2">
+          {[...Array(5)].map((_, i) => <div key={i} className="h-3 bg-gray-200 rounded" />)}
+        </div>
       </div>
     </div>
   );

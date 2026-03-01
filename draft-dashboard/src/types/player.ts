@@ -113,6 +113,11 @@ export interface HistoricalPlayer {
   draft_year: number | null;
   draft_round: number | null;
   draft_pick: number | null;
+  // School branding — sourced from ESPN via college stats record
+  athlete_id?: number;
+  espn_team_id?: number;
+  team_primary_color?: string;
+  team_secondary_color?: string;
 }
 
 // ---------------------------------------------------------------------------

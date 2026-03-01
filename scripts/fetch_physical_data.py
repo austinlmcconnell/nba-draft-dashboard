@@ -17,6 +17,7 @@ import os
 import re
 import shutil
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import date
 from typing import Dict, List, Optional
 
 import requests
@@ -27,6 +28,10 @@ CURRENT_SEASON    = 2026
 MAX_WORKERS       = 12
 HEADERS           = {'User-Agent': 'Mozilla/5.0 (research / educational project)'}
 ESPN_BASE         = 'https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball'
+
+# Season start date — used to compute age at time of season.
+# For the 2025–26 season the opening tip-off week is early November 2025.
+SEASON_START_DATE = date(2025, 11, 1)
 
 # ---------------------------------------------------------------------------
 # Name normalisation (mirrors fetch_nba_data.py)
@@ -81,11 +86,22 @@ def fetch_team_roster(team_id: int) -> List[Dict]:
         result = []
         for a in athletes:
             espn_id = a.get('id') or a.get('uid', '').split(':')[-1]
+            # Parse date of birth → age at season start
+            dob_str = a.get('dateOfBirth') or a.get('dob')
+            age_at_season_start = None
+            if dob_str:
+                try:
+                    dob = date.fromisoformat(dob_str[:10])
+                    delta = SEASON_START_DATE - dob
+                    age_at_season_start = delta.days // 365
+                except (ValueError, TypeError):
+                    pass
             result.append({
-                'name':          a.get('displayName') or a.get('fullName', ''),
-                'espn_id':       int(espn_id) if espn_id else None,
-                'height_inches': parse_height(a.get('height')),
-                'weight_pounds': int(a['weight']) if a.get('weight') else None,
+                'name':                a.get('displayName') or a.get('fullName', ''),
+                'espn_id':             int(espn_id) if espn_id else None,
+                'height_inches':       parse_height(a.get('height')),
+                'weight_pounds':       int(a['weight']) if a.get('weight') else None,
+                'age_at_season_start': age_at_season_start,
             })
         return result
     except Exception as e:
@@ -148,9 +164,13 @@ def main():
             updated_phys += 1
         if match['weight_pounds'] is not None:
             p['weight_pounds'] = match['weight_pounds']
+        if match.get('age_at_season_start') is not None:
+            p['age_at_season_start'] = match['age_at_season_start']
 
+    ages_added = sum(1 for p in players if p.get('season') == CURRENT_SEASON and p.get('age_at_season_start'))
     print(f'athlete_id updated:   {updated_id}')
     print(f'height/weight added:  {updated_phys}')
+    print(f'age populated:        {ages_added}')
 
     # Sample a few results
     sample = [p for p in players if p.get('season') == CURRENT_SEASON
@@ -159,6 +179,7 @@ def main():
     for p in sample:
         print(f"  {p['name']} ({p['team']}): "
               f"{p.get('height_inches')}in, {p.get('weight_pounds')}lb, "
+              f"age={p.get('age_at_season_start')}, "
               f"athlete_id={p.get('athlete_id')}")
 
     # Save

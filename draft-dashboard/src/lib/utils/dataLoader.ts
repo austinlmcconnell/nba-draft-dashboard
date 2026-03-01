@@ -102,12 +102,16 @@ export async function loadHistoricalPlayers(): Promise<HistoricalPlayer[]> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const raw: any[] = await res.json();
     historicalCache = raw.map(r => ({
-      id:             r.id ?? `hist_${r.name}_${r.college_season}`,
-      name:           r.name,
-      college_team:   r.college_team ?? '',
-      college_season: r.college_season ?? 0,
-      college_stats:  toCollegeStats(r.college_stats ?? r),
-      physical:       toPhysical(r.physical),
+      id:                   r.id ?? `hist_${r.name}_${r.college_season}`,
+      name:                 r.name,
+      college_team:         r.college_team ?? '',
+      college_season:       r.college_season ?? 0,
+      college_stats:        toCollegeStats(r.college_stats ?? r),
+      physical:             toPhysical(r.physical),
+      athlete_id:           r.college_stats?.athlete_id          ?? undefined,
+      espn_team_id:         r.college_stats?.espn_team_id        ?? undefined,
+      team_primary_color:   r.college_stats?.team_primary_color  ?? undefined,
+      team_secondary_color: r.college_stats?.team_secondary_color ?? undefined,
       nba_career: {
         seasons_played: r.nba_career?.seasons_played ?? 0,
         games_played:   r.nba_career?.games_played   ?? 0,

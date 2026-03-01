@@ -332,7 +332,7 @@ function luminance([r, g, b]: [number, number, number]): number {
  *   z ≤ −2.5  → factor ≈ 1.375  (lightened toward white)
  */
 function zToFactor(z: number): number {
-  return 1.0 - 0.15 * Math.max(-2.5, Math.min(2.5, z));
+  return 1.0 - 0.25 * Math.max(-2.5, Math.min(2.5, z));
 }
 
 function StatBox({

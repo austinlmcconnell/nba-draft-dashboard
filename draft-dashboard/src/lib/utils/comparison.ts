@@ -244,6 +244,18 @@ export function getProspectComparisons(
   let physical: PlayerComparison | null = null;
   let byOverall: Row;
 
+  // Minimum facet floor for overall comparison — skip candidates with any
+  // single facet similarity below this threshold. A player who is wildly
+  // dissimilar in one key dimension (e.g. a rim-protector matched to a
+  // perimeter scorer on defense) is not a meaningful overall comparable.
+  const FACET_FLOOR = 50;
+  const passesFloor = (r: Row): boolean =>
+    sim(r.sEff)    >= FACET_FLOOR &&
+    sim(r.sVol, 2) >= FACET_FLOOR &&
+    sim(r.sPlay)   >= FACET_FLOOR &&
+    sim(r.sReb)    >= FACET_FLOOR &&
+    sim(r.sDef)    >= FACET_FLOOR;
+
   if (hasPhys(prospectPhysical)) {
     // Restrict physical and overall to players with physical data — without
     // this, unmeasured players all get pDist=null → oSim collapses to sSim.
@@ -254,8 +266,10 @@ export function getProspectComparisons(
       const sortedPhys = withPhys.slice().sort((a, b) => a.pDist! - b.pDist!);
       physical = make(sortedPhys[0], 'physical', sortedPhys[0].pSim);
 
-      // Overall: maximum blended similarity score (search by sim, not distance)
-      byOverall = withPhys.slice().sort((a, b) => b.oSim - a.oSim)[0];
+      // Overall: apply facet floor, fall back to full pool if too restrictive
+      const flooredPool = withPhys.filter(passesFloor);
+      const overallPool = flooredPool.length > 0 ? flooredPool : withPhys;
+      byOverall = overallPool.slice().sort((a, b) => b.oSim - a.oSim)[0];
     } else {
       byOverall = [...rows].sort((a, b) => b.oSim - a.oSim)[0];
     }

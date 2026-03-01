@@ -92,7 +92,7 @@ export default function MethodologyPage() {
               ['#normalise',   'Step 1 — Z-score normalisation'],
               ['#stats',       'Step 2 — Statistical distance'],
               ['#physical',    'Step 3 — Physical distance'],
-              ['#overall',     'Step 4 — Overall (blended) similarity'],
+              ['#overall',     'Step 4 — Overall (blended) similarity + facet floor'],
               ['#similarity',  'Step 5 — Distance → similarity score'],
               ['#derived',     'Derived stats (TS%, AST/TOV, 3P% vs FT rate)'],
               ['#statboxes',   'Profile stat box shading'],
@@ -351,6 +351,32 @@ age_dist = |z_age_prospect − z_age_historical|   (absolute z-score gap)
             If age data is missing for either player, <code>age_sim</code> defaults
             to 100 (no penalty) and the weights redistribute to 70/30.
           </p>
+
+          <Sub title="Minimum facet floor constraint">
+            <p className="text-sm text-gray-600 mb-2">
+              Before selecting the overall winner, candidates where <em>any single facet</em>{' '}
+              similarity score falls below <strong>50 %</strong> are excluded from consideration.
+              A player who is wildly dissimilar in one key dimension (e.g. a rim-protector matched
+              to a perimeter scorer on defense) is not a meaningful overall comparable — even if
+              their physical profile and other stats look similar.
+            </p>
+            <Formula>{`FACET_FLOOR = 50   // percent
+
+passesFloor(row) =
+  sim(sEff)    ≥ FACET_FLOOR  AND
+  sim(sVol, 2) ≥ FACET_FLOOR  AND
+  sim(sPlay)   ≥ FACET_FLOOR  AND
+  sim(sReb)    ≥ FACET_FLOOR  AND
+  sim(sDef)    ≥ FACET_FLOOR
+
+// Fall back to full pool if no candidate passes the floor
+// (rare — prevents "no match found" for unusual stat profiles)`}</Formula>
+            <p className="text-sm text-gray-600">
+              This constraint applies only to the <em>overall</em> lens. Statistical and physical
+              comparisons are unrestricted — the best available match is always shown, even if it
+              is a loose one.
+            </p>
+          </Sub>
         </Section>
 
         {/* ---------------------------------------------------------------- */}
@@ -428,11 +454,11 @@ Underestimates TS% for high-volume 3-point shooters by ~1–2 pp.`}</Formula>
             primary colour, with brightness adjusted to reflect how that stat compares to
             same-position peers in the current season:
           </p>
-          <Formula>{`brightness_factor = 1.0 − 0.15 × clamp(z, −2.5, +2.5)
+          <Formula>{`brightness_factor = 1.0 − 0.25 × clamp(z, −2.5, +2.5)
 
-z ≥ +2.0  →  factor ≈ 0.70  →  darkened primary (elite)
+z ≥ +2.0  →  factor ≈ 0.50  →  darkened primary (elite)
 z =  0.0  →  factor = 1.00  →  primary colour as-is (average)
-z ≤ −2.0  →  factor ≈ 1.30  →  lightened toward white (below average)`}</Formula>
+z ≤ −2.0  →  factor ≈ 1.50  →  lightened toward white (below average)`}</Formula>
           <p className="text-sm text-gray-600 mb-2">
             <strong>Darker = better.</strong>{' '}
             A stat box that is a deep, saturated version of the school colour indicates
