@@ -79,10 +79,7 @@ export default function ProspectDetailPage() {
 
           {/* Stat strip */}
           <div className="px-8 py-6">
-            <h2 className="text-lg font-bold text-gray-800 mb-1">Season Stats</h2>
-            <p className="text-xs text-gray-400 mb-4">
-              Shading compares to same-position peers · darker = better · hover for averages
-            </p>
+            <h2 className="text-lg font-bold text-gray-800 mb-4">Season Stats</h2>
             <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
               {[
                 { label: 'PPG',  value: s.points_per_game.toFixed(1),   norm: seasonAvg?.points_per_game,   raw: s.points_per_game },
@@ -327,12 +324,12 @@ function luminance([r, g, b]: [number, number, number]): number {
 /**
  * Map z-score to a brightness adjustment factor.
  * Rule: darker = better, lighter = worse.
- *   z ≥ +2.5  → factor ≈ 0.625  (darkened primary)
- *   z =  0    → factor = 1.000  (primary as-is)
- *   z ≤ −2.5  → factor ≈ 1.375  (lightened toward white)
+ *   z ≥ +2.5  → factor ≈ 0.25  (darkened primary)
+ *   z =  0    → factor = 1.00  (primary as-is)
+ *   z ≤ −2.5  → factor ≈ 1.75  (lightened toward white)
  */
 function zToFactor(z: number): number {
-  return 1.0 - 0.25 * Math.max(-2.5, Math.min(2.5, z));
+  return 1.0 - 0.30 * Math.max(-2.5, Math.min(2.5, z));
 }
 
 function StatBox({

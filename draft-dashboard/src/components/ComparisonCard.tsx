@@ -50,10 +50,96 @@ function ordinal(n: number): string {
 }
 
 function cardGradient(primary?: string, secondary?: string): string {
-  const p = primary   ? `#${primary.replace('#', '')}` : '#1d4ed8';
-  const s = secondary ? `#${secondary.replace('#', '')}` : '#1e3a8a';
+  const p = primary   ? `#${primary.replace('#', '')}` : '#1e293b';
+  const s = secondary ? `#${secondary.replace('#', '')}` : '#0f172a';
   return `linear-gradient(135deg, ${p} 0%, ${s} 100%)`;
 }
+
+// Static school-colors lookup for programs not yet in the live data.
+// Keyed by college_team name as it appears in nba_career_stats.json.
+const TEAM_COLORS: Record<string, { primary: string; secondary: string; espnTeamId: number }> = {
+  'Air Force':        { primary: '004a7b', secondary: '004a7b', espnTeamId: 2005 },
+  'Arizona':          { primary: 'AB0520', secondary: '003366', espnTeamId: 12 },
+  'Arizona State':    { primary: '8C1D40', secondary: 'FFC627', espnTeamId: 9 },
+  'Arkansas':         { primary: '9D2235', secondary: '9D2235', espnTeamId: 8 },
+  'Auburn':           { primary: '0C2340', secondary: 'E87722', espnTeamId: 2 },
+  'Baylor':           { primary: '003015', secondary: 'FFCC00', espnTeamId: 239 },
+  'BYU':              { primary: '002E5D', secondary: '98002E', espnTeamId: 252 },
+  'Butler':           { primary: '13294B', secondary: 'C8C372', espnTeamId: 2050 },
+  'Cincinnati':       { primary: 'E00122', secondary: '000000', espnTeamId: 2132 },
+  'Clemson':          { primary: 'F66733', secondary: '522D80', espnTeamId: 228 },
+  'Colorado':         { primary: 'CFB87C', secondary: '000000', espnTeamId: 38 },
+  'Colorado State':   { primary: '1E4D2B', secondary: 'C8C372', espnTeamId: 36 },
+  'Connecticut':      { primary: '000E2F', secondary: 'E4002B', espnTeamId: 41 },
+  'Creighton':        { primary: '005CA9', secondary: '005CA9', espnTeamId: 156 },
+  'Dayton':           { primary: 'CF0A2C', secondary: '004B8D', espnTeamId: 2168 },
+  'Duke':             { primary: '001A57', secondary: '001A57', espnTeamId: 150 },
+  'Florida':          { primary: '0021A5', secondary: 'FA4616', espnTeamId: 57 },
+  'Florida State':    { primary: '782F40', secondary: 'CEB888', espnTeamId: 52 },
+  'Fresno State':     { primary: 'CC0000', secondary: '003399', espnTeamId: 278 },
+  'Georgetown':       { primary: '041E42', secondary: '7A7A7A', espnTeamId: 46 },
+  'Georgia':          { primary: 'BA0C2F', secondary: '000000', espnTeamId: 61 },
+  'Georgia Tech':     { primary: 'B3A369', secondary: '003057', espnTeamId: 59 },
+  'Gonzaga':          { primary: '002967', secondary: 'CC0033', espnTeamId: 2250 },
+  'Houston':          { primary: 'C8102E', secondary: '63666A', espnTeamId: 248 },
+  'Illinois':         { primary: 'E84A27', secondary: '13294B', espnTeamId: 356 },
+  'Indiana':          { primary: '990000', secondary: '990000', espnTeamId: 84 },
+  'Iowa':             { primary: 'FFCD00', secondary: '000000', espnTeamId: 2294 },
+  'Iowa State':       { primary: '9E1B32', secondary: 'F1BE48', espnTeamId: 66 },
+  'Kansas':           { primary: '0051A5', secondary: 'E8000D', espnTeamId: 2305 },
+  'Kansas State':     { primary: '512888', secondary: '512888', espnTeamId: 2306 },
+  'Kentucky':         { primary: '0033A0', secondary: '0033A0', espnTeamId: 96 },
+  'Long Beach State': { primary: '000000', secondary: 'FFC72C', espnTeamId: 2400 },
+  'LSU':              { primary: '461D7C', secondary: 'FDD023', espnTeamId: 99 },
+  'Louisville':       { primary: 'AD0000', secondary: '000000', espnTeamId: 97 },
+  'Marquette':        { primary: '003366', secondary: 'FFCC00', espnTeamId: 269 },
+  'Maryland':         { primary: 'E03A3E', secondary: '000000', espnTeamId: 120 },
+  'Memphis':          { primary: '003087', secondary: '898C8F', espnTeamId: 235 },
+  'Miami':            { primary: 'F47321', secondary: '005030', espnTeamId: 2390 },
+  'Michigan':         { primary: '00274C', secondary: 'FFCB05', espnTeamId: 130 },
+  'Michigan State':   { primary: '18453B', secondary: '18453B', espnTeamId: 127 },
+  'Minnesota':        { primary: '7A0019', secondary: 'FFD700', espnTeamId: 135 },
+  'Mississippi State':{ primary: '5D1725', secondary: '5D1725', espnTeamId: 344 },
+  'Missouri':         { primary: 'F1B300', secondary: '000000', espnTeamId: 142 },
+  'Nevada':           { primary: '003366', secondary: '8E9090', espnTeamId: 2440 },
+  'New Mexico':       { primary: 'BA0C2F', secondary: '63666A', espnTeamId: 167 },
+  'North Carolina':   { primary: '4B9CD3', secondary: '13294B', espnTeamId: 153 },
+  'Notre Dame':       { primary: '0C2340', secondary: 'C99700', espnTeamId: 87 },
+  'Ohio State':       { primary: 'BB0000', secondary: '666666', espnTeamId: 194 },
+  'Oklahoma':         { primary: '841617', secondary: '841617', espnTeamId: 201 },
+  'Oklahoma State':   { primary: 'FF6600', secondary: '000000', espnTeamId: 197 },
+  'Ole Miss':         { primary: '14213D', secondary: 'CE1126', espnTeamId: 145 },
+  'Oregon':           { primary: '154733', secondary: 'FEE123', espnTeamId: 2483 },
+  'Oregon State':     { primary: 'D73F09', secondary: '000000', espnTeamId: 204 },
+  'Penn State':       { primary: '003087', secondary: '009CDE', espnTeamId: 213 },
+  'Pittsburgh':       { primary: '003594', secondary: 'FFB81C', espnTeamId: 221 },
+  'Portland':         { primary: '6D1A3A', secondary: '808080', espnTeamId: 2501 },
+  'Providence':       { primary: '000000', secondary: '77B5D9', espnTeamId: 2507 },
+  'Purdue':           { primary: '9D4918', secondary: 'B1B3B3', espnTeamId: 2509 },
+  'San Diego State':  { primary: 'A6192E', secondary: '000000', espnTeamId: 21 },
+  'South Carolina':   { primary: '73000A', secondary: '000000', espnTeamId: 2579 },
+  'Stanford':         { primary: '8C1515', secondary: '8C1515', espnTeamId: 24 },
+  "St. John's":       { primary: 'C60C30', secondary: '000000', espnTeamId: 2599 },
+  'Syracuse':         { primary: 'F76900', secondary: '002954', espnTeamId: 183 },
+  'Temple':           { primary: '9D2235', secondary: '9D2235', espnTeamId: 218 },
+  'Tennessee':        { primary: 'FF8200', secondary: 'FF8200', espnTeamId: 2633 },
+  'Texas':            { primary: 'BF5700', secondary: 'BF5700', espnTeamId: 251 },
+  'Texas A&M':        { primary: '500000', secondary: '500000', espnTeamId: 245 },
+  'Texas Tech':       { primary: 'CC0000', secondary: '000000', espnTeamId: 2641 },
+  'UCLA':             { primary: '2D68C4', secondary: 'F2A900', espnTeamId: 26 },
+  'UNLV':             { primary: 'CC0000', secondary: '888B8D', espnTeamId: 2439 },
+  'USC':              { primary: '990000', secondary: 'FFC72C', espnTeamId: 30 },
+  'Utah':             { primary: 'CC0000', secondary: '000000', espnTeamId: 254 },
+  'Utah State':       { primary: '00263A', secondary: '8B8D8F', espnTeamId: 328 },
+  'Villanova':        { primary: '003366', secondary: '13B5EA', espnTeamId: 222 },
+  'Virginia':         { primary: '232D4B', secondary: 'E57200', espnTeamId: 258 },
+  'Virginia Tech':    { primary: '630031', secondary: 'CF4420', espnTeamId: 259 },
+  'Wake Forest':      { primary: '9E7E38', secondary: '000000', espnTeamId: 154 },
+  'Washington':       { primary: '4B2E83', secondary: '4B2E83', espnTeamId: 264 },
+  'West Virginia':    { primary: '002855', secondary: 'EAAA00', espnTeamId: 277 },
+  'Wisconsin':        { primary: 'C5050C', secondary: 'C5050C', espnTeamId: 275 },
+  'Xavier':           { primary: '003591', secondary: '9EA1A2', espnTeamId: 2752 },
+};
 
 export function ComparisonCard({ comparison, className = '' }: Props) {
   const [headErr, setHeadErr] = useState(false);
@@ -62,11 +148,17 @@ export function ComparisonCard({ comparison, className = '' }: Props) {
   const { historical_player: h, comparison_type, similarity_score, breakdown } = comparison;
   const typeStyle = TYPE_LABELS[comparison_type];
 
+  // Use live data first, fall back to static lookup, then neutral slate
+  const teamFallback   = TEAM_COLORS[h.college_team];
+  const primaryColor   = h.team_primary_color   ?? teamFallback?.primary;
+  const secondaryColor = h.team_secondary_color  ?? teamFallback?.secondary;
+  const teamId         = h.espn_team_id          ?? teamFallback?.espnTeamId;
+
   const headshotSrc = h.athlete_id
     ? `https://a.espncdn.com/combiner/i?img=/i/headshots/mens-college-basketball/players/full/${h.athlete_id}.png`
     : null;
-  const logoSrc = h.espn_team_id
-    ? `https://a.espncdn.com/i/teamlogos/ncaa/500/${h.espn_team_id}.png`
+  const logoSrc = teamId
+    ? `https://a.espncdn.com/i/teamlogos/ncaa/500/${teamId}.png`
     : null;
 
   const facets = [
@@ -86,7 +178,7 @@ export function ComparisonCard({ comparison, className = '' }: Props) {
       {/* School-colored gradient header */}
       <div
         className="relative h-20 px-4 pt-3"
-        style={{ background: cardGradient(h.team_primary_color, h.team_secondary_color) }}
+        style={{ background: cardGradient(primaryColor, secondaryColor) }}
       >
         {/* Type + similarity badges */}
         <div className="flex items-center gap-2">
