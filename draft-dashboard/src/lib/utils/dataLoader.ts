@@ -115,15 +115,18 @@ export async function loadProspects(season = 2024): Promise<CollegePlayer[]> {
     prospectsCache = raw
       .filter(r => r.season === season)
       .map(r => ({
-        id:         `prospect_${r.athlete_id ?? r.name.replace(/\s+/g, '_').toLowerCase()}_${r.season}`,
-        name:       r.name,
-        team:       r.team,
-        season:     r.season,
-        position:   r.position ?? 'G',
-        conference: r.conference ?? '',
-        athlete_id: r.athlete_id,
-        stats:      toCollegeStats(r),
-        physical:   undefined,
+        id:                   `prospect_${r.athlete_id ?? r.name.replace(/\s+/g, '_').toLowerCase()}_${r.season}`,
+        name:                 r.name,
+        team:                 r.team,
+        season:               r.season,
+        position:             r.position ?? 'G',
+        conference:           r.conference ?? '',
+        athlete_id:           r.athlete_id,
+        espn_team_id:         r.espn_team_id ?? undefined,
+        team_primary_color:   r.team_primary_color ?? undefined,
+        team_secondary_color: r.team_secondary_color ?? undefined,
+        stats:                toCollegeStats(r),
+        physical:             undefined,
       }));
     return prospectsCache;
   } catch (e) {

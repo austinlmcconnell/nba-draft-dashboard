@@ -1,0 +1,7212 @@
+{
+  "George Washington": {
+    "espn_source_id": 45,
+    "primary_color": "002843",
+    "secondary_color": "e8d2a1"
+  },
+  "Saint Joseph's": {
+    "espn_source_id": 2603,
+    "primary_color": "C2071B",
+    "secondary_color": "101010"
+  },
+  "Rhode Island": {
+    "espn_source_id": 227,
+    "primary_color": "091f3f",
+    "secondary_color": "5ab3e8"
+  },
+  "St. Bonaventure": {
+    "espn_source_id": 179,
+    "primary_color": "70261D",
+    "secondary_color": null
+  },
+  "Dayton": {
+    "espn_source_id": 2168,
+    "primary_color": "004B8D",
+    "secondary_color": "ffffff"
+  },
+  "Richmond": {
+    "espn_source_id": 257,
+    "primary_color": "9e0712",
+    "secondary_color": "b90b2e"
+  },
+  "La Salle": {
+    "espn_source_id": 2325,
+    "primary_color": "003356",
+    "secondary_color": "ffce00"
+  },
+  "Saint Louis": {
+    "espn_source_id": 139,
+    "primary_color": "00539C",
+    "secondary_color": "ebebeb"
+  },
+  "Fordham": {
+    "espn_source_id": 2230,
+    "primary_color": "830032",
+    "secondary_color": "909090"
+  },
+  "VCU": {
+    "espn_source_id": 2670,
+    "primary_color": "ffaf00",
+    "secondary_color": "000000"
+  },
+  "Davidson": {
+    "espn_source_id": 2166,
+    "primary_color": "000000",
+    "secondary_color": "e51837"
+  },
+  "George Mason": {
+    "espn_source_id": 2244,
+    "primary_color": "016600",
+    "secondary_color": "ecb010"
+  },
+  "Loyola Chicago": {
+    "espn_source_id": 2350,
+    "primary_color": "9d1244",
+    "secondary_color": null
+  },
+  "North Carolina": {
+    "espn_source_id": 153,
+    "primary_color": "7bafd4",
+    "secondary_color": "13294b"
+  },
+  "Duke": {
+    "espn_source_id": 150,
+    "primary_color": "013088",
+    "secondary_color": "ffffff"
+  },
+  "NC State": {
+    "espn_source_id": 152,
+    "primary_color": "cc0000",
+    "secondary_color": "ffffff"
+  },
+  "Virginia": {
+    "espn_source_id": 258,
+    "primary_color": "232d4b",
+    "secondary_color": "f84c1e"
+  },
+  "Wake Forest": {
+    "espn_source_id": 154,
+    "primary_color": "000000",
+    "secondary_color": "ceb888"
+  },
+  "Clemson": {
+    "espn_source_id": 228,
+    "primary_color": "f56600",
+    "secondary_color": "522d80"
+  },
+  "Georgia Tech": {
+    "espn_source_id": 59,
+    "primary_color": "003057",
+    "secondary_color": "b3a369"
+  },
+  "Florida State": {
+    "espn_source_id": 52,
+    "primary_color": "782f40",
+    "secondary_color": "ceb888"
+  },
+  "Miami": {
+    "espn_source_id": 2390,
+    "primary_color": "005030",
+    "secondary_color": "f47321"
+  },
+  "Virginia Tech": {
+    "espn_source_id": 259,
+    "primary_color": "630031",
+    "secondary_color": "cf4520"
+  },
+  "Boston College": {
+    "espn_source_id": 103,
+    "primary_color": "8c2232",
+    "secondary_color": "dbcca6"
+  },
+  "Syracuse": {
+    "espn_source_id": 183,
+    "primary_color": "ff6500",
+    "secondary_color": "000e54"
+  },
+  "Notre Dame": {
+    "espn_source_id": 87,
+    "primary_color": "0c2340",
+    "secondary_color": "c99700"
+  },
+  "Pittsburgh": {
+    "espn_source_id": 221,
+    "primary_color": "003263",
+    "secondary_color": "231f20"
+  },
+  "Louisville": {
+    "espn_source_id": 97,
+    "primary_color": "c9001f",
+    "secondary_color": "000000"
+  },
+  "SMU": {
+    "espn_source_id": 2567,
+    "primary_color": "354ca1",
+    "secondary_color": "cc0035"
+  },
+  "Stanford": {
+    "espn_source_id": 24,
+    "primary_color": "8c1515",
+    "secondary_color": "ffffff"
+  },
+  "California": {
+    "espn_source_id": 25,
+    "primary_color": "031522",
+    "secondary_color": "ffc423"
+  },
+  "Stetson": {
+    "espn_source_id": 56,
+    "primary_color": "0a5640",
+    "secondary_color": "56854e"
+  },
+  "Jacksonville": {
+    "espn_source_id": 294,
+    "primary_color": "00523e",
+    "secondary_color": null
+  },
+  "Lipscomb": {
+    "espn_source_id": 288,
+    "primary_color": "20366C",
+    "secondary_color": "f6b734"
+  },
+  "Florida Gulf Coast": {
+    "espn_source_id": 526,
+    "primary_color": "00885a",
+    "secondary_color": "076c3b"
+  },
+  "North Florida": {
+    "espn_source_id": 2454,
+    "primary_color": "004B8D",
+    "secondary_color": "babcbe"
+  },
+  "North Alabama": {
+    "espn_source_id": 2453,
+    "primary_color": "663399",
+    "secondary_color": null
+  },
+  "Eastern Kentucky": {
+    "espn_source_id": 2198,
+    "primary_color": "660819",
+    "secondary_color": "f0f0f0"
+  },
+  "Bellarmine": {
+    "espn_source_id": 91,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Queens University": {
+    "espn_source_id": 2511,
+    "primary_color": "192C66",
+    "secondary_color": "857040"
+  },
+  "Austin Peay": {
+    "espn_source_id": 2046,
+    "primary_color": "8e0b0b",
+    "secondary_color": null
+  },
+  "Central Arkansas": {
+    "espn_source_id": 2110,
+    "primary_color": "a7a9ac",
+    "secondary_color": "8e959a"
+  },
+  "West Georgia": {
+    "espn_source_id": 2698,
+    "primary_color": "0033a1",
+    "secondary_color": "db1a21"
+  },
+  "Vermont": {
+    "espn_source_id": 261,
+    "primary_color": "154734",
+    "secondary_color": "ffc72c"
+  },
+  "Maine": {
+    "espn_source_id": 311,
+    "primary_color": "127dbe",
+    "secondary_color": null
+  },
+  "New Hampshire": {
+    "espn_source_id": 160,
+    "primary_color": "004990",
+    "secondary_color": "c3c4c6"
+  },
+  "UAlbany": {
+    "espn_source_id": 399,
+    "primary_color": "3D2777",
+    "secondary_color": "ffffff"
+  },
+  "UMBC": {
+    "espn_source_id": 2378,
+    "primary_color": "000000",
+    "secondary_color": "ad860a"
+  },
+  "Binghamton": {
+    "espn_source_id": 2066,
+    "primary_color": "00614A",
+    "secondary_color": "f0f0f0"
+  },
+  "UMass Lowell": {
+    "espn_source_id": 2349,
+    "primary_color": "00529C",
+    "secondary_color": "cf1f2f"
+  },
+  "Bryant": {
+    "espn_source_id": 2803,
+    "primary_color": "000000",
+    "secondary_color": "9f8343"
+  },
+  "NJIT": {
+    "espn_source_id": 2885,
+    "primary_color": "EE3024",
+    "secondary_color": "df3e2e"
+  },
+  "Memphis": {
+    "espn_source_id": 235,
+    "primary_color": "004991",
+    "secondary_color": "8e908f"
+  },
+  "Temple": {
+    "espn_source_id": 218,
+    "primary_color": "A80532",
+    "secondary_color": "a7a9ac"
+  },
+  "Tulsa": {
+    "espn_source_id": 202,
+    "primary_color": "003595",
+    "secondary_color": "d0b787"
+  },
+  "South Florida": {
+    "espn_source_id": 58,
+    "primary_color": "004A36",
+    "secondary_color": "231f20"
+  },
+  "Wichita State": {
+    "espn_source_id": 2724,
+    "primary_color": "0d0a03",
+    "secondary_color": "ffc41e"
+  },
+  "East Carolina": {
+    "espn_source_id": 151,
+    "primary_color": "4b1869",
+    "secondary_color": "f0907b"
+  },
+  "Tulane": {
+    "espn_source_id": 2655,
+    "primary_color": "006547",
+    "secondary_color": "468ac9"
+  },
+  "Florida Atlantic": {
+    "espn_source_id": 2226,
+    "primary_color": "00447c",
+    "secondary_color": "d31245"
+  },
+  "UAB": {
+    "espn_source_id": 5,
+    "primary_color": "054338",
+    "secondary_color": "ffc845"
+  },
+  "North Texas": {
+    "espn_source_id": 249,
+    "primary_color": "ffffff",
+    "secondary_color": "000000"
+  },
+  "Charlotte": {
+    "espn_source_id": 2429,
+    "primary_color": "ffffff",
+    "secondary_color": "cfab7a"
+  },
+  "Rice": {
+    "espn_source_id": 242,
+    "primary_color": "d1d5d8",
+    "secondary_color": "ffffff"
+  },
+  "UTSA": {
+    "espn_source_id": 2636,
+    "primary_color": "002A5C",
+    "secondary_color": "f47321"
+  },
+  "Kansas": {
+    "espn_source_id": 2305,
+    "primary_color": "0051ba",
+    "secondary_color": "e8000d"
+  },
+  "Oklahoma State": {
+    "espn_source_id": 197,
+    "primary_color": "000000",
+    "secondary_color": "dddddd"
+  },
+  "Baylor": {
+    "espn_source_id": 239,
+    "primary_color": "154734",
+    "secondary_color": "ffb81c"
+  },
+  "Iowa State": {
+    "espn_source_id": 66,
+    "primary_color": "822433",
+    "secondary_color": "fdca2f"
+  },
+  "Kansas State": {
+    "espn_source_id": 2306,
+    "primary_color": "3c0969",
+    "secondary_color": "e2e3e4"
+  },
+  "Texas Tech": {
+    "espn_source_id": 2641,
+    "primary_color": "000000",
+    "secondary_color": "da291c"
+  },
+  "West Virginia": {
+    "espn_source_id": 277,
+    "primary_color": "002855",
+    "secondary_color": "eaaa00"
+  },
+  "TCU": {
+    "espn_source_id": 2628,
+    "primary_color": "4d1979",
+    "secondary_color": "f1f2f3"
+  },
+  "Houston": {
+    "espn_source_id": 248,
+    "primary_color": "c92a39",
+    "secondary_color": "ffffff"
+  },
+  "BYU": {
+    "espn_source_id": 252,
+    "primary_color": "003da5",
+    "secondary_color": "ffffff"
+  },
+  "Cincinnati": {
+    "espn_source_id": 2132,
+    "primary_color": "000000",
+    "secondary_color": "717073"
+  },
+  "UCF": {
+    "espn_source_id": 2116,
+    "primary_color": "000000",
+    "secondary_color": "b4a269"
+  },
+  "Arizona": {
+    "espn_source_id": 12,
+    "primary_color": "0c234b",
+    "secondary_color": "ab0520"
+  },
+  "Utah": {
+    "espn_source_id": 254,
+    "primary_color": "ea002a",
+    "secondary_color": "ffffff"
+  },
+  "Arizona State": {
+    "espn_source_id": 9,
+    "primary_color": "8e0c3a",
+    "secondary_color": "ffc72c"
+  },
+  "Villanova": {
+    "espn_source_id": 222,
+    "primary_color": "00205b",
+    "secondary_color": "13b5ea"
+  },
+  "Georgetown": {
+    "espn_source_id": 46,
+    "primary_color": "110E42",
+    "secondary_color": "001c58"
+  },
+  "St. John's": {
+    "espn_source_id": 2599,
+    "primary_color": "d10000",
+    "secondary_color": "101010"
+  },
+  "Providence": {
+    "espn_source_id": 2507,
+    "primary_color": "000000",
+    "secondary_color": "a3a19e"
+  },
+  "Seton Hall": {
+    "espn_source_id": 2550,
+    "primary_color": "0857B1",
+    "secondary_color": "8a8d8f"
+  },
+  "Marquette": {
+    "espn_source_id": 269,
+    "primary_color": "003366",
+    "secondary_color": "ffcc00"
+  },
+  "Creighton": {
+    "espn_source_id": 156,
+    "primary_color": "005ca9",
+    "secondary_color": "6cadde"
+  },
+  "Xavier": {
+    "espn_source_id": 2752,
+    "primary_color": "21304e",
+    "secondary_color": "a5a7a8"
+  },
+  "DePaul": {
+    "espn_source_id": 305,
+    "primary_color": "2d649c",
+    "secondary_color": "ce1125"
+  },
+  "Butler": {
+    "espn_source_id": 2086,
+    "primary_color": "0d1361",
+    "secondary_color": "00a3e0"
+  },
+  "Weber State": {
+    "espn_source_id": 2692,
+    "primary_color": "18005a",
+    "secondary_color": "ebebeb"
+  },
+  "Montana": {
+    "espn_source_id": 149,
+    "primary_color": "751D4A",
+    "secondary_color": "666666"
+  },
+  "Montana State": {
+    "espn_source_id": 147,
+    "primary_color": "00205c",
+    "secondary_color": "bc955c"
+  },
+  "Idaho State": {
+    "espn_source_id": 304,
+    "primary_color": "ef8c00",
+    "secondary_color": "e9a126"
+  },
+  "Northern Arizona": {
+    "espn_source_id": 2464,
+    "primary_color": "003976",
+    "secondary_color": "1b3069"
+  },
+  "Eastern Washington": {
+    "espn_source_id": 331,
+    "primary_color": "a10022",
+    "secondary_color": "abb4bc"
+  },
+  "Portland State": {
+    "espn_source_id": 2502,
+    "primary_color": "00311e",
+    "secondary_color": "ebebeb"
+  },
+  "Northern Colorado": {
+    "espn_source_id": 2458,
+    "primary_color": "13558D",
+    "secondary_color": "ffc533"
+  },
+  "Sacramento State": {
+    "espn_source_id": 16,
+    "primary_color": "00573C",
+    "secondary_color": "cdb97d"
+  },
+  "Winthrop": {
+    "espn_source_id": 2737,
+    "primary_color": "9e0b0e",
+    "secondary_color": "fdb41e"
+  },
+  "Radford": {
+    "espn_source_id": 2515,
+    "primary_color": "BC1515",
+    "secondary_color": "c2c3c0"
+  },
+  "UNC Asheville": {
+    "espn_source_id": 2427,
+    "primary_color": "003da5",
+    "secondary_color": "ffffff"
+  },
+  "Charleston Southern": {
+    "espn_source_id": 2127,
+    "primary_color": "2e3192",
+    "secondary_color": "ded090"
+  },
+  "High Point": {
+    "espn_source_id": 2272,
+    "primary_color": "b0b7bc",
+    "secondary_color": "ebebeb"
+  },
+  "Gardner-Webb": {
+    "espn_source_id": 2241,
+    "primary_color": "c12535",
+    "secondary_color": "909090"
+  },
+  "Longwood": {
+    "espn_source_id": 2344,
+    "primary_color": "003273",
+    "secondary_color": "9ea2a3"
+  },
+  "Presbyterian": {
+    "espn_source_id": 2506,
+    "primary_color": "194896",
+    "secondary_color": "990134"
+  },
+  "South Carolina Upstate": {
+    "espn_source_id": 2908,
+    "primary_color": "008545",
+    "secondary_color": "000000"
+  },
+  "Purdue": {
+    "espn_source_id": 2509,
+    "primary_color": "000000",
+    "secondary_color": "cfb991"
+  },
+  "Indiana": {
+    "espn_source_id": 84,
+    "primary_color": "990000",
+    "secondary_color": "edebeb"
+  },
+  "Illinois": {
+    "espn_source_id": 356,
+    "primary_color": "ff5f05",
+    "secondary_color": "13294b"
+  },
+  "Ohio State": {
+    "espn_source_id": 194,
+    "primary_color": "ce1141",
+    "secondary_color": "505056"
+  },
+  "Iowa": {
+    "espn_source_id": 2294,
+    "primary_color": "000000",
+    "secondary_color": "fcd116"
+  },
+  "Wisconsin": {
+    "espn_source_id": 275,
+    "primary_color": "c4012f",
+    "secondary_color": "ffffff"
+  },
+  "Minnesota": {
+    "espn_source_id": 135,
+    "primary_color": "5e0a2f",
+    "secondary_color": "fab41c"
+  },
+  "Michigan": {
+    "espn_source_id": 130,
+    "primary_color": "00274c",
+    "secondary_color": "ffcb05"
+  },
+  "Michigan State": {
+    "espn_source_id": 127,
+    "primary_color": "18453b",
+    "secondary_color": "ffffff"
+  },
+  "Northwestern": {
+    "espn_source_id": 77,
+    "primary_color": "582c83",
+    "secondary_color": "ffffff"
+  },
+  "Penn State": {
+    "espn_source_id": 213,
+    "primary_color": "00265D",
+    "secondary_color": "002e5c"
+  },
+  "Maryland": {
+    "espn_source_id": 120,
+    "primary_color": "D5002B",
+    "secondary_color": "ffcd00"
+  },
+  "Nebraska": {
+    "espn_source_id": 158,
+    "primary_color": "d00000",
+    "secondary_color": "ffffff"
+  },
+  "Rutgers": {
+    "espn_source_id": 164,
+    "primary_color": "d21034",
+    "secondary_color": "ffffff"
+  },
+  "Oregon": {
+    "espn_source_id": 2483,
+    "primary_color": "007030",
+    "secondary_color": "fee11a"
+  },
+  "UCLA": {
+    "espn_source_id": 26,
+    "primary_color": "2774ae",
+    "secondary_color": "f2a900"
+  },
+  "USC": {
+    "espn_source_id": 30,
+    "primary_color": "9e2237",
+    "secondary_color": "ffcc00"
+  },
+  "Washington": {
+    "espn_source_id": 264,
+    "primary_color": "33006f",
+    "secondary_color": "e8d3a2"
+  },
+  "Long Beach State": {
+    "espn_source_id": 299,
+    "primary_color": "000000",
+    "secondary_color": "f1f2f3"
+  },
+  "UC Irvine": {
+    "espn_source_id": 300,
+    "primary_color": "002B5C",
+    "secondary_color": "fec52e"
+  },
+  "Cal State Fullerton": {
+    "espn_source_id": 2239,
+    "primary_color": "003767",
+    "secondary_color": "ff8300"
+  },
+  "Cal Poly": {
+    "espn_source_id": 13,
+    "primary_color": "1E4D2B",
+    "secondary_color": "eed897"
+  },
+  "Cal State Northridge": {
+    "espn_source_id": 2463,
+    "primary_color": "b50000",
+    "secondary_color": null
+  },
+  "UC Riverside": {
+    "espn_source_id": 27,
+    "primary_color": "14234F",
+    "secondary_color": null
+  },
+  "UC Davis": {
+    "espn_source_id": 302,
+    "primary_color": "002855",
+    "secondary_color": "c3c4c6"
+  },
+  "Hawai'i": {
+    "espn_source_id": 62,
+    "primary_color": "003420",
+    "secondary_color": "ffffff"
+  },
+  "UC San Diego": {
+    "espn_source_id": 28,
+    "primary_color": "182B49",
+    "secondary_color": "FFCD00"
+  },
+  "Cal State Bakersfield": {
+    "espn_source_id": 2934,
+    "primary_color": "003BAB",
+    "secondary_color": null
+  },
+  "UNC Wilmington": {
+    "espn_source_id": 350,
+    "primary_color": "00665e",
+    "secondary_color": "ffda00"
+  },
+  "Hofstra": {
+    "espn_source_id": 2275,
+    "primary_color": "00337c",
+    "secondary_color": "f6c934"
+  },
+  "Drexel": {
+    "espn_source_id": 2182,
+    "primary_color": "020260",
+    "secondary_color": "ffd65a"
+  },
+  "Northeastern": {
+    "espn_source_id": 111,
+    "primary_color": "CC0001",
+    "secondary_color": "c2c3c0"
+  },
+  "Charleston": {
+    "espn_source_id": 232,
+    "primary_color": "7a2531",
+    "secondary_color": "9e8959"
+  },
+  "Elon": {
+    "espn_source_id": 2210,
+    "primary_color": "020303",
+    "secondary_color": "b59a57"
+  },
+  "Stony Brook": {
+    "espn_source_id": 2619,
+    "primary_color": "990000",
+    "secondary_color": null
+  },
+  "Monmouth": {
+    "espn_source_id": 2405,
+    "primary_color": "051844",
+    "secondary_color": null
+  },
+  "Hampton": {
+    "espn_source_id": 2261,
+    "primary_color": "0067AC",
+    "secondary_color": null
+  },
+  "North Carolina A&T": {
+    "espn_source_id": 2448,
+    "primary_color": "0505aa",
+    "secondary_color": "004684"
+  },
+  "Campbell": {
+    "espn_source_id": 2097,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "UTEP": {
+    "espn_source_id": 2638,
+    "primary_color": "ff8200",
+    "secondary_color": "041e42"
+  },
+  "Louisiana Tech": {
+    "espn_source_id": 2348,
+    "primary_color": "002d65",
+    "secondary_color": "d3313a"
+  },
+  "Middle Tennessee": {
+    "espn_source_id": 2393,
+    "primary_color": "006db6",
+    "secondary_color": "ffffff"
+  },
+  "Western Kentucky": {
+    "espn_source_id": 98,
+    "primary_color": "F32026",
+    "secondary_color": "b3b5b8"
+  },
+  "Florida International": {
+    "espn_source_id": 2229,
+    "primary_color": "091731",
+    "secondary_color": "c5960c"
+  },
+  "Liberty": {
+    "espn_source_id": 2335,
+    "primary_color": "071740",
+    "secondary_color": "a61f21"
+  },
+  "Sam Houston": {
+    "espn_source_id": 2534,
+    "primary_color": "fe5000",
+    "secondary_color": "000000"
+  },
+  "Jacksonville State": {
+    "espn_source_id": 55,
+    "primary_color": "b50500",
+    "secondary_color": "b5b7ba"
+  },
+  "New Mexico State": {
+    "espn_source_id": 166,
+    "primary_color": "891216",
+    "secondary_color": "000000"
+  },
+  "Kennesaw State": {
+    "espn_source_id": 338,
+    "primary_color": "fdbb30",
+    "secondary_color": "000000"
+  },
+  "Detroit Mercy": {
+    "espn_source_id": 2174,
+    "primary_color": "165b9e",
+    "secondary_color": "d31733"
+  },
+  "Wright State": {
+    "espn_source_id": 2750,
+    "primary_color": "cba052",
+    "secondary_color": "cba052"
+  },
+  "Green Bay": {
+    "espn_source_id": 2739,
+    "primary_color": "006633",
+    "secondary_color": "ffffff"
+  },
+  "Milwaukee": {
+    "espn_source_id": 270,
+    "primary_color": "000000",
+    "secondary_color": "ffc20e"
+  },
+  "Cleveland State": {
+    "espn_source_id": 325,
+    "primary_color": "006633",
+    "secondary_color": "231f20"
+  },
+  "Youngstown State": {
+    "espn_source_id": 2754,
+    "primary_color": "E51935",
+    "secondary_color": "690717"
+  },
+  "Oakland": {
+    "espn_source_id": 2473,
+    "primary_color": "04091c",
+    "secondary_color": "bc955c"
+  },
+  "Northern Kentucky": {
+    "espn_source_id": 94,
+    "primary_color": "ffc82e",
+    "secondary_color": "000000"
+  },
+  "Purdue Fort Wayne": {
+    "espn_source_id": 2870,
+    "primary_color": "00378A",
+    "secondary_color": "f0f0f0"
+  },
+  "IU Indianapolis": {
+    "espn_source_id": 85,
+    "primary_color": "A81F30",
+    "secondary_color": "d59f0f"
+  },
+  "Robert Morris": {
+    "espn_source_id": 2523,
+    "primary_color": "00214D",
+    "secondary_color": "a21d2b"
+  },
+  "Princeton": {
+    "espn_source_id": 163,
+    "primary_color": "000000",
+    "secondary_color": "ff6000"
+  },
+  "Pennsylvania": {
+    "espn_source_id": 219,
+    "primary_color": "082A74",
+    "secondary_color": "a6163d"
+  },
+  "Yale": {
+    "espn_source_id": 43,
+    "primary_color": "004a81",
+    "secondary_color": "286dc0"
+  },
+  "Columbia": {
+    "espn_source_id": 171,
+    "primary_color": "174785",
+    "secondary_color": "004b85"
+  },
+  "Cornell": {
+    "espn_source_id": 172,
+    "primary_color": "d60027",
+    "secondary_color": "101010"
+  },
+  "Dartmouth": {
+    "espn_source_id": 159,
+    "primary_color": "005730",
+    "secondary_color": "000000"
+  },
+  "Harvard": {
+    "espn_source_id": 108,
+    "primary_color": "990000",
+    "secondary_color": "dbdbdb"
+  },
+  "Brown": {
+    "espn_source_id": 225,
+    "primary_color": "411e09",
+    "secondary_color": "949300"
+  },
+  "Iona": {
+    "espn_source_id": 314,
+    "primary_color": "6f2c3e",
+    "secondary_color": "f0ab00"
+  },
+  "Saint Peter's": {
+    "espn_source_id": 2612,
+    "primary_color": "004CC2",
+    "secondary_color": null
+  },
+  "Fairfield": {
+    "espn_source_id": 2217,
+    "primary_color": "000000",
+    "secondary_color": "ebebeb"
+  },
+  "Manhattan": {
+    "espn_source_id": 2363,
+    "primary_color": "4f8537",
+    "secondary_color": "b5b7ba"
+  },
+  "Siena": {
+    "espn_source_id": 2561,
+    "primary_color": "037961",
+    "secondary_color": "eea60f"
+  },
+  "Niagara": {
+    "espn_source_id": 315,
+    "primary_color": "69207E",
+    "secondary_color": "f0f0f0"
+  },
+  "Canisius": {
+    "espn_source_id": 2099,
+    "primary_color": "004a81",
+    "secondary_color": "dda50f"
+  },
+  "Rider": {
+    "espn_source_id": 2520,
+    "primary_color": "a80532",
+    "secondary_color": "ebebeb"
+  },
+  "Marist": {
+    "espn_source_id": 2368,
+    "primary_color": "e53730",
+    "secondary_color": "f0f0f0"
+  },
+  "Quinnipiac": {
+    "espn_source_id": 2514,
+    "primary_color": "041B43",
+    "secondary_color": null
+  },
+  "Mount St. Mary's": {
+    "espn_source_id": 116,
+    "primary_color": "005596",
+    "secondary_color": "ebebeb"
+  },
+  "Merrimack": {
+    "espn_source_id": 2771,
+    "primary_color": "2f4f93",
+    "secondary_color": "e8c535"
+  },
+  "Sacred Heart": {
+    "espn_source_id": 2529,
+    "primary_color": "a40012",
+    "secondary_color": "c29472"
+  },
+  "Ohio": {
+    "espn_source_id": 195,
+    "primary_color": "295A29",
+    "secondary_color": "e4bb85"
+  },
+  "Toledo": {
+    "espn_source_id": 2649,
+    "primary_color": "0a2240",
+    "secondary_color": "ffcd00"
+  },
+  "Miami (OH)": {
+    "espn_source_id": 193,
+    "primary_color": "a4000c",
+    "secondary_color": "f0f0f0"
+  },
+  "Kent State": {
+    "espn_source_id": 2309,
+    "primary_color": "003976",
+    "secondary_color": "efab00"
+  },
+  "William & Mary": {
+    "espn_source_id": 2729,
+    "primary_color": "103217",
+    "secondary_color": "f6b220"
+  },
+  "Bowling Green": {
+    "espn_source_id": 189,
+    "primary_color": "2b1000",
+    "secondary_color": "492000"
+  },
+  "Western Michigan": {
+    "espn_source_id": 2711,
+    "primary_color": "532e1f",
+    "secondary_color": "8b7f79"
+  },
+  "Ball State": {
+    "espn_source_id": 2050,
+    "primary_color": "DA0000",
+    "secondary_color": "ffffff"
+  },
+  "Eastern Michigan": {
+    "espn_source_id": 2199,
+    "primary_color": "00331b",
+    "secondary_color": "f0f0f0"
+  },
+  "Central Michigan": {
+    "espn_source_id": 2117,
+    "primary_color": "6a0032",
+    "secondary_color": "ffc82e"
+  },
+  "Akron": {
+    "espn_source_id": 2006,
+    "primary_color": "00285e",
+    "secondary_color": "84754e"
+  },
+  "Buffalo": {
+    "espn_source_id": 2084,
+    "primary_color": "041A9B",
+    "secondary_color": "ebebeb"
+  },
+  "South Carolina State": {
+    "espn_source_id": 2569,
+    "primary_color": "7d1315",
+    "secondary_color": "104897"
+  },
+  "Howard": {
+    "espn_source_id": 47,
+    "primary_color": "003a63",
+    "secondary_color": "e51937"
+  },
+  "Delaware State": {
+    "espn_source_id": 2169,
+    "primary_color": "FF3630",
+    "secondary_color": "009cdd"
+  },
+  "Coppin State": {
+    "espn_source_id": 2154,
+    "primary_color": "2e3192",
+    "secondary_color": "ffd204"
+  },
+  "Morgan State": {
+    "espn_source_id": 2415,
+    "primary_color": "014786",
+    "secondary_color": "f47937"
+  },
+  "Norfolk State": {
+    "espn_source_id": 2450,
+    "primary_color": "0c8968",
+    "secondary_color": "fdb813"
+  },
+  "Maryland Eastern Shore": {
+    "espn_source_id": 2379,
+    "primary_color": "5c2301",
+    "secondary_color": "b5b7ba"
+  },
+  "North Carolina Central": {
+    "espn_source_id": 2428,
+    "primary_color": "880023",
+    "secondary_color": "c2c3c0"
+  },
+  "Southern Illinois": {
+    "espn_source_id": 79,
+    "primary_color": "85283D",
+    "secondary_color": "c2c3c0"
+  },
+  "Illinois State": {
+    "espn_source_id": 2287,
+    "primary_color": "CE1126",
+    "secondary_color": "ffe716"
+  },
+  "Indiana State": {
+    "espn_source_id": 282,
+    "primary_color": "00669a",
+    "secondary_color": "f0f0f0"
+  },
+  "Northern Iowa": {
+    "espn_source_id": 2460,
+    "primary_color": "473282",
+    "secondary_color": "ffffff"
+  },
+  "Evansville": {
+    "espn_source_id": 339,
+    "primary_color": "663399",
+    "secondary_color": "ef6f00"
+  },
+  "Valparaiso": {
+    "espn_source_id": 2674,
+    "primary_color": "794500",
+    "secondary_color": null
+  },
+  "Belmont": {
+    "espn_source_id": 2057,
+    "primary_color": "182142",
+    "secondary_color": "c9262d"
+  },
+  "Murray State": {
+    "espn_source_id": 93,
+    "primary_color": "002148",
+    "secondary_color": "000e00"
+  },
+  "UIC": {
+    "espn_source_id": 82,
+    "primary_color": "001e62",
+    "secondary_color": "d50032"
+  },
+  "San Diego State": {
+    "espn_source_id": 21,
+    "primary_color": "c41230",
+    "secondary_color": "000000"
+  },
+  "UNLV": {
+    "espn_source_id": 2439,
+    "primary_color": "b10202",
+    "secondary_color": "ffffff"
+  },
+  "New Mexico": {
+    "espn_source_id": 167,
+    "primary_color": "000000",
+    "secondary_color": "231f20"
+  },
+  "Colorado State": {
+    "espn_source_id": 36,
+    "primary_color": "1e4d2b",
+    "secondary_color": "c8c372"
+  },
+  "Wyoming": {
+    "espn_source_id": 2751,
+    "primary_color": "492f24",
+    "secondary_color": "ffc425"
+  },
+  "Air Force": {
+    "espn_source_id": 2005,
+    "primary_color": "004a7b",
+    "secondary_color": "ffffff"
+  },
+  "Boise State": {
+    "espn_source_id": 68,
+    "primary_color": "0033a0",
+    "secondary_color": "fa4616"
+  },
+  "Nevada": {
+    "espn_source_id": 2440,
+    "primary_color": "002d62",
+    "secondary_color": "ffffff"
+  },
+  "Utah State": {
+    "espn_source_id": 328,
+    "primary_color": "00263a",
+    "secondary_color": "949ca1"
+  },
+  "Fresno State": {
+    "espn_source_id": 278,
+    "primary_color": "c41230",
+    "secondary_color": "13284c"
+  },
+  "San Jos\u00e9 State": {
+    "espn_source_id": 23,
+    "primary_color": "005893",
+    "secondary_color": "fdba31"
+  },
+  "Fairleigh Dickinson": {
+    "espn_source_id": 161,
+    "primary_color": "72293c",
+    "secondary_color": "28334a"
+  },
+  "Wagner": {
+    "espn_source_id": 2681,
+    "primary_color": "00483A",
+    "secondary_color": "ffffff"
+  },
+  "Long Island University": {
+    "espn_source_id": 112358,
+    "primary_color": "50c9f7",
+    "secondary_color": "ffbf00"
+  },
+  "St. Francis (PA)": {
+    "espn_source_id": 2598,
+    "primary_color": "a20012",
+    "secondary_color": null
+  },
+  "Central Connecticut": {
+    "espn_source_id": 2115,
+    "primary_color": "1B49A2",
+    "secondary_color": "d1d5d8"
+  },
+  "Stonehill": {
+    "espn_source_id": 284,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Le Moyne": {
+    "espn_source_id": 2330,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Mercyhurst": {
+    "espn_source_id": 2385,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Chicago State": {
+    "espn_source_id": 2130,
+    "primary_color": "006700",
+    "secondary_color": null
+  },
+  "Morehead State": {
+    "espn_source_id": 2413,
+    "primary_color": "094FA3",
+    "secondary_color": "fed91a"
+  },
+  "Tennessee Tech": {
+    "espn_source_id": 2635,
+    "primary_color": "5A4099",
+    "secondary_color": "ffde00"
+  },
+  "Tennessee State": {
+    "espn_source_id": 2634,
+    "primary_color": "171796",
+    "secondary_color": "f0f0f0"
+  },
+  "Southeast Missouri State": {
+    "espn_source_id": 2546,
+    "primary_color": "c8102e",
+    "secondary_color": "000000"
+  },
+  "UT Martin": {
+    "espn_source_id": 2630,
+    "primary_color": "FF6700",
+    "secondary_color": "102a5c"
+  },
+  "Eastern Illinois": {
+    "espn_source_id": 2197,
+    "primary_color": "000000",
+    "secondary_color": "bebab9"
+  },
+  "SIU Edwardsville": {
+    "espn_source_id": 2565,
+    "primary_color": "eb1c23",
+    "secondary_color": "080808"
+  },
+  "Little Rock": {
+    "espn_source_id": 2031,
+    "primary_color": "AD0000",
+    "secondary_color": "898d8f"
+  },
+  "Southern Indiana": {
+    "espn_source_id": 88,
+    "primary_color": "CF102D",
+    "secondary_color": "002D5D"
+  },
+  "Western Illinois": {
+    "espn_source_id": 2710,
+    "primary_color": "4e1e8a",
+    "secondary_color": "ffc90a"
+  },
+  "Lindenwood": {
+    "espn_source_id": 2815,
+    "primary_color": "101820",
+    "secondary_color": "B5A36A"
+  },
+  "Bucknell": {
+    "espn_source_id": 2083,
+    "primary_color": "000060",
+    "secondary_color": "00316e"
+  },
+  "Colgate": {
+    "espn_source_id": 2142,
+    "primary_color": "821019",
+    "secondary_color": "ffffff"
+  },
+  "Holy Cross": {
+    "espn_source_id": 3187,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Lehigh": {
+    "espn_source_id": 2329,
+    "primary_color": "6c2b2a",
+    "secondary_color": "b69e70"
+  },
+  "Navy": {
+    "espn_source_id": 2426,
+    "primary_color": "00225b",
+    "secondary_color": "b5a67c"
+  },
+  "Lafayette": {
+    "espn_source_id": 322,
+    "primary_color": "790000",
+    "secondary_color": "a59474"
+  },
+  "Army": {
+    "espn_source_id": 349,
+    "primary_color": "ce9c00",
+    "secondary_color": "231f20"
+  },
+  "American University": {
+    "espn_source_id": 44,
+    "primary_color": "c41130",
+    "secondary_color": "c8102e"
+  },
+  "Boston University": {
+    "espn_source_id": 104,
+    "primary_color": "cc0000",
+    "secondary_color": "ffffff"
+  },
+  "Loyola Maryland": {
+    "espn_source_id": 2352,
+    "primary_color": "76a7a0",
+    "secondary_color": "c9cbca"
+  },
+  "Kentucky": {
+    "espn_source_id": 96,
+    "primary_color": "0033a0",
+    "secondary_color": "ffffff"
+  },
+  "Alabama": {
+    "espn_source_id": 333,
+    "primary_color": "9e1632",
+    "secondary_color": "ffffff"
+  },
+  "Tennessee": {
+    "espn_source_id": 2633,
+    "primary_color": "ff8200",
+    "secondary_color": "58595b"
+  },
+  "Florida": {
+    "espn_source_id": 57,
+    "primary_color": "0021a5",
+    "secondary_color": "fa4616"
+  },
+  "Vanderbilt": {
+    "espn_source_id": 238,
+    "primary_color": "000000",
+    "secondary_color": "231f20"
+  },
+  "LSU": {
+    "espn_source_id": 99,
+    "primary_color": "461d7c",
+    "secondary_color": "fdd023"
+  },
+  "Auburn": {
+    "espn_source_id": 2,
+    "primary_color": "002b5c",
+    "secondary_color": "f26522"
+  },
+  "Mississippi State": {
+    "espn_source_id": 344,
+    "primary_color": "5d1725",
+    "secondary_color": "c1c6c8"
+  },
+  "Georgia": {
+    "espn_source_id": 61,
+    "primary_color": "ba0c2f",
+    "secondary_color": "ffffff"
+  },
+  "Ole Miss": {
+    "espn_source_id": 145,
+    "primary_color": "13294b",
+    "secondary_color": "c8102e"
+  },
+  "Arkansas": {
+    "espn_source_id": 8,
+    "primary_color": "a41f35",
+    "secondary_color": "ffffff"
+  },
+  "South Carolina": {
+    "espn_source_id": 2579,
+    "primary_color": "73000a",
+    "secondary_color": "ffffff"
+  },
+  "Texas A&M": {
+    "espn_source_id": 245,
+    "primary_color": "500000",
+    "secondary_color": "ffffff"
+  },
+  "Missouri": {
+    "espn_source_id": 142,
+    "primary_color": "f1b82d",
+    "secondary_color": "000000"
+  },
+  "Oklahoma": {
+    "espn_source_id": 201,
+    "primary_color": "a32036",
+    "secondary_color": "ffffff"
+  },
+  "Texas": {
+    "espn_source_id": 251,
+    "primary_color": "c15d26",
+    "secondary_color": "ffffff"
+  },
+  "Southern": {
+    "espn_source_id": 2582,
+    "primary_color": "004B97",
+    "secondary_color": "ffc82d"
+  },
+  "Texas Southern": {
+    "espn_source_id": 2640,
+    "primary_color": "860038",
+    "secondary_color": "ffffff"
+  },
+  "Jackson State": {
+    "espn_source_id": 2296,
+    "primary_color": "123297",
+    "secondary_color": "b5b7ba"
+  },
+  "Alcorn State": {
+    "espn_source_id": 2016,
+    "primary_color": "4b0058",
+    "secondary_color": "46166a"
+  },
+  "Alabama State": {
+    "espn_source_id": 2011,
+    "primary_color": "e9a900",
+    "secondary_color": "0a0a0a"
+  },
+  "Grambling": {
+    "espn_source_id": 2755,
+    "primary_color": "ee8601",
+    "secondary_color": "ffd10a"
+  },
+  "Mississippi Valley State": {
+    "espn_source_id": 2400,
+    "primary_color": "005328",
+    "secondary_color": "cf2d34"
+  },
+  "Prairie View A&M": {
+    "espn_source_id": 2504,
+    "primary_color": "4d0960",
+    "secondary_color": null
+  },
+  "Alabama A&M": {
+    "espn_source_id": 2010,
+    "primary_color": "790000",
+    "secondary_color": "ffffff"
+  },
+  "Arkansas-Pine Bluff": {
+    "espn_source_id": 2029,
+    "primary_color": "e0aa0f",
+    "secondary_color": "eaaa00"
+  },
+  "Bethune-Cookman": {
+    "espn_source_id": 2065,
+    "primary_color": "7b1831",
+    "secondary_color": "e9aa12"
+  },
+  "Florida A&M": {
+    "espn_source_id": 50,
+    "primary_color": "F89728",
+    "secondary_color": "00843d"
+  },
+  "Chattanooga": {
+    "espn_source_id": 236,
+    "primary_color": "00386b",
+    "secondary_color": "dca71d"
+  },
+  "The Citadel": {
+    "espn_source_id": 2643,
+    "primary_color": "002b5c",
+    "secondary_color": "f0f0f0"
+  },
+  "Western Carolina": {
+    "espn_source_id": 2717,
+    "primary_color": "492F91",
+    "secondary_color": "bf9e70"
+  },
+  "Wofford": {
+    "espn_source_id": 2747,
+    "primary_color": "533B22",
+    "secondary_color": "f0f0f0"
+  },
+  "UNC Greensboro": {
+    "espn_source_id": 2430,
+    "primary_color": "003559",
+    "secondary_color": "ffd90a"
+  },
+  "Furman": {
+    "espn_source_id": 231,
+    "primary_color": "582c83",
+    "secondary_color": "ffffff"
+  },
+  "Samford": {
+    "espn_source_id": 2535,
+    "primary_color": "005485",
+    "secondary_color": "bc0023"
+  },
+  "Mercer": {
+    "espn_source_id": 2382,
+    "primary_color": "ff7f29",
+    "secondary_color": "080808"
+  },
+  "McNeese": {
+    "espn_source_id": 2377,
+    "primary_color": "00529C",
+    "secondary_color": null
+  },
+  "Northwestern State": {
+    "espn_source_id": 2466,
+    "primary_color": "492F91",
+    "secondary_color": "ed6118"
+  },
+  "Nicholls": {
+    "espn_source_id": 2447,
+    "primary_color": "C41230",
+    "secondary_color": "f0f0f0"
+  },
+  "SE Louisiana": {
+    "espn_source_id": 2545,
+    "primary_color": "215732",
+    "secondary_color": "ffc72c"
+  },
+  "Texas A&M-Corpus Christi": {
+    "espn_source_id": 357,
+    "primary_color": "0067c5",
+    "secondary_color": "007f3e"
+  },
+  "New Orleans": {
+    "espn_source_id": 2443,
+    "primary_color": "005da6",
+    "secondary_color": "a2a9ae"
+  },
+  "Incarnate Word": {
+    "espn_source_id": 2916,
+    "primary_color": "000000",
+    "secondary_color": "080808"
+  },
+  "Houston Christian": {
+    "espn_source_id": 2277,
+    "primary_color": "00539c",
+    "secondary_color": null
+  },
+  "East Texas A&M": {
+    "espn_source_id": 2837,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "UT Rio Grande Valley": {
+    "espn_source_id": 292,
+    "primary_color": "dc6000",
+    "secondary_color": "e1732d"
+  },
+  "South Dakota State": {
+    "espn_source_id": 2571,
+    "primary_color": "0033a0",
+    "secondary_color": "ffd100"
+  },
+  "North Dakota State": {
+    "espn_source_id": 2449,
+    "primary_color": "01402A",
+    "secondary_color": "ffffff"
+  },
+  "South Dakota": {
+    "espn_source_id": 233,
+    "primary_color": "CD1241",
+    "secondary_color": "f0f0f0"
+  },
+  "Omaha": {
+    "espn_source_id": 2437,
+    "primary_color": "e3193e",
+    "secondary_color": null
+  },
+  "Denver": {
+    "espn_source_id": 2172,
+    "primary_color": "98002e",
+    "secondary_color": "a8996e"
+  },
+  "North Dakota": {
+    "espn_source_id": 155,
+    "primary_color": "00A26B",
+    "secondary_color": "c2c3c0"
+  },
+  "St. Thomas-Minnesota": {
+    "espn_source_id": 2900,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "South Alabama": {
+    "espn_source_id": 6,
+    "primary_color": "003E7E",
+    "secondary_color": null
+  },
+  "Louisiana": {
+    "espn_source_id": 309,
+    "primary_color": "ce181e",
+    "secondary_color": "ffffff"
+  },
+  "Arkansas State": {
+    "espn_source_id": 2032,
+    "primary_color": "e81018",
+    "secondary_color": "000000"
+  },
+  "Troy": {
+    "espn_source_id": 2653,
+    "primary_color": "AE0210",
+    "secondary_color": "88898c"
+  },
+  "UL Monroe": {
+    "espn_source_id": 2433,
+    "primary_color": "231F20",
+    "secondary_color": "b18445"
+  },
+  "Texas State": {
+    "espn_source_id": 326,
+    "primary_color": "4e1719",
+    "secondary_color": "b4975a"
+  },
+  "Georgia Southern": {
+    "espn_source_id": 290,
+    "primary_color": "003775",
+    "secondary_color": "f0f0f0"
+  },
+  "App State": {
+    "espn_source_id": 2026,
+    "primary_color": "000000",
+    "secondary_color": "ffcd00"
+  },
+  "Coastal Carolina": {
+    "espn_source_id": 324,
+    "primary_color": "007073",
+    "secondary_color": "876447"
+  },
+  "James Madison": {
+    "espn_source_id": 256,
+    "primary_color": "450084",
+    "secondary_color": "b5a068"
+  },
+  "Southern Miss": {
+    "espn_source_id": 2572,
+    "primary_color": "FFAA3C",
+    "secondary_color": "ffc423"
+  },
+  "Marshall": {
+    "espn_source_id": 276,
+    "primary_color": "00ae42",
+    "secondary_color": "be854c"
+  },
+  "Utah Valley": {
+    "espn_source_id": 3084,
+    "primary_color": "004812",
+    "secondary_color": "e1c736"
+  },
+  "California Baptist": {
+    "espn_source_id": 2856,
+    "primary_color": "000080",
+    "secondary_color": null
+  },
+  "Tarleton State": {
+    "espn_source_id": 2627,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Abilene Christian": {
+    "espn_source_id": 2000,
+    "primary_color": "592d82",
+    "secondary_color": "b1b3b3"
+  },
+  "Utah Tech": {
+    "espn_source_id": 3101,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Southern Utah": {
+    "espn_source_id": 253,
+    "primary_color": "c72026",
+    "secondary_color": "000000"
+  },
+  "San Francisco": {
+    "espn_source_id": 2539,
+    "primary_color": "22523F",
+    "secondary_color": "fbcd3c"
+  },
+  "Santa Clara": {
+    "espn_source_id": 2541,
+    "primary_color": "690b0b",
+    "secondary_color": "101010"
+  },
+  "Saint Mary's": {
+    "espn_source_id": 2608,
+    "primary_color": "d80024",
+    "secondary_color": "003057"
+  },
+  "Gonzaga": {
+    "espn_source_id": 2250,
+    "primary_color": "041e42",
+    "secondary_color": "c8102e"
+  },
+  "Pepperdine": {
+    "espn_source_id": 2492,
+    "primary_color": "003A72",
+    "secondary_color": "dc762f"
+  },
+  "Loyola Marymount": {
+    "espn_source_id": 2351,
+    "primary_color": "880029",
+    "secondary_color": "00345b"
+  },
+  "San Diego": {
+    "espn_source_id": 301,
+    "primary_color": "2f99d4",
+    "secondary_color": "2f99d4"
+  },
+  "Portland": {
+    "espn_source_id": 2501,
+    "primary_color": "330072",
+    "secondary_color": "a8b3ba"
+  },
+  "Washington State": {
+    "espn_source_id": 265,
+    "primary_color": "981e32",
+    "secondary_color": "ffffff"
+  },
+  "Oregon State": {
+    "espn_source_id": 204,
+    "primary_color": "231f20",
+    "secondary_color": "d73f09"
+  },
+  "Old Dominion": {
+    "espn_source_id": 295,
+    "primary_color": "00507d",
+    "secondary_color": "a1d2f1"
+  },
+  "Colorado": {
+    "espn_source_id": 38,
+    "primary_color": "000000",
+    "secondary_color": "cfb87c"
+  },
+  "Delaware": {
+    "espn_source_id": 48,
+    "primary_color": "033594",
+    "secondary_color": "e8ce31"
+  },
+  "Grand Canyon": {
+    "espn_source_id": 2253,
+    "primary_color": "522398",
+    "secondary_color": "ffffff"
+  },
+  "Missouri State": {
+    "espn_source_id": 2623,
+    "primary_color": "5F0000",
+    "secondary_color": "e8e8e8"
+  },
+  "New Haven": {
+    "espn_source_id": 2441,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Seattle U": {
+    "espn_source_id": 2547,
+    "primary_color": "BF2E1A",
+    "secondary_color": "c2c3c0"
+  },
+  "Massachusetts": {
+    "espn_source_id": 113,
+    "primary_color": "880007",
+    "secondary_color": null
+  },
+  "Stephen F. Austin": {
+    "espn_source_id": 2617,
+    "primary_color": "393996",
+    "secondary_color": "bec0c2"
+  },
+  "UT Arlington": {
+    "espn_source_id": 250,
+    "primary_color": "004b7c",
+    "secondary_color": "f58024"
+  },
+  "Lamar": {
+    "espn_source_id": 2320,
+    "primary_color": "000000",
+    "secondary_color": "ebebeb"
+  },
+  "UConn": {
+    "espn_source_id": 41,
+    "primary_color": "0c2340",
+    "secondary_color": "f1f2f3"
+  },
+  "Kansas City": {
+    "espn_source_id": 140,
+    "primary_color": "004b87",
+    "secondary_color": "ffc72c"
+  },
+  "Oral Roberts": {
+    "espn_source_id": 198,
+    "primary_color": "002462",
+    "secondary_color": "dac792"
+  },
+  "VMI": {
+    "espn_source_id": 2678,
+    "primary_color": "ae122a",
+    "secondary_color": "ffd619"
+  },
+  "East Tennessee State": {
+    "espn_source_id": 2193,
+    "primary_color": "002d61",
+    "secondary_color": "ffc423"
+  },
+  "Idaho": {
+    "espn_source_id": 70,
+    "primary_color": "000000",
+    "secondary_color": "8c6e4a"
+  },
+  "Georgia State": {
+    "espn_source_id": 2247,
+    "primary_color": "1e539a",
+    "secondary_color": "ebebeb"
+  },
+  "Pacific": {
+    "espn_source_id": 279,
+    "primary_color": "F47820",
+    "secondary_color": "c2c3c0"
+  },
+  "Towson": {
+    "espn_source_id": 119,
+    "primary_color": "FFC229",
+    "secondary_color": null
+  },
+  "Northern Illinois": {
+    "espn_source_id": 2459,
+    "primary_color": "F1122C",
+    "secondary_color": "cc0000"
+  },
+  "Duquesne": {
+    "espn_source_id": 2184,
+    "primary_color": "002D62",
+    "secondary_color": "b90b2e"
+  },
+  "UC Santa Barbara": {
+    "espn_source_id": 2540,
+    "primary_color": "1e1840",
+    "secondary_color": "febc11"
+  },
+  "Bradley": {
+    "espn_source_id": 71,
+    "primary_color": "b70002",
+    "secondary_color": "c0c0c0"
+  },
+  "Drake": {
+    "espn_source_id": 2181,
+    "primary_color": "005596",
+    "secondary_color": "bec0c2"
+  },
+  "Regis (CO)": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Southwest Minnesota State": {
+    "espn_source_id": 2587,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Webber International": {
+    "espn_source_id": 2691,
+    "primary_color": "bf2f38",
+    "secondary_color": "909090"
+  },
+  "Mount Vernon Nazarene (OH)": {
+    "espn_source_id": 576,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Hastings": {
+    "espn_source_id": 536,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Central State Oklahoma": {
+    "espn_source_id": 2122,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Salisbury": {
+    "espn_source_id": 2532,
+    "primary_color": "8b0e04",
+    "secondary_color": "fdb913"
+  },
+  "Penn State-York": {
+    "espn_source_id": 112706,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Bethany College (CA)": {
+    "espn_source_id": 2982,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Cotner College": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Oberlin": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Dillard": {
+    "espn_source_id": 2176,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Paul Smith'S": {
+    "espn_source_id": 131638,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Minnesota Morris": {
+    "espn_source_id": 2399,
+    "primary_color": "8d191b",
+    "secondary_color": "e19c25"
+  },
+  "Siena Heights": {
+    "espn_source_id": 2562,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Doane": {
+    "espn_source_id": 2178,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "McPherson": {
+    "espn_source_id": 562,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Blackburn": {
+    "espn_source_id": 2070,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Purchase": {
+    "espn_source_id": 3103,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Warner University": {
+    "espn_source_id": 2683,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "WVU Tech": {
+    "espn_source_id": 2706,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Cairn University": {
+    "espn_source_id": 3216,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Connecticut College": {
+    "espn_source_id": 39,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "DeSales": {
+    "espn_source_id": 111949,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Ave Maria": {
+    "espn_source_id": 3178,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Stanton": {
+    "espn_source_id": 128501,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Silver Lake": {
+    "espn_source_id": 109708,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Utica": {
+    "espn_source_id": 390,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Colorado Mesa": {
+    "espn_source_id": 11,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Lourdes University": {
+    "espn_source_id": 109671,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Bristol": {
+    "espn_source_id": 108782,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "St. Joseph (VT)": {
+    "espn_source_id": 2604,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Knox": {
+    "espn_source_id": 255,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Midland University": {
+    "espn_source_id": 565,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Central Washington": {
+    "espn_source_id": 2120,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Penn State (Mont Alto)": {
+    "espn_source_id": 108994,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Centenary (NJ)": {
+    "espn_source_id": 2114,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Lake Forest": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Southeastern Oklahoma State": {
+    "espn_source_id": 199,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Chicago": {
+    "espn_source_id": 80,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Upper Iowa": {
+    "espn_source_id": 389,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "St. Xavier  (IL)": {
+    "espn_source_id": 2615,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Calvin University": {
+    "espn_source_id": 123366,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Lincoln (MO)": {
+    "espn_source_id": 2876,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Centre College": {
+    "espn_source_id": 2121,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Brooklyn": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Emmanuel (MA)": {
+    "espn_source_id": 2211,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Dakota Wesleyan": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Ohio Wesleyan": {
+    "espn_source_id": 2980,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Huntington (IN)": {
+    "espn_source_id": 2279,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Millersville": {
+    "espn_source_id": 210,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Lake Erie": {
+    "espn_source_id": 437,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Ashland": {
+    "espn_source_id": 308,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Milligan": {
+    "espn_source_id": 2397,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Concordia Moorhead": {
+    "espn_source_id": 2152,
+    "primary_color": "701d45",
+    "secondary_color": "ffffff"
+  },
+  "Marygrove": {
+    "espn_source_id": 3098,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Lane College": {
+    "espn_source_id": 6371,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Grace Christian": {
+    "espn_source_id": 126822,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Fort Lewis": {
+    "espn_source_id": 2237,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Mid-America Christian": {
+    "espn_source_id": 3126,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Hartwick": {
+    "espn_source_id": 173,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Barber Scotia": {
+    "espn_source_id": 489,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Walla Walla": {
+    "espn_source_id": 3152,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Florida Tech": {
+    "espn_source_id": 53,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Victory University": {
+    "espn_source_id": 3129,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "SUNY-New Paltz": {
+    "espn_source_id": 181,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Marywood": {
+    "espn_source_id": 2374,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Louisiana Christian": {
+    "espn_source_id": 2347,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Delta State": {
+    "espn_source_id": 2170,
+    "primary_color": "00753e",
+    "secondary_color": "000000"
+  },
+  "Newberry": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Western Colorado": {
+    "espn_source_id": 112694,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Howard Payne": {
+    "espn_source_id": 2758,
+    "primary_color": "02215b",
+    "secondary_color": "b5985b"
+  },
+  "New York City Tech": {
+    "espn_source_id": 445,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Concordia Oregon": {
+    "espn_source_id": 2150,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Lasell College": {
+    "espn_source_id": 444,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Wilmington (DE)": {
+    "espn_source_id": 2732,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Penn State (Harrisburg)": {
+    "espn_source_id": 108874,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Neumann": {
+    "espn_source_id": 422,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Talladega": {
+    "espn_source_id": 2625,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Western New England": {
+    "espn_source_id": 7933,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Cazenovia College": {
+    "espn_source_id": 126955,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Goldey-Beacom": {
+    "espn_source_id": 108859,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Houghton": {
+    "espn_source_id": 538,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Hampden-Sydney": {
+    "espn_source_id": 297,
+    "primary_color": "900028",
+    "secondary_color": "a8b1b7"
+  },
+  "Massachusetts College of Liberal Arts": {
+    "espn_source_id": 343,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Augusta": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Elms College": {
+    "espn_source_id": 111948,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Tennessee Temple": {
+    "espn_source_id": 2631,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Wilkes University": {
+    "espn_source_id": 398,
+    "primary_color": "002856",
+    "secondary_color": "ffcd00"
+  },
+  "Culver-Stockton": {
+    "espn_source_id": 510,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Point Loma Nazarene": {
+    "espn_source_id": 2500,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Vermont State - Lyndon": {
+    "espn_source_id": 551,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Juniata College": {
+    "espn_source_id": 246,
+    "primary_color": "031832",
+    "secondary_color": "ac9c66"
+  },
+  "Evangel": {
+    "espn_source_id": 2865,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Mary Baldwin": {
+    "espn_source_id": 124942,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Colorado-Colorado Springs": {
+    "espn_source_id": 2145,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Spring Hill": {
+    "espn_source_id": 2590,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Minnesota Duluth": {
+    "espn_source_id": 134,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "John Carroll": {
+    "espn_source_id": 2302,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Thomas (ME)": {
+    "espn_source_id": 2645,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Mid-Continent University": {
+    "espn_source_id": 564,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "St Gregory's": {
+    "espn_source_id": 2949,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Occidental": {
+    "espn_source_id": 2475,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Fresno Pacific": {
+    "espn_source_id": 2235,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Fredonia State": {
+    "espn_source_id": 2902,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Saint Mary's (MN)": {
+    "espn_source_id": 2899,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Clinton College": {
+    "espn_source_id": 126954,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "SUNY Cobleskill": {
+    "espn_source_id": 3156,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "St. Norbert": {
+    "espn_source_id": 2832,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Black Hills State": {
+    "espn_source_id": 2069,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Massachusetts Institute of Technology": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Southwestern College": {
+    "espn_source_id": 616,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Susquehanna": {
+    "espn_source_id": 216,
+    "primary_color": "6b1a31",
+    "secondary_color": "fd6b0d"
+  },
+  "Florida Memorial": {
+    "espn_source_id": 2227,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Haverford": {
+    "espn_source_id": 2265,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Lewis": {
+    "espn_source_id": 2332,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Menlo": {
+    "espn_source_id": 2381,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Southeastern Baptist College": {
+    "espn_source_id": 111951,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Nebraska Wesleyan": {
+    "espn_source_id": 157,
+    "primary_color": "aa985d",
+    "secondary_color": "000000"
+  },
+  "Michigan-Dearborn": {
+    "espn_source_id": 2391,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Simpson College (IA)": {
+    "espn_source_id": 2564,
+    "primary_color": "b20838",
+    "secondary_color": "f0b310"
+  },
+  "Bob Jones": {
+    "espn_source_id": 3243,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Earlham College": {
+    "espn_source_id": 2189,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Paine": {
+    "espn_source_id": 2488,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "College of Idaho": {
+    "espn_source_id": 3159,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Roanoke": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "SUNY Poly": {
+    "espn_source_id": 18131,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Bluefield University": {
+    "espn_source_id": 495,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Wisconsin-Lacrosse": {
+    "espn_source_id": 2740,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Anderson (IN)": {
+    "espn_source_id": 2023,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Shaw": {
+    "espn_source_id": 2551,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Puerto Rico-Mayaguez": {
+    "espn_source_id": 2503,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Macalester": {
+    "espn_source_id": 2359,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "MARIAN": {
+    "espn_source_id": 124851,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Tiffin": {
+    "espn_source_id": 2838,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Graceland University": {
+    "espn_source_id": 530,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Willamette": {
+    "espn_source_id": 2930,
+    "primary_color": "960a2c",
+    "secondary_color": "ab9e76"
+  },
+  "Swarthmore": {
+    "espn_source_id": 217,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Lee": {
+    "espn_source_id": 2875,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Nichols College": {
+    "espn_source_id": 2884,
+    "primary_color": "007b5f",
+    "secondary_color": "000000"
+  },
+  "University of Saint Katherine": {
+    "espn_source_id": 3249,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Randolph-Macon": {
+    "espn_source_id": 2516,
+    "primary_color": "fcdf12",
+    "secondary_color": "000000"
+  },
+  "Loyola (LA)": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Flagler": {
+    "espn_source_id": 2228,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Merchant Marine": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Missouri Southern State": {
+    "espn_source_id": 2403,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "College of New Jersey": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "University of Health Sciences & Pharmacy": {
+    "espn_source_id": 112686,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Mobile": {
+    "espn_source_id": 2920,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Heidelberg": {
+    "espn_source_id": 191,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Washington University (St. Louis)": {
+    "espn_source_id": 143,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "CSU San Marcos": {
+    "espn_source_id": 3182,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Queens College NY": {
+    "espn_source_id": 2512,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Lincoln Christian": {
+    "espn_source_id": 111174,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Westcliff": {
+    "espn_source_id": 111910,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Caldwell": {
+    "espn_source_id": 2857,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Kentucky Christian": {
+    "espn_source_id": 3077,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Maine-Fort Kent": {
+    "espn_source_id": 554,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Penn State-Alleghany": {
+    "espn_source_id": 124950,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Central Penn": {
+    "espn_source_id": 3164,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Southeastern College": {
+    "espn_source_id": 2581,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Oswego St": {
+    "espn_source_id": 3186,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Loras": {
+    "espn_source_id": 263,
+    "primary_color": "452d7d",
+    "secondary_color": "d2b888"
+  },
+  "Holy Names University": {
+    "espn_source_id": 2868,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Roberts Wesleyan": {
+    "espn_source_id": 128531,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Lyon": {
+    "espn_source_id": 2358,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Manchester": {
+    "espn_source_id": 2362,
+    "primary_color": "ddac14",
+    "secondary_color": "000000"
+  },
+  "Westminster (PA)": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Spartanburg Methodist": {
+    "espn_source_id": 130241,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Bryant & Stratton": {
+    "espn_source_id": 131603,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "St. Olaf": {
+    "espn_source_id": 133,
+    "primary_color": "000000",
+    "secondary_color": "d18c29"
+  },
+  "Olivet Nazarene": {
+    "espn_source_id": 2922,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Missouri Baptist": {
+    "espn_source_id": 2880,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Rosemont": {
+    "espn_source_id": 465,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Mount Ida": {
+    "espn_source_id": 481,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Cabrini": {
+    "espn_source_id": 92,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Simpson University (CA)": {
+    "espn_source_id": 612,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Allegheny": {
+    "espn_source_id": 2018,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Rhema Bible Training Center": {
+    "espn_source_id": 3104,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Belhaven": {
+    "espn_source_id": 2056,
+    "primary_color": "215732",
+    "secondary_color": "f2a900"
+  },
+  "Dean College": {
+    "espn_source_id": 110411,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Allen University": {
+    "espn_source_id": 2019,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "University of Wisconsin River Falls": {
+    "espn_source_id": 2723,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Converse University": {
+    "espn_source_id": 124947,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Virginia St": {
+    "espn_source_id": 330,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Cal Maritime": {
+    "espn_source_id": 500,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Westminster (MO)": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Texas Permian Basin": {
+    "espn_source_id": 94822,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Catholic": {
+    "espn_source_id": 2108,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Keystone": {
+    "espn_source_id": 108860,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Dalton State": {
+    "espn_source_id": 3247,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "MSU Denver": {
+    "espn_source_id": 2389,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Dana": {
+    "espn_source_id": 515,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Northwest University": {
+    "espn_source_id": 2465,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Mount Olive": {
+    "espn_source_id": 2418,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Saint Elizabeth": {
+    "espn_source_id": 66786,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Pittsburgh-Bradford": {
+    "espn_source_id": 220,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "St. Mary's (MI)": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Selma": {
+    "espn_source_id": 3075,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Michigan Tech": {
+    "espn_source_id": 2392,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Miami (OH)-Hamilton": {
+    "espn_source_id": 124809,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "American International": {
+    "espn_source_id": 2022,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Lehman College": {
+    "espn_source_id": 130190,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Mount St. Joseph": {
+    "espn_source_id": 2419,
+    "primary_color": "002d5d",
+    "secondary_color": "f5ce3e"
+  },
+  "Fort Hays State": {
+    "espn_source_id": 2231,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Life Pacific": {
+    "espn_source_id": 109670,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Wooster": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Concordia College (AL)": {
+    "espn_source_id": 3099,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Northwestern Ohio": {
+    "espn_source_id": 3250,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Marietta": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Lander": {
+    "espn_source_id": 2322,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Centenary (LA)": {
+    "espn_source_id": 2113,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Eastern Oregon": {
+    "espn_source_id": 2202,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Clayton State": {
+    "espn_source_id": 2861,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Valley City": {
+    "espn_source_id": 628,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Coastal Georgia": {
+    "espn_source_id": 3189,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Albertson College": {
+    "espn_source_id": 2014,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "North Central (IL)": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "SUNY-Maritime": {
+    "espn_source_id": 2951,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "West Alabama": {
+    "espn_source_id": 2695,
+    "primary_color": "d31d33",
+    "secondary_color": "ffffff"
+  },
+  "Mount Aloysius": {
+    "espn_source_id": 111943,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Morris Brown": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Mitchell College": {
+    "espn_source_id": 108838,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Oklahoma Wesleyan Un": {
+    "espn_source_id": 590,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Northwood (FL)": {
+    "espn_source_id": 584,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Johnson & Wales (CO)": {
+    "espn_source_id": 3094,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Curry College": {
+    "espn_source_id": 40,
+    "primary_color": "65448b",
+    "secondary_color": "ffffff"
+  },
+  "Keene State": {
+    "espn_source_id": 313,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "North Georgia": {
+    "espn_source_id": 2455,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Greensboro College": {
+    "espn_source_id": 2256,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Simon Fraser": {
+    "espn_source_id": 2829,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Davenport": {
+    "espn_source_id": 3092,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "York College Nebraska": {
+    "espn_source_id": 109998,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Pacific Union": {
+    "espn_source_id": 594,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Beloit": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "UT Permian Basin": {
+    "espn_source_id": 3081,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Florida Southern": {
+    "espn_source_id": 51,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Lewis & Clark": {
+    "espn_source_id": 2333,
+    "primary_color": "f37737",
+    "secondary_color": "000000"
+  },
+  "Navajo Tech": {
+    "espn_source_id": 128585,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Mercy": {
+    "espn_source_id": 2384,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Concord": {
+    "espn_source_id": 2148,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Edinboro": {
+    "espn_source_id": 2205,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Washington & Jefferson": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Ripon": {
+    "espn_source_id": 2891,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Indiana-South Bend": {
+    "espn_source_id": 2288,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Ottawa (AZ)": {
+    "espn_source_id": 111254,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Caltech": {
+    "espn_source_id": 110450,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Alaska": {
+    "espn_source_id": 298,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Elmhurst": {
+    "espn_source_id": 72,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Montana State-Billings": {
+    "espn_source_id": 2407,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Yellowstone Christian College": {
+    "espn_source_id": 123391,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Penn State - Wilkes-Barre": {
+    "espn_source_id": 111942,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Texas Wesleyan": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Bloomfield": {
+    "espn_source_id": 2854,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Middlebury": {
+    "espn_source_id": 2394,
+    "primary_color": "365a8a",
+    "secondary_color": "ffffff"
+  },
+  "Benedictine University (IL)": {
+    "espn_source_id": 5345,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Central Baptist College": {
+    "espn_source_id": 3079,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Illinois Wesleyan": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Bridgewater College (VA)": {
+    "espn_source_id": 2079,
+    "primary_color": "990022",
+    "secondary_color": "8d724b"
+  },
+  "UT Dallas": {
+    "espn_source_id": 2905,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "UT Tyler": {
+    "espn_source_id": 3086,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Southern Oregon": {
+    "espn_source_id": 2584,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Muskingum": {
+    "espn_source_id": 332,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Keiser": {
+    "espn_source_id": 111912,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Southwestern Christian": {
+    "espn_source_id": 3238,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Harris-Stowe State": {
+    "espn_source_id": 534,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Washington College": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "John Melvin": {
+    "espn_source_id": 128336,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Geneva": {
+    "espn_source_id": 2242,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Livingstone": {
+    "espn_source_id": 2940,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Virginia Wesleyan": {
+    "espn_source_id": 2672,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Transylvania": {
+    "espn_source_id": 2975,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "UNT Dallas": {
+    "espn_source_id": 126794,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Clarion": {
+    "espn_source_id": 2134,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Oklahoma Baptist": {
+    "espn_source_id": 319,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "University of Mary": {
+    "espn_source_id": 559,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Colorado Christian": {
+    "espn_source_id": 2862,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Pfeiffer": {
+    "espn_source_id": 2945,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Southwestern (KS)": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Hawai'i Hilo": {
+    "espn_source_id": 2267,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Judson University": {
+    "espn_source_id": 546,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Lawrence Tech": {
+    "espn_source_id": 111168,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Berea": {
+    "espn_source_id": 2061,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Fairmont St": {
+    "espn_source_id": 2986,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Harding": {
+    "espn_source_id": 2264,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Point Park": {
+    "espn_source_id": 214,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Manhattanville": {
+    "espn_source_id": 2879,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Colorado School of Mines": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Chico State": {
+    "espn_source_id": 14,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Husson": {
+    "espn_source_id": 2280,
+    "primary_color": "004b44",
+    "secondary_color": "b09a5f"
+  },
+  "Johnson & Wales (NC)": {
+    "espn_source_id": 3169,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Southern Virginia": {
+    "espn_source_id": 2896,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Jamestown": {
+    "espn_source_id": 2939,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Concordia Seminary": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Northwestern Oklahoma State": {
+    "espn_source_id": 2823,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Oregon Tech": {
+    "espn_source_id": 2484,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "University Of Saint Mary": {
+    "espn_source_id": 603,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Calvary": {
+    "espn_source_id": 111176,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Northern State": {
+    "espn_source_id": 425,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Tampa": {
+    "espn_source_id": 2626,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Albright College": {
+    "espn_source_id": 2015,
+    "primary_color": "c82e48",
+    "secondary_color": "000000"
+  },
+  "St. Josephs (IND)": {
+    "espn_source_id": 2601,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Millikin": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "St. Thomas Aquinas": {
+    "espn_source_id": 123,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "South Vermont": {
+    "espn_source_id": 2895,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Elmira": {
+    "espn_source_id": 347,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Union (NY)": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Johnson University (TN)": {
+    "espn_source_id": 3239,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Cardinal Stritch": {
+    "espn_source_id": 2100,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Thomas More": {
+    "espn_source_id": 2646,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Seton Hill": {
+    "espn_source_id": 109567,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Staten Island": {
+    "espn_source_id": 2901,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Master's University": {
+    "espn_source_id": 2375,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Massachusetts-Boston": {
+    "espn_source_id": 2660,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Embry-Riddle (AZ)": {
+    "espn_source_id": 111226,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Dickinson (PA)": {
+    "espn_source_id": 2175,
+    "primary_color": "ed192d",
+    "secondary_color": "000000"
+  },
+  "Ouachita Baptist": {
+    "espn_source_id": 2888,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "LSU Alexandria": {
+    "espn_source_id": 108817,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Cal State East Bay": {
+    "espn_source_id": 2093,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Northeastern Illinois": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Pittsburg St": {
+    "espn_source_id": 90,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Concordia-Nebraska": {
+    "espn_source_id": 507,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Mount Marty College": {
+    "espn_source_id": 573,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Point": {
+    "espn_source_id": 3179,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "UW-Parkside": {
+    "espn_source_id": 2742,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "La Sierra": {
+    "espn_source_id": 3167,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "William Carey": {
+    "espn_source_id": 2730,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Northern Michigan": {
+    "espn_source_id": 128,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Brandeis University": {
+    "espn_source_id": 105,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Goucher": {
+    "espn_source_id": 2251,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "St. Francis (IL)": {
+    "espn_source_id": 2595,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Mayville State": {
+    "espn_source_id": 561,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Mansfield": {
+    "espn_source_id": 2365,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Rose-Hulman": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Principia College": {
+    "espn_source_id": 131584,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Stevenson": {
+    "espn_source_id": 471,
+    "primary_color": "005747",
+    "secondary_color": "000000"
+  },
+  "Dubuque": {
+    "espn_source_id": 49,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Wesley": {
+    "espn_source_id": 3108,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Young Harris College": {
+    "espn_source_id": 3219,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Spalding": {
+    "espn_source_id": 2589,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Waldorf College": {
+    "espn_source_id": 3080,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Arkansas Tech": {
+    "espn_source_id": 2033,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Whittier": {
+    "espn_source_id": 2850,
+    "primary_color": "4a217b",
+    "secondary_color": "b29547"
+  },
+  "Wisconsin-Stevens Point": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Quincy": {
+    "espn_source_id": 2825,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Evergreen State": {
+    "espn_source_id": 2866,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "St. Andrews": {
+    "espn_source_id": 2592,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Puerto Rico-Bayamon": {
+    "espn_source_id": 2889,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Ursinus": {
+    "espn_source_id": 2667,
+    "primary_color": "98012e",
+    "secondary_color": "fcb034"
+  },
+  "Miles": {
+    "espn_source_id": 2396,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Wayland Baptist": {
+    "espn_source_id": 630,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Wheelock College": {
+    "espn_source_id": 450,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Carroll (MT)": {
+    "espn_source_id": 2104,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Great Falls": {
+    "espn_source_id": 531,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Northwood (MI)": {
+    "espn_source_id": 2886,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Dickinson State (ND)": {
+    "espn_source_id": 316,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Alabama-Huntsville": {
+    "espn_source_id": 2008,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Columbus State": {
+    "espn_source_id": 413,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Washington & Lee": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Cleary University": {
+    "espn_source_id": 128438,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Cincinnati Christian": {
+    "espn_source_id": 3093,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Alice Lloyd College": {
+    "espn_source_id": 484,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Mount Saint Vincent": {
+    "espn_source_id": 329,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "SUNY-Potsdam": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Grand Valley State": {
+    "espn_source_id": 125,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Case Western Reserve": {
+    "espn_source_id": 2963,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Oklahoma City": {
+    "espn_source_id": 2481,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Arlington Baptist": {
+    "espn_source_id": 3166,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Nazareth College": {
+    "espn_source_id": 110426,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Bluefield State": {
+    "espn_source_id": 2073,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Franciscan University": {
+    "espn_source_id": 111170,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Sioux Falls": {
+    "espn_source_id": 2894,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "St. Mary's (TX)": {
+    "espn_source_id": 2610,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Johnson C Smith": {
+    "espn_source_id": 2304,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Medgar Evers": {
+    "espn_source_id": 2380,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Williams Baptist": {
+    "espn_source_id": 2981,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Wabash College": {
+    "espn_source_id": 89,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Southwestern Assemblies of God": {
+    "espn_source_id": 2904,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "UNC Pembroke": {
+    "espn_source_id": 2882,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Montana Tech": {
+    "espn_source_id": 148,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Emporia State": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Penn State (Beaver)": {
+    "espn_source_id": 108808,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Union (KY)": {
+    "espn_source_id": 2841,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "West Texas A&M": {
+    "espn_source_id": 2704,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Winston-Salem": {
+    "espn_source_id": 2736,
+    "primary_color": "bb0100",
+    "secondary_color": null
+  },
+  "Brigham Young College": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Midwestern State": {
+    "espn_source_id": 2395,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Olivet": {
+    "espn_source_id": 354,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Hope": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Lebanon Valley": {
+    "espn_source_id": 388,
+    "primary_color": "003767",
+    "secondary_color": "ffffff"
+  },
+  "Denison": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Warner Pacific": {
+    "espn_source_id": 2952,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Pomona Pitzer": {
+    "espn_source_id": 2923,
+    "primary_color": "00549a",
+    "secondary_color": "f7941e"
+  },
+  "Plymouth State": {
+    "espn_source_id": 2972,
+    "primary_color": "054e39",
+    "secondary_color": "000000"
+  },
+  "Freed-Hardeman": {
+    "espn_source_id": 2915,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Penn State-Behrend": {
+    "espn_source_id": 2944,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "University of The Ozarks": {
+    "espn_source_id": 3109,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Point University": {
+    "espn_source_id": 2932,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Avila": {
+    "espn_source_id": 2048,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Trinity Baptist": {
+    "espn_source_id": 3174,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Savannah College Of Art And Design": {
+    "espn_source_id": 466,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Kentucky Wesleyan": {
+    "espn_source_id": 2316,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Rogers State": {
+    "espn_source_id": 3122,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Scranton": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Ottawa (KS)": {
+    "espn_source_id": 2775,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Humboldt State": {
+    "espn_source_id": 6183,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "City College NY": {
+    "espn_source_id": 170,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Langston": {
+    "espn_source_id": 2324,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Southern Colorado": {
+    "espn_source_id": 2570,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Texas Pan American": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Southwestern (TX)": {
+    "espn_source_id": 2588,
+    "primary_color": "000000",
+    "secondary_color": "ffcd00"
+  },
+  "Millsaps": {
+    "espn_source_id": 2398,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Northwest Nazarene": {
+    "espn_source_id": 2887,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Defiance": {
+    "espn_source_id": 190,
+    "primary_color": "4e2d8a",
+    "secondary_color": "ded27c"
+  },
+  "Cheyenne Business College": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "UC Santa Cruz": {
+    "espn_source_id": 2662,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "McKendree": {
+    "espn_source_id": 2816,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Mid-Atlantic Christian": {
+    "espn_source_id": 108806,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Puerto Rico-Rio Piedras": {
+    "espn_source_id": 435,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Welch": {
+    "espn_source_id": 111922,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Washington Adventist": {
+    "espn_source_id": 408,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Ohio Christian": {
+    "espn_source_id": 3121,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Northern New Mexico": {
+    "espn_source_id": 3141,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "St. Josephs (ME)": {
+    "espn_source_id": 2602,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Cincinnati Clermont": {
+    "espn_source_id": 108799,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Covenant": {
+    "espn_source_id": 2157,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "SUNY Delhi": {
+    "espn_source_id": 126848,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "New Mexico Highlands": {
+    "espn_source_id": 2424,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "D'Youville": {
+    "espn_source_id": 126796,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Farmingdale State": {
+    "espn_source_id": 3149,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Panhandle St (OK)": {
+    "espn_source_id": 2824,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "UC Merced": {
+    "espn_source_id": 3185,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Cumberland (KY)": {
+    "espn_source_id": 511,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Haskell": {
+    "espn_source_id": 535,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Robert Morris (IL)": {
+    "espn_source_id": 599,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Missouri S&T": {
+    "espn_source_id": 6760,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Seattle Pacific": {
+    "espn_source_id": 2548,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Belmont Abbey": {
+    "espn_source_id": 2058,
+    "primary_color": "b71234",
+    "secondary_color": "b5b6b3"
+  },
+  "Regis": {
+    "espn_source_id": 2517,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Lubbock Christian": {
+    "espn_source_id": 2878,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Rutgers-Newark": {
+    "espn_source_id": 109658,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Iowa Wesleyan": {
+    "espn_source_id": 2295,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "St. Francis (IN)": {
+    "espn_source_id": 2831,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Vanguard": {
+    "espn_source_id": 2585,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Pine Manor": {
+    "espn_source_id": 109656,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Illinois College": {
+    "espn_source_id": 2286,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Hiwassee": {
+    "espn_source_id": 3171,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Rensselaer": {
+    "espn_source_id": 2528,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Rockhurst": {
+    "espn_source_id": 2525,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Hillsdale": {
+    "espn_source_id": 2273,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Peru State": {
+    "espn_source_id": 596,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "New College (FL)": {
+    "espn_source_id": 128550,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Nebraska Christian": {
+    "espn_source_id": 111175,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Wilson College": {
+    "espn_source_id": 111914,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Whitworth": {
+    "espn_source_id": 2721,
+    "primary_color": "930036",
+    "secondary_color": "000000"
+  },
+  "Johns Hopkins University": {
+    "espn_source_id": 118,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Asbury": {
+    "espn_source_id": 2036,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "E. New Mexico": {
+    "espn_source_id": 2201,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Urbana": {
+    "espn_source_id": 2666,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Brewton-Parker": {
+    "espn_source_id": 2077,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Wingate": {
+    "espn_source_id": 351,
+    "primary_color": "182441",
+    "secondary_color": "c1b585"
+  },
+  "Indiana-Kokomo": {
+    "espn_source_id": 3192,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Bethel (IN)": {
+    "espn_source_id": 122634,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Westfield State": {
+    "espn_source_id": 2909,
+    "primary_color": "1b509e",
+    "secondary_color": "000000"
+  },
+  "Penn State-Fayette": {
+    "espn_source_id": 130197,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Southern Arkansas": {
+    "espn_source_id": 2568,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Indianapolis": {
+    "espn_source_id": 2292,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Pratt": {
+    "espn_source_id": 2505,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "North Central (MN)": {
+    "espn_source_id": 121894,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Findlay": {
+    "espn_source_id": 2224,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Washburn": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Madonna": {
+    "espn_source_id": 552,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Penn St Abington": {
+    "espn_source_id": 3183,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Northland": {
+    "espn_source_id": 2462,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Mount Union (OH)": {
+    "espn_source_id": 426,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Montevallo": {
+    "espn_source_id": 2409,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "LaGrange": {
+    "espn_source_id": 548,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Brandeis": {
+    "espn_source_id": 5426,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Guilford": {
+    "espn_source_id": 2258,
+    "primary_color": "910028",
+    "secondary_color": "dcddde"
+  },
+  "Nelson": {
+    "espn_source_id": 112679,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Benedictine College (KS)": {
+    "espn_source_id": 491,
+    "primary_color": "ba0c2f",
+    "secondary_color": "ffffff"
+  },
+  "Grace": {
+    "espn_source_id": 2252,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Ecclesia": {
+    "espn_source_id": 3120,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Henderson State": {
+    "espn_source_id": 2271,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Central Methodist": {
+    "espn_source_id": 2860,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Maryville University (MO)": {
+    "espn_source_id": 310,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Southern-New Orleans": {
+    "espn_source_id": 2573,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "York College Pa": {
+    "espn_source_id": 86853,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Concordia (WI)": {
+    "espn_source_id": 409,
+    "primary_color": "245699",
+    "secondary_color": "b1b3b3"
+  },
+  "Minot State": {
+    "espn_source_id": 568,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Mary Hardin-Baylor": {
+    "espn_source_id": 2371,
+    "primary_color": "492f92",
+    "secondary_color": "fece1c"
+  },
+  "Hamline": {
+    "espn_source_id": 162,
+    "primary_color": "98012e",
+    "secondary_color": "ffffff"
+  },
+  "Gordon College": {
+    "espn_source_id": 111172,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Savage School of Physical Education": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Lincoln": {
+    "espn_source_id": 2338,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Lees-McRae": {
+    "espn_source_id": 2327,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Carver College": {
+    "espn_source_id": 111946,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Hanover": {
+    "espn_source_id": 2262,
+    "primary_color": "0b486d",
+    "secondary_color": "990000"
+  },
+  "Montana State-Northern": {
+    "espn_source_id": 569,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Wilmington (OH)": {
+    "espn_source_id": 2733,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Bethany (WV)": {
+    "espn_source_id": 2062,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Fayetteville St": {
+    "espn_source_id": 2220,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Gwynedd-Mercy": {
+    "espn_source_id": 461,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Campbellsville-Harrodsburg": {
+    "espn_source_id": 111921,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Eureka": {
+    "espn_source_id": 101,
+    "primary_color": "960a2c",
+    "secondary_color": "c09a05"
+  },
+  "Concordia College (NY)": {
+    "espn_source_id": 37,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Berry": {
+    "espn_source_id": 2757,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Mississippi University For Women": {
+    "espn_source_id": 126826,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Colby-Sawyer": {
+    "espn_source_id": 35,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Saint Mary of the Woods College": {
+    "espn_source_id": 126824,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Southwest Baptist": {
+    "espn_source_id": 2586,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Daniel Webster College": {
+    "espn_source_id": 3119,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Rhodes": {
+    "espn_source_id": 2519,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Chaminade": {
+    "espn_source_id": 2124,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Hendrix College": {
+    "espn_source_id": 418,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Vermont State - Johnson": {
+    "espn_source_id": 126751,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Gettysburg": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Angelo State": {
+    "espn_source_id": 2025,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Wisconsin-Lutheran": {
+    "espn_source_id": 2741,
+    "primary_color": "006241",
+    "secondary_color": "000000"
+  },
+  "Saint Vincent": {
+    "espn_source_id": 2614,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Pace": {
+    "espn_source_id": 2487,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Schreiner": {
+    "espn_source_id": 2544,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Justice College": {
+    "espn_source_id": 130183,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Albany St (GA)": {
+    "espn_source_id": 2013,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Lincoln (PA)": {
+    "espn_source_id": 2339,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Indiana-Pennsylvania": {
+    "espn_source_id": 2291,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Baker University": {
+    "espn_source_id": 488,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Bryan (TN)": {
+    "espn_source_id": 2081,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "BYU-Hawaii": {
+    "espn_source_id": 2088,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Truett-McConnell": {
+    "espn_source_id": 3245,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "University Park": {
+    "espn_source_id": 112006,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Indiana Wesleyan": {
+    "espn_source_id": 2290,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Anderson (SC)": {
+    "espn_source_id": 380,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "University of New England": {
+    "espn_source_id": 3085,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Baltimore": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Indiana University East": {
+    "espn_source_id": 3138,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Bethesda University": {
+    "espn_source_id": 3246,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Trinity International": {
+    "espn_source_id": 2907,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Stevens Institute": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Pensacola Christian College": {
+    "espn_source_id": 3173,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Baptist (Fl)": {
+    "espn_source_id": 132013,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Concordia-Chicago": {
+    "espn_source_id": 2151,
+    "primary_color": "572a31",
+    "secondary_color": "ffc72e"
+  },
+  "Westmont": {
+    "espn_source_id": 2716,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Cedarville": {
+    "espn_source_id": 2109,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Arkansas-Fort Smith": {
+    "espn_source_id": 3157,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Chestnut Hill College": {
+    "espn_source_id": 469,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Pacific (OR)": {
+    "espn_source_id": 205,
+    "primary_color": "b4183a",
+    "secondary_color": "ffffff"
+  },
+  "Lakeland": {
+    "espn_source_id": 267,
+    "primary_color": "007dc3",
+    "secondary_color": "ffc423"
+  },
+  "Alma": {
+    "espn_source_id": 2800,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Southwestern Adventist": {
+    "espn_source_id": 2903,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "East Central": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "St. John Fisher": {
+    "espn_source_id": 374,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Alvernia College": {
+    "espn_source_id": 404,
+    "primary_color": "9e053b",
+    "secondary_color": "fdbe10"
+  },
+  "Southwestern College Arizona": {
+    "espn_source_id": 3151,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Monterrey Tech": {
+    "espn_source_id": 3100,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Nebraska-Kearney": {
+    "espn_source_id": 2438,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Benedict": {
+    "espn_source_id": 2059,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Bellevue University": {
+    "espn_source_id": 2853,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "St. Ambrose": {
+    "espn_source_id": 2591,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Merchant Marine Academy": {
+    "espn_source_id": 2383,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Hardin-Simmons": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "NVU-Lyndon": {
+    "espn_source_id": 124966,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Union (TN)": {
+    "espn_source_id": 237,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Cornerstone University": {
+    "espn_source_id": 508,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Indiana-Southeast": {
+    "espn_source_id": 387,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "CS San Bernardino": {
+    "espn_source_id": 2536,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Saint John's (MN)": {
+    "espn_source_id": 2600,
+    "primary_color": "ce153e",
+    "secondary_color": "7baed5"
+  },
+  "LSU Shreveport": {
+    "espn_source_id": 2353,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Manhattan Christian": {
+    "espn_source_id": 131632,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Maryland Bible College": {
+    "espn_source_id": 3135,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Ryerson": {
+    "espn_source_id": 109683,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Penn State-Shenango": {
+    "espn_source_id": 130195,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Philadelphia": {
+    "espn_source_id": 361,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Penn State-New Kensington": {
+    "espn_source_id": 126910,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "McMurry": {
+    "espn_source_id": 241,
+    "primary_color": "98002e",
+    "secondary_color": "000000"
+  },
+  "Pikeville": {
+    "espn_source_id": 95,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Trinity Christian (IL)": {
+    "espn_source_id": 2652,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Molloy": {
+    "espn_source_id": 2404,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Nobel": {
+    "espn_source_id": 130201,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Holy Cross College (IN)": {
+    "espn_source_id": 103524,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Franklin Pierce": {
+    "espn_source_id": 144,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Erskine": {
+    "espn_source_id": 2215,
+    "primary_color": "701931",
+    "secondary_color": "000000"
+  },
+  "Stillman": {
+    "espn_source_id": 2948,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "St. Thomas (FL)": {
+    "espn_source_id": 606,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Ohio-Chillicothe": {
+    "espn_source_id": 111966,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Trinity (CT)": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Knoxville": {
+    "espn_source_id": 2314,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Newman University": {
+    "espn_source_id": 580,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Philander Smith": {
+    "espn_source_id": 2494,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Wheaton": {
+    "espn_source_id": 396,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "North Greenville": {
+    "espn_source_id": 2822,
+    "primary_color": "d91e39",
+    "secondary_color": "000000"
+  },
+  "Toccoa Falls": {
+    "espn_source_id": 2648,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Paul Quinn": {
+    "espn_source_id": 2491,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Lambuth": {
+    "espn_source_id": 2321,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "William Woods": {
+    "espn_source_id": 2931,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Edward Waters": {
+    "espn_source_id": 2206,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Ohio Valley": {
+    "espn_source_id": 2479,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Grove City": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Concordia-Irvine": {
+    "espn_source_id": 506,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Greenville": {
+    "espn_source_id": 2257,
+    "primary_color": "f36917",
+    "secondary_color": "000000"
+  },
+  "Penn State Hazleton": {
+    "espn_source_id": 131642,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Cornell College (IA)": {
+    "espn_source_id": 2155,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Frostburg State": {
+    "espn_source_id": 341,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Manor College": {
+    "espn_source_id": 130196,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Park University Gilbert": {
+    "espn_source_id": 123350,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Presentation College": {
+    "espn_source_id": 597,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Bryant & Stratton (Ohio)": {
+    "espn_source_id": 131761,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Grinnell": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Azusa Pacific": {
+    "espn_source_id": 2049,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Clark Atlanta": {
+    "espn_source_id": 2805,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Keene St": {
+    "espn_source_id": 6304,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Central Pennsylvania College": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Barry University": {
+    "espn_source_id": 2053,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Valdosta State": {
+    "espn_source_id": 2673,
+    "primary_color": "dd1a32",
+    "secondary_color": "000000"
+  },
+  "Texas A&M-International": {
+    "espn_source_id": 3082,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Albion": {
+    "espn_source_id": 2790,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Truman State": {
+    "espn_source_id": 2654,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Calumet College": {
+    "espn_source_id": 502,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Georgia Southwestern": {
+    "espn_source_id": 12758,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Clark (MA)": {
+    "espn_source_id": 3095,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "DePauw": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Lenoir-Rhyne": {
+    "espn_source_id": 2331,
+    "primary_color": "000000",
+    "secondary_color": "ffffff"
+  },
+  "Indiana Tech": {
+    "espn_source_id": 3069,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Wittenberg": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Augustana (IL)": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "La Grange": {
+    "espn_source_id": 2918,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Dominican (CA)": {
+    "espn_source_id": 2957,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Depauw": {
+    "espn_source_id": 83,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Columbia College (SC)": {
+    "espn_source_id": 130401,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Saginaw Valley State": {
+    "espn_source_id": 129,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Ferris State": {
+    "espn_source_id": 2222,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "MIT": {
+    "espn_source_id": 109,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Regent": {
+    "espn_source_id": 111926,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Saint Michael's": {
+    "espn_source_id": 260,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Kean": {
+    "espn_source_id": 2871,
+    "primary_color": "092f56",
+    "secondary_color": "ffffff"
+  },
+  "Fisk": {
+    "espn_source_id": 2225,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Washington and Lee": {
+    "espn_source_id": 2688,
+    "primary_color": "000399",
+    "secondary_color": "d8d8d8"
+  },
+  "West Florida": {
+    "espn_source_id": 2697,
+    "primary_color": "087dc2",
+    "secondary_color": "03b186"
+  },
+  "Dallas": {
+    "espn_source_id": 2163,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "University of The Southwest": {
+    "espn_source_id": 3154,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Friends University": {
+    "espn_source_id": 128218,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Linfield College": {
+    "espn_source_id": 203,
+    "primary_color": "46256a",
+    "secondary_color": "d41e47"
+  },
+  "Thiel": {
+    "espn_source_id": 2644,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Georgia College": {
+    "espn_source_id": 2246,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Bethany (KS)": {
+    "espn_source_id": 492,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Illinois Tech": {
+    "espn_source_id": 73,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "King (TN)": {
+    "espn_source_id": 2312,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Bluffton": {
+    "espn_source_id": 2074,
+    "primary_color": "46166a",
+    "secondary_color": "ffffff"
+  },
+  "Westminster (UT)": {
+    "espn_source_id": 224,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Saint Leo": {
+    "espn_source_id": 2605,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Carlow": {
+    "espn_source_id": 123313,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "WPI": {
+    "espn_source_id": 2749,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "West Coast Baptist": {
+    "espn_source_id": 110418,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Hope International": {
+    "espn_source_id": 3091,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Old Westbury": {
+    "espn_source_id": 16231,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "New Hope Christian College": {
+    "espn_source_id": 3165,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Sul Ross State": {
+    "espn_source_id": 2834,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "St. Catherine (MN)": {
+    "espn_source_id": 86661,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Bowdoin": {
+    "espn_source_id": 340,
+    "primary_color": "ffffff",
+    "secondary_color": "000000"
+  },
+  "Muhlenberg": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Wisconsin-Superior": {
+    "espn_source_id": 401,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "District Of Columbia": {
+    "espn_source_id": 2177,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Hannibal-LaGrange": {
+    "espn_source_id": 533,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Webster": {
+    "espn_source_id": 2693,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "St. Thomas (TX)": {
+    "espn_source_id": 126749,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Barclay College": {
+    "espn_source_id": 111162,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "LIU Brooklyn": {
+    "espn_source_id": 6446,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "York (NY)": {
+    "espn_source_id": 122196,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Dallas Baptist": {
+    "espn_source_id": 2164,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Wiley": {
+    "espn_source_id": 2728,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Marian (IN)": {
+    "espn_source_id": 2366,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Cheyney (PA)": {
+    "espn_source_id": 2129,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Auburn-Montgomery": {
+    "espn_source_id": 2040,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Nova Southeastern": {
+    "espn_source_id": 2470,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Kansas Christian": {
+    "espn_source_id": 123410,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Life University": {
+    "espn_source_id": 124721,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Carson-Newman": {
+    "espn_source_id": 2105,
+    "primary_color": "f2682a",
+    "secondary_color": "0c233f"
+  },
+  "Oakwood": {
+    "espn_source_id": 3083,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Baldwin-Wallace": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Post University": {
+    "espn_source_id": 430,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Coe": {
+    "espn_source_id": 2141,
+    "primary_color": "881922",
+    "secondary_color": "c8934a"
+  },
+  "Dickinson College": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Shippensburg": {
+    "espn_source_id": 2559,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Fontbonne": {
+    "espn_source_id": 459,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Alaska Anchorage": {
+    "espn_source_id": 1,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Warren Wilson": {
+    "espn_source_id": 2684,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Maine Maritime": {
+    "espn_source_id": 274,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Babson": {
+    "espn_source_id": 5308,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Crown College": {
+    "espn_source_id": 509,
+    "primary_color": "5c2f92",
+    "secondary_color": "ffffff"
+  },
+  "Medaille College": {
+    "espn_source_id": 476,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Baldwin Wallace": {
+    "espn_source_id": 188,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Pacific Lutheran": {
+    "espn_source_id": 2486,
+    "primary_color": "ffc423",
+    "secondary_color": "000000"
+  },
+  "Albertus Magnus": {
+    "espn_source_id": 440,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Christian Brothers": {
+    "espn_source_id": 2131,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "UVA Wise": {
+    "espn_source_id": 2842,
+    "primary_color": "e30000",
+    "secondary_color": "000000"
+  },
+  "Emory": {
+    "espn_source_id": 2212,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Virginia Intermont": {
+    "espn_source_id": 2671,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Vassar": {
+    "espn_source_id": 185,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Cal Poly Pomona": {
+    "espn_source_id": 2914,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Faith Baptist Bible": {
+    "espn_source_id": 2218,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Purdue Northwest": {
+    "espn_source_id": 368,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "CS Monterey Bay": {
+    "espn_source_id": 2863,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Endicott College": {
+    "espn_source_id": 130199,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Widener": {
+    "espn_source_id": 2725,
+    "primary_color": "0056ba",
+    "secondary_color": "fdc743"
+  },
+  "Portland Bible": {
+    "espn_source_id": 3217,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Wheeling": {
+    "espn_source_id": 2719,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Chatham University": {
+    "espn_source_id": 110412,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Centre (KY)": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "St. Scholastica": {
+    "espn_source_id": 375,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Eastern Nazarene": {
+    "espn_source_id": 412,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Gannon": {
+    "espn_source_id": 367,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Kalamazoo": {
+    "espn_source_id": 126,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "New York Institute Of Technology": {
+    "espn_source_id": 108818,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Campbellsville": {
+    "espn_source_id": 2098,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Brevard": {
+    "espn_source_id": 2913,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Barton": {
+    "espn_source_id": 2054,
+    "primary_color": "004684",
+    "secondary_color": "000000"
+  },
+  "Rocky Mountain": {
+    "espn_source_id": 2826,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Blue Mountain": {
+    "espn_source_id": 494,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "College Of New Rochelle": {
+    "espn_source_id": 111171,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Stockton": {
+    "espn_source_id": 111950,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Baruch College": {
+    "espn_source_id": 2959,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Valley Forge": {
+    "espn_source_id": 110414,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "NYU Poly": {
+    "espn_source_id": 342,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Southern Nazarene": {
+    "espn_source_id": 200,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Rutgers-Camden": {
+    "espn_source_id": 370,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Thomas (GA)": {
+    "espn_source_id": 7639,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Worcester State": {
+    "espn_source_id": 402,
+    "primary_color": "004b8e",
+    "secondary_color": "ffc629"
+  },
+  "Coker": {
+    "espn_source_id": 229,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Elizabeth City State": {
+    "espn_source_id": 2207,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Bemidji State": {
+    "espn_source_id": 132,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Shepherd": {
+    "espn_source_id": 2974,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Johnson & Wales (FL)": {
+    "espn_source_id": 543,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Cumberland": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Saint Rose": {
+    "espn_source_id": 2979,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Jessup University": {
+    "espn_source_id": 3078,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Morris College": {
+    "espn_source_id": 571,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Wheaton (MA)": {
+    "espn_source_id": 111242,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "University Of The Virgin Islands": {
+    "espn_source_id": 111982,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Carnegie Mellon": {
+    "espn_source_id": 2102,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Washington College (MD)": {
+    "espn_source_id": 2689,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Adrian": {
+    "espn_source_id": 2003,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "St. Edward's": {
+    "espn_source_id": 244,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Christendom": {
+    "espn_source_id": 111180,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Alfred State": {
+    "espn_source_id": 108820,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Bryn Athyn": {
+    "espn_source_id": 109684,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "U.S. International": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Bethel (TN)": {
+    "espn_source_id": 2064,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "South Carolina-Aiken": {
+    "espn_source_id": 2543,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Central Missouri": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Northeastern State": {
+    "espn_source_id": 196,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "North Park": {
+    "espn_source_id": 75,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Mississippi College": {
+    "espn_source_id": 2401,
+    "primary_color": "0c2240",
+    "secondary_color": "c89700"
+  },
+  "Malone": {
+    "espn_source_id": 556,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Notre Dame College (OH)": {
+    "espn_source_id": 587,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Luther": {
+    "espn_source_id": 67,
+    "primary_color": "015a9c",
+    "secondary_color": "a5bbda"
+  },
+  "Texas Lutheran": {
+    "espn_source_id": 2639,
+    "primary_color": "fdbe10",
+    "secondary_color": "000000"
+  },
+  "Maryville College (TN)": {
+    "espn_source_id": 2373,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Amherst": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Framingham State": {
+    "espn_source_id": 126956,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Chadron State": {
+    "espn_source_id": 2123,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "SUNY-Oneonta": {
+    "espn_source_id": 355,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Huston-Tillotson": {
+    "espn_source_id": 2281,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Randall University": {
+    "espn_source_id": 3090,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "South Dakota St School Of Mines": {
+    "espn_source_id": 613,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "College Of Faith": {
+    "espn_source_id": 108858,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "New York University": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Briar Cliff": {
+    "espn_source_id": 3065,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "McDaniel": {
+    "espn_source_id": 14632,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Puget Sound": {
+    "espn_source_id": 2508,
+    "primary_color": "680001",
+    "secondary_color": "ffffff"
+  },
+  "Miami (OH)-Middletown": {
+    "espn_source_id": 126972,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Rollins": {
+    "espn_source_id": 303,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Cameron": {
+    "espn_source_id": 2096,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Hiram": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Arkansas-Monticello": {
+    "espn_source_id": 2028,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Slippery Rock": {
+    "espn_source_id": 215,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "NC Wesleyan": {
+    "espn_source_id": 286,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Jarvis Christian": {
+    "espn_source_id": 2299,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "St. Lawrence": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Texas College": {
+    "espn_source_id": 2637,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "George Fox": {
+    "espn_source_id": 415,
+    "primary_color": "002d62",
+    "secondary_color": "c2a303"
+  },
+  "Western Oregon": {
+    "espn_source_id": 2848,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Lancaster Bible College": {
+    "espn_source_id": 123306,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Kenyon": {
+    "espn_source_id": 352,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "East Central (OK)": {
+    "espn_source_id": 2191,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Boyce": {
+    "espn_source_id": 109700,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Texas A&M-Texarkana": {
+    "espn_source_id": 123286,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Carleton College": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Fort Valley State": {
+    "espn_source_id": 2232,
+    "primary_color": "f9bd0a",
+    "secondary_color": "2a307f"
+  },
+  "Capital": {
+    "espn_source_id": 424,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Oglethorpe": {
+    "espn_source_id": 2476,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Oak Hills Christian": {
+    "espn_source_id": 110436,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Bacone": {
+    "espn_source_id": 487,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Sterling College (KS)": {
+    "espn_source_id": 128657,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "West Virginia Tech": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Shawnee State": {
+    "espn_source_id": 2893,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Clearwater Christian": {
+    "espn_source_id": 3240,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Corban College": {
+    "espn_source_id": 3106,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Salish Kootenai": {
+    "espn_source_id": 131858,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "SUNY-Canton": {
+    "espn_source_id": 111947,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Dakota State": {
+    "espn_source_id": 512,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Apprentice School": {
+    "espn_source_id": 3111,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Notre Dame de Namur": {
+    "espn_source_id": 2468,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Springfield": {
+    "espn_source_id": 81,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Antelope Valley": {
+    "espn_source_id": 109597,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Crossroads College": {
+    "espn_source_id": 107738,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Taylor": {
+    "espn_source_id": 620,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Dominican (NY)": {
+    "espn_source_id": 2179,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Hobart College": {
+    "espn_source_id": 174,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Lawrence University": {
+    "espn_source_id": 268,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Spurgeon College": {
+    "espn_source_id": 125330,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Northwest Missouri State": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Georgetown College (KY)": {
+    "espn_source_id": 2245,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "St. Pauls College": {
+    "espn_source_id": 2611,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Vermont State - Randolph": {
+    "espn_source_id": 130189,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Missouri Valley": {
+    "espn_source_id": 136,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Cal Lutheran": {
+    "espn_source_id": 2094,
+    "primary_color": "3b2361",
+    "secondary_color": "fec223"
+  },
+  "Lindsey Wilson College": {
+    "espn_source_id": 2877,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "IU Columbus": {
+    "espn_source_id": 130262,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Mount Saint Mary (NY)": {
+    "espn_source_id": 289,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Newbury College": {
+    "espn_source_id": 108822,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Ohio Midwestern": {
+    "espn_source_id": 108798,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Robert Morris-Springfield (IL)": {
+    "espn_source_id": 3160,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Cal State Los Angeles": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Northwood University": {
+    "espn_source_id": 585,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Huntingdon College (AL)": {
+    "espn_source_id": 2938,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Texas A&M-Kingsville": {
+    "espn_source_id": 2658,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Purdue North Central": {
+    "espn_source_id": 598,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Maine-Farmington": {
+    "espn_source_id": 287,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Carolina University": {
+    "espn_source_id": 108942,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Tuskegee": {
+    "espn_source_id": 2657,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Averett": {
+    "espn_source_id": 2047,
+    "primary_color": "012853",
+    "secondary_color": "fdbb30"
+  },
+  "Keuka": {
+    "espn_source_id": 6319,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Illinois-Springfield": {
+    "espn_source_id": 542,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Buena Vista": {
+    "espn_source_id": 63,
+    "primary_color": "feba12",
+    "secondary_color": "001440"
+  },
+  "Kentucky State": {
+    "espn_source_id": 2310,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Clarkson": {
+    "espn_source_id": 2137,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Northwest Missouri St": {
+    "espn_source_id": 138,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Wells College": {
+    "espn_source_id": 124846,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "LeMoyne-Owen": {
+    "espn_source_id": 2917,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Trinity (TX)": {
+    "espn_source_id": 386,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "St. Catharine (KY)": {
+    "espn_source_id": 3140,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Pittsburgh - Greensburg": {
+    "espn_source_id": 126821,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "William Penn": {
+    "espn_source_id": 2912,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Oakland City": {
+    "espn_source_id": 2474,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Eastern Mennonite": {
+    "espn_source_id": 2192,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "San Francisco State": {
+    "espn_source_id": 22,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Southwestern Oklahoma State": {
+    "espn_source_id": 2927,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Fisher College": {
+    "espn_source_id": 524,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Virginia Union": {
+    "espn_source_id": 2676,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Xavier (LA)": {
+    "espn_source_id": 2753,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Our Lady Of The Lake": {
+    "espn_source_id": 3158,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Trevecca Nazarene": {
+    "espn_source_id": 2906,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Benedictine (AZ)": {
+    "espn_source_id": 110031,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Wilberforce": {
+    "espn_source_id": 2726,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Penn State-Schuylkill": {
+    "espn_source_id": 128344,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Montreat": {
+    "espn_source_id": 2410,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Bowie State": {
+    "espn_source_id": 2075,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Sewanee": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Minnesota A&M": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Saint Augustine's": {
+    "espn_source_id": 395,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Waynesburg": {
+    "espn_source_id": 2845,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Tougaloo": {
+    "espn_source_id": 2650,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Dowling": {
+    "espn_source_id": 2180,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Austin": {
+    "espn_source_id": 2045,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Tabor": {
+    "espn_source_id": 619,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Misericordia": {
+    "espn_source_id": 111902,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "San Diego Christian": {
+    "espn_source_id": 3096,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Baptist Bible": {
+    "espn_source_id": 405,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Baker": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Kings (PA)": {
+    "espn_source_id": 247,
+    "primary_color": "c41230",
+    "secondary_color": "000000"
+  },
+  "Ferrum": {
+    "espn_source_id": 366,
+    "primary_color": "000000",
+    "secondary_color": "c0a656"
+  },
+  "Roosevelt": {
+    "espn_source_id": 3163,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "East Texas Baptist": {
+    "espn_source_id": 2194,
+    "primary_color": "002b44",
+    "secondary_color": "e0ad13"
+  },
+  "Rust": {
+    "espn_source_id": 2892,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Hartford": {
+    "espn_source_id": 42,
+    "primary_color": "D60008",
+    "secondary_color": "000000"
+  },
+  "Elizabethtown": {
+    "espn_source_id": 5901,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Voorhees": {
+    "espn_source_id": 2679,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Franklin": {
+    "espn_source_id": 2233,
+    "primary_color": "1b295b",
+    "secondary_color": "fdd106"
+  },
+  "Salem University": {
+    "espn_source_id": 467,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Rockford": {
+    "espn_source_id": 2524,
+    "primary_color": "5a3f99",
+    "secondary_color": "c4c6c8"
+  },
+  "The Open Bible": {
+    "espn_source_id": 3248,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "CS Dominguez Hills": {
+    "espn_source_id": 2092,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Midway University": {
+    "espn_source_id": 111166,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Penn State Scranton": {
+    "espn_source_id": 130198,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Southern Wesleyan": {
+    "espn_source_id": 2576,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Lesley University": {
+    "espn_source_id": 477,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Goshen": {
+    "espn_source_id": 3067,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Monmouth (IL)": {
+    "espn_source_id": 2919,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Cumberland (TN)": {
+    "espn_source_id": 2161,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Alliance University": {
+    "espn_source_id": 428,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "SUNY-Brockport": {
+    "espn_source_id": 2781,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Western New Mexico": {
+    "espn_source_id": 2703,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Milwaukee School Of Engineering": {
+    "espn_source_id": 110437,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Ohio Dominican": {
+    "espn_source_id": 2477,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Tennessee Southern": {
+    "espn_source_id": 2370,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Cascade": {
+    "espn_source_id": 2859,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Dallas Christian": {
+    "espn_source_id": 2937,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Rochester (NY)": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Arcadia": {
+    "espn_source_id": 407,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Coast Guard": {
+    "espn_source_id": 2557,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Johnson University Florida": {
+    "espn_source_id": 3097,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "East-West University": {
+    "espn_source_id": 3107,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "College Of Biblical Studies": {
+    "espn_source_id": 128256,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Hawai'i Pacific": {
+    "espn_source_id": 2269,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Oklahoma Christian": {
+    "espn_source_id": 589,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Viterbo": {
+    "espn_source_id": 2677,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Wabash": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Penn State-Altoona": {
+    "espn_source_id": 478,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Central Christian College": {
+    "espn_source_id": 112698,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Minnesota Crookston": {
+    "espn_source_id": 2772,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Salve Regina": {
+    "espn_source_id": 2776,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Northwest Indian": {
+    "espn_source_id": 3218,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Maine-Augusta": {
+    "espn_source_id": 126890,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Crowley's Ridge": {
+    "espn_source_id": 3168,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Emerson": {
+    "espn_source_id": 108842,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Delaware Valley": {
+    "espn_source_id": 2808,
+    "primary_color": "004c23",
+    "secondary_color": "e6b71b"
+  },
+  "St. Joseph's (NY)": {
+    "espn_source_id": 2990,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Davis & Elkins": {
+    "espn_source_id": 2167,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Carolina Christian College": {
+    "espn_source_id": 128326,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Baptist Bible College (MO)": {
+    "espn_source_id": 123312,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Canterbury College": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Lynchburg": {
+    "espn_source_id": 2355,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "City College of New York": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Champion Christian": {
+    "espn_source_id": 3134,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "West Virginia Wesleyan": {
+    "espn_source_id": 455,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Cortland": {
+    "espn_source_id": 2782,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Science & Arts (OK)": {
+    "espn_source_id": 608,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Rivier": {
+    "espn_source_id": 111913,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Mountain State University": {
+    "espn_source_id": 577,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Bushnell": {
+    "espn_source_id": 3142,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Maine-Machias": {
+    "espn_source_id": 555,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Brescia": {
+    "espn_source_id": 2855,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Shenandoah": {
+    "espn_source_id": 2828,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Rowan": {
+    "espn_source_id": 2827,
+    "primary_color": "571b04",
+    "secondary_color": "ffcf06"
+  },
+  "Mount Union": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Multnomah University": {
+    "espn_source_id": 109661,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Penn State (Brandywine)": {
+    "espn_source_id": 111199,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Keuka College": {
+    "espn_source_id": 2873,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Georgian Court": {
+    "espn_source_id": 111179,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Lycoming": {
+    "espn_source_id": 2354,
+    "primary_color": "15283f",
+    "secondary_color": "eaa22e"
+  },
+  "Embry-Riddle (FL)": {
+    "espn_source_id": 520,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "TBD": {
+    "espn_source_id": -2,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Wesleyan (CT)": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Lewis-Clark St": {
+    "espn_source_id": 2334,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Palm Beach Atlantic": {
+    "espn_source_id": 2489,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Stanislaus State": {
+    "espn_source_id": 2616,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Arkansas Baptist": {
+    "espn_source_id": 2027,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Ensign College": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "LeTourneau": {
+    "espn_source_id": 2326,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Eckerd": {
+    "espn_source_id": 2204,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Savannah State": {
+    "espn_source_id": 2542,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Rochester University (MI)": {
+    "espn_source_id": 2947,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Moravian": {
+    "espn_source_id": 323,
+    "primary_color": "1f3361",
+    "secondary_color": "a5a6a9"
+  },
+  "Concordia-Texas": {
+    "espn_source_id": 2153,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Columbia International": {
+    "espn_source_id": 3242,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Wilmington University": {
+    "espn_source_id": 95026,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Claflin": {
+    "espn_source_id": 2133,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "University of The Sciences": {
+    "espn_source_id": 482,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Chapman": {
+    "espn_source_id": 411,
+    "primary_color": "ab1d38",
+    "secondary_color": "000000"
+  },
+  "Sonoma State": {
+    "espn_source_id": 2574,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Tufts": {
+    "espn_source_id": 112,
+    "primary_color": "3e8ede",
+    "secondary_color": "c6beb6"
+  },
+  "RIT": {
+    "espn_source_id": 178,
+    "primary_color": "000000",
+    "secondary_color": "ff6b00"
+  },
+  "Lock Haven University": {
+    "espn_source_id": 209,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Dominican (IL)": {
+    "espn_source_id": 2936,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Reinhardt": {
+    "espn_source_id": 2890,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Central State (OH)": {
+    "espn_source_id": 2119,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Missouri-St. Louis": {
+    "espn_source_id": 141,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Saint Martin's": {
+    "espn_source_id": 2606,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Philadelphia Biblical University": {
+    "espn_source_id": 429,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Adams State": {
+    "espn_source_id": 2001,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Ozark Christian": {
+    "espn_source_id": 127162,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Texas A&M-San Antonio": {
+    "espn_source_id": 130174,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Shorter": {
+    "espn_source_id": 2560,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Birmingham-Southern": {
+    "espn_source_id": 3,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Loyola New Orleans": {
+    "espn_source_id": 100,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Buffalo State": {
+    "espn_source_id": 2085,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Concordia-St. Paul": {
+    "espn_source_id": 3066,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Plattsburgh St": {
+    "espn_source_id": 177,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Whitman": {
+    "espn_source_id": 2720,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Methodist": {
+    "espn_source_id": 291,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Lincoln University (CA)": {
+    "espn_source_id": 124946,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Chowan": {
+    "espn_source_id": 2804,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Saint Joseph's Long Island": {
+    "espn_source_id": 3196,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Florida National": {
+    "espn_source_id": 107730,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Spring Arbor": {
+    "espn_source_id": 2950,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Skidmore": {
+    "espn_source_id": 2566,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Trine University": {
+    "espn_source_id": 2651,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Gallaudet": {
+    "espn_source_id": 417,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "St. Francis Brooklyn": {
+    "espn_source_id": 2597,
+    "primary_color": "005496",
+    "secondary_color": "e03a3e"
+  },
+  "Armstrong": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Southern Polytechnic": {
+    "espn_source_id": 614,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Wisconsin-Stout": {
+    "espn_source_id": 2744,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Suffolk": {
+    "espn_source_id": 383,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "SUNY Morrisville": {
+    "espn_source_id": 108789,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Colorado College": {
+    "espn_source_id": 2144,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Emory & Henry": {
+    "espn_source_id": 2213,
+    "primary_color": "1e376d",
+    "secondary_color": "daad27"
+  },
+  "Hood College": {
+    "espn_source_id": 108854,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Aquinas": {
+    "espn_source_id": 486,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Holy Family University": {
+    "espn_source_id": 420,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Morehouse": {
+    "espn_source_id": 60,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Academy of Art": {
+    "espn_source_id": 3136,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "John Jay College": {
+    "espn_source_id": 212,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Felician": {
+    "espn_source_id": 128327,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Glenville State": {
+    "espn_source_id": 2249,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Rhode Island College": {
+    "espn_source_id": 226,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Bloomsburg": {
+    "espn_source_id": 2071,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Clarks Summit": {
+    "espn_source_id": 109636,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "South Dakota Mines": {
+    "espn_source_id": 7298,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "St. John's College (OH)": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Cal State LA": {
+    "espn_source_id": 2345,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Mars Hill": {
+    "espn_source_id": 2369,
+    "primary_color": "004b8d",
+    "secondary_color": "efc814"
+  },
+  "Lynn": {
+    "espn_source_id": 2357,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Notre Dame (Md)": {
+    "espn_source_id": 128342,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Trinity (FL)": {
+    "espn_source_id": 3155,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Wayne State (MI)": {
+    "espn_source_id": 131,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Middle Georgia State": {
+    "espn_source_id": 109014,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Colby": {
+    "espn_source_id": 33,
+    "primary_color": "012778",
+    "secondary_color": "ffffff"
+  },
+  "McGill": {
+    "espn_source_id": 110413,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Wentworth Institute Of Technology": {
+    "espn_source_id": 2976,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Ithaca College": {
+    "espn_source_id": 175,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "La Verne": {
+    "espn_source_id": 2318,
+    "primary_color": "004812",
+    "secondary_color": "f89828"
+  },
+  "Pacifica College": {
+    "espn_source_id": 3184,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "John Brown": {
+    "espn_source_id": 2301,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Lake Superior State": {
+    "espn_source_id": 285,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "William Peace": {
+    "espn_source_id": 108807,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Pittsburg State": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Fort Lauderdale": {
+    "espn_source_id": 123362,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Aurora": {
+    "espn_source_id": 2044,
+    "primary_color": "00549f",
+    "secondary_color": "000000"
+  },
+  "West Chester": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Florida College": {
+    "espn_source_id": 3244,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "PennWest California": {
+    "espn_source_id": 2858,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Messiah": {
+    "espn_source_id": 2387,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Rio Grande": {
+    "espn_source_id": 2521,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Grace Bible College": {
+    "espn_source_id": 3131,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Maine-Presque Isle": {
+    "espn_source_id": 2361,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Tusculum": {
+    "espn_source_id": 2839,
+    "primary_color": "f2682a",
+    "secondary_color": "000000"
+  },
+  "University of Rochester (NY)": {
+    "espn_source_id": 184,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Virginia-Lynchburg": {
+    "espn_source_id": 3229,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Eastern University (PA)": {
+    "espn_source_id": 2196,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Francis Marion": {
+    "espn_source_id": 230,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "La Roche": {
+    "espn_source_id": 2874,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Piedmont": {
+    "espn_source_id": 2496,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Western State Colorado University": {
+    "espn_source_id": 2714,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Catawba": {
+    "espn_source_id": 2107,
+    "primary_color": "0c233f",
+    "secondary_color": "cb152f"
+  },
+  "Bard College": {
+    "espn_source_id": 66779,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Immaculata": {
+    "espn_source_id": 107554,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Andrews University": {
+    "espn_source_id": 128343,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Tennessee Wesleyan": {
+    "espn_source_id": 2632,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Sarah Lawrence": {
+    "espn_source_id": 108862,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Marymount (VA)": {
+    "espn_source_id": 2372,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Montana-Western": {
+    "espn_source_id": 2701,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Colorado School Of Mines": {
+    "espn_source_id": 2146,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Wartburg": {
+    "espn_source_id": 2685,
+    "primary_color": "f5822b",
+    "secondary_color": "000000"
+  },
+  "Mary Washington": {
+    "espn_source_id": 2942,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Indiana University Northwest": {
+    "espn_source_id": 3088,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "MacMurray College": {
+    "espn_source_id": 273,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Southeastern": {
+    "espn_source_id": 3105,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "CSU Pueblo": {
+    "espn_source_id": 49865,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Wayne State (NE)": {
+    "espn_source_id": 2844,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Johnson & Wales (RI)": {
+    "espn_source_id": 353,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "North Central College": {
+    "espn_source_id": 3071,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "St. Mary's (MD)": {
+    "espn_source_id": 117,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Missouri Western": {
+    "espn_source_id": 137,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Wheaton (IL)": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Williams": {
+    "espn_source_id": 2731,
+    "primary_color": "500082",
+    "secondary_color": "ffbe0a"
+  },
+  "William Jewell": {
+    "espn_source_id": 2911,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "North American": {
+    "espn_source_id": 126750,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Limestone": {
+    "espn_source_id": 2336,
+    "primary_color": "19468d",
+    "secondary_color": "fff607"
+  },
+  "Biola": {
+    "espn_source_id": 2067,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Emporia St": {
+    "espn_source_id": 2214,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Phoenix": {
+    "espn_source_id": 3188,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "Ohio Northern": {
+    "espn_source_id": 427,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Randolph College": {
+    "espn_source_id": 3153,
+    "primary_color": null,
+    "secondary_color": null
+  },
+  "FDU Florham": {
+    "espn_source_id": 2221,
+    "primary_color": "003f87",
+    "secondary_color": "a32638"
+  },
+  "Redlands": {
+    "espn_source_id": 29,
+    "primary_color": "751708",
+    "secondary_color": "ffffff"
+  },
+  "Concordia-Ann Arbor": {
+    "espn_source_id": 2985,
+    "primary_color": "000000",
+    "secondary_color": null
+  },
+  "Haskell (KS)": {
+    "espn_source_id": null,
+    "primary_color": null,
+    "secondary_color": null
+  }
+}

@@ -74,6 +74,9 @@ export interface CollegePlayer {
   position: Position;
   conference: string;
   athlete_id?: number;
+  espn_team_id?: number;
+  team_primary_color?: string;
+  team_secondary_color?: string;
   stats: CollegeStats;
   physical?: PhysicalAttributes; // only populated when data is available
 }

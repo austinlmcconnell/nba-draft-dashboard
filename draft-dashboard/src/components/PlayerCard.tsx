@@ -3,8 +3,9 @@
  * Displays a prospect's basic info and stats in a card format
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import type { CollegePlayer } from '@/types/player';
 
 interface PlayerCardProps {
@@ -12,40 +13,89 @@ interface PlayerCardProps {
   className?: string;
 }
 
+/** Build an ESPN headshot URL from an athleteId */
+function headshotUrl(athleteId: number): string {
+  return `https://a.espncdn.com/combiner/i?img=/i/headshots/mens-college-basketball/players/full/${athleteId}.png`;
+}
+
+/** Build an ESPN team logo URL from a sourceId */
+function teamLogoUrl(espnTeamId: number): string {
+  return `https://a.espncdn.com/i/teamlogos/ncaa/500/${espnTeamId}.png`;
+}
+
+/** Convert a hex color like "003087" to a CSS background-image gradient */
+function teamGradient(primary?: string, secondary?: string): string {
+  const p = primary   ? `#${primary.replace('#', '')}`   : '#1d4ed8';   // blue-700
+  const s = secondary ? `#${secondary.replace('#', '')}` : '#1e3a8a';   // blue-900
+  return `linear-gradient(135deg, ${p}, ${s})`;
+}
+
+const formatHeight = (inches: number | null | undefined): string => {
+  if (!inches) return '—';
+  return `${Math.floor(inches / 12)}'${inches % 12}"`;
+};
+
 export function PlayerCard({ player, className = '' }: PlayerCardProps) {
   const { name, team, position, stats, physical } = player;
+  const [headErr, setHeadErr] = useState(false);
+  const [logoErr, setLogoErr] = useState(false);
 
-  const formatHeight = (inches: number | null | undefined): string => {
-    if (!inches) return '—';
-    return `${Math.floor(inches / 12)}'${inches % 12}"`;
-  };
+  const hasHeadshot = !!player.athlete_id && !headErr;
+  const hasLogo     = !!player.espn_team_id && !logoErr;
 
   return (
     <Link href={`/prospects/${player.id}`}>
       <div
         className={`
-          group relative overflow-hidden rounded-xl bg-white shadow-md 
+          group relative overflow-hidden rounded-xl bg-white shadow-md
           transition-all duration-300 hover:shadow-xl hover:-translate-y-1
           border border-gray-100
           ${className}
         `}
       >
-        {/* Header Section */}
-        <div className="relative h-48 bg-gradient-to-br from-blue-600 to-blue-800">
-          {/* Player Image Placeholder */}
+        {/* Header — team-colored gradient */}
+        <div
+          className="relative h-48"
+          style={{ background: teamGradient(player.team_primary_color, player.team_secondary_color) }}
+        >
+          {/* Player headshot or initials */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-32 h-32 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
-              <span className="text-6xl font-bold text-white/60">
-                {name.split(' ').map(n => n[0]).join('')}
-              </span>
-            </div>
+            {hasHeadshot ? (
+              <Image
+                src={headshotUrl(player.athlete_id!)}
+                alt={name}
+                width={128}
+                height={128}
+                className="w-32 h-32 rounded-full object-cover border-4 border-white/30"
+                onError={() => setHeadErr(true)}
+                unoptimized
+              />
+            ) : (
+              <div className="w-32 h-32 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                <span className="text-6xl font-bold text-white/60">
+                  {name.split(' ').map(n => n[0]).join('')}
+                </span>
+              </div>
+            )}
           </div>
 
-          {/* Team Logo (placeholder) */}
-          <div className="absolute top-4 right-4 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center">
-            <span className="text-xs font-bold text-gray-700">
-              {team.substring(0, 3).toUpperCase()}
-            </span>
+          {/* Team logo */}
+          <div className="absolute top-4 right-4 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center overflow-hidden">
+            {hasLogo ? (
+              <Image
+                src={teamLogoUrl(player.espn_team_id!)}
+                alt={team}
+                width={40}
+                height={40}
+                className="object-contain p-1"
+                onError={() => setLogoErr(true)}
+                unoptimized
+              />
+            ) : (
+              <span className="text-xs font-bold text-gray-700">
+                {team.substring(0, 3).toUpperCase()}
+              </span>
+            )}
           </div>
 
           {/* Position Badge */}
