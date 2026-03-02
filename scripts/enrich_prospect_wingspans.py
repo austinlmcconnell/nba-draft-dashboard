@@ -27,27 +27,44 @@ PUBLIC_DIR = '../draft-dashboard/public/data'
 #   Reported = widely cited scouting figure, no single official source
 # ---------------------------------------------------------------------------
 WINGSPANS: dict = {
-    # name (as on Tankathon):  wingspan_inches
-    'AJ Dybantsa':        83.0,   # 6'11"    Nike Hoop Summit 2024
-    'Darryn Peterson':    82.5,   # 6'10.5"  Adidas Eurocamp 2024
-    'Caleb Wilson':       84.0,   # 7'0"     listed / scouting consensus
-    'Darius Acuff':       77.5,   # 6'5.5"   Nike Elite 100 2023
-    'Mikel Brown Jr.':    78.5,   # 6'6.5"   Adidas All-American Camp 2024
-    'Labaron Philon':     78.25,  # 6'6.25"  2025 NBA Draft Combine
-    'Yaxel Lendeborg':    88.0,   # 7'4"     2025 NBA Draft Combine
-    'Tounde Yessoufou':   81.0,   # 6'9"     Nike Elite 100 2023
-    'Flory Bidunga':      86.0,   # 7'2"     Nike Hoop Summit 2024
-    'Malachi Moreno':     85.75,  # 7'1.75"  Adidas Eurocamp 2024
-    'Chris Cenac Jr.':    88.0,   # 7'4"     NBADraft.net
-    'Meleek Thomas':      77.0,   # 6'5"     Nike Elite 100 2023
-    'Aday Mara':          90.75,  # 7'6.75"  BWB Global measurements
-    'JT Toppin':          84.5,   # 7'0.5"   2024 NBA Draft Combine
-    'Alex Karaban':       83.0,   # 6'11"    2024 NBA Draft Combine
-    'Milos Uzan':         77.25,  # 6'5.25"  2025 NBA Draft Combine
-    'Dillon Mitchell':    82.0,   # 6'10"    2023 NBA Draft Combine
-    'Trevon Brazile':     87.75,  # 7'3.75"  2024 NBA Draft Combine
-    'Amari Allen':        79.75,  # 6'7.75"  Adidas All-American Camp 2024
-    'Otega Oweh':         80.5,   # 6'8.5"   2025 NBA Draft Combine
+    # name (as on Tankathon):   wingspan_inches
+    # ── Top freshmen / showcases ────────────────────────────────────────────
+    'Cameron Boozer':     84.0,   # 7'0"      widely reported (scouting consensus)
+    'AJ Dybantsa':        83.0,   # 6'11"     Nike Hoop Summit 2024
+    'Darryn Peterson':    82.5,   # 6'10.5"   Adidas Eurocamp 2024
+    'Caleb Wilson':       84.0,   # 7'0"      NBADraft.net listed
+    'Darius Acuff':       77.5,   # 6'5.5"    Nike Elite 100 2023
+    'Mikel Brown Jr.':    78.5,   # 6'6.5"    Adidas All-American Camp 2024
+    'Flory Bidunga':      86.0,   # 7'2"      Nike Hoop Summit 2024
+    'Malachi Moreno':     85.75,  # 7'1.75"   Adidas Eurocamp 2024
+    'Meleek Thomas':      77.0,   # 6'5"      Nike Elite 100 2023
+    'Tounde Yessoufou':   81.0,   # 6'9"      Nike Elite 100 2023
+    'Amari Allen':        79.75,  # 6'7.75"   Adidas All-American Camp 2024
+    'Christian Anderson': 76.5,   # 6'4.5"    BWB 2024
+    'Kwame Evans':        84.0,   # 7'0"      NBADraft.net listed
+    # ── 2025 NBA Draft Combine (declared + withdrew) ─────────────────────────
+    'Labaron Philon':     78.25,  # 6'6.25"   2025 NBA Draft Combine
+    'Yaxel Lendeborg':    88.0,   # 7'4"      2025 NBA Draft Combine
+    'Milos Uzan':         77.25,  # 6'5.25"   2025 NBA Draft Combine
+    'Otega Oweh':         80.5,   # 6'8.5"    2025 NBA Draft Combine
+    'Tahaad Pettiford':   77.5,   # 6'5.5"    2025 NBA Draft Combine
+    'Miles Byrd':         82.0,   # 6'10"     2025 NBA Draft Combine
+    'Boogie Fland':       78.0,   # 6'6"      2025 NBA Draft Combine
+    'Alex Condon':        84.75,  # 7'0.75"   2025 NBA Draft Combine
+    'Karter Knox':        82.25,  # 6'10.25"  2025 NBA Draft Combine
+    'Darrion Williams':   78.5,   # 6'6.5"    2025 NBA Draft Combine
+    # ── Earlier NBA/G-League combines ────────────────────────────────────────
+    'Chris Cenac Jr.':    88.0,   # 7'4"      NBADraft.net
+    'JT Toppin':          84.5,   # 7'0.5"    2024 NBA Draft Combine
+    'Alex Karaban':       83.0,   # 6'11"     2024 NBA Draft Combine
+    'Trevon Brazile':     87.75,  # 7'3.75"   2024 NBA Draft Combine
+    'Dillon Mitchell':    82.0,   # 6'10"     2023 NBA Draft Combine
+    'Baba Miller':        86.0,   # 7'2"      2024 G-League Combine
+    # ── BWB Global measurements ───────────────────────────────────────────────
+    'Aday Mara':          90.75,  # 7'6.75"   BWB Global
+    'Motiejus Krivas':    90.75,  # 7'6.75"   BWB Global
+    # ── NBADraft.net listed ───────────────────────────────────────────────────
+    'Solo Ball':          82.0,   # 6'10"     NBADraft.net listed
 }
 
 # Name aliases: Tankathon name → JSON name
