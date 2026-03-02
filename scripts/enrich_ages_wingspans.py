@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 """
-Enrich historical players with age_at_season_start from Basketball Reference.
+Enrich historical players with age_at_season_start from Basketball Reference
+and wingspan_inches from the NBA Draft Combine GitHub CSV.
 
 Sources:
   1. Birth dates — BBRef NBA player index pages (a-z), 26 HTTP requests total.
      Each page lists every NBA player with their birth date.  We build a lookup
      keyed by normalised name and match it against nba_career_stats.json.
 
-  2. Wingspans — NBA Draft Combine API (stats.nba.com).  Covers draft classes
-     2001-2024.  Skipped gracefully if the endpoint is unreachable (it has
-     strict CORS / bot-detection that can block non-browser clients).
+  2. Wingspans — BryanDfor3/nba-draft-combine-command-center GitHub CSV.
+     Covers draft classes 2000-2025, ~1800 rows, free to download.
+     URL: https://raw.githubusercontent.com/BryanDfor3/
+          nba-draft-combine-command-center/main/data/nba_draft_combine_data.csv
 
 Age calculation:
   age_at_season_start = player's age on November 1 of (college_season - 1).
@@ -21,6 +23,8 @@ Usage:
     python3 enrich_ages_wingspans.py
 """
 
+import csv
+import io
 import json
 import os
 import re
@@ -32,26 +36,15 @@ from typing import Dict, Optional
 import requests
 from bs4 import BeautifulSoup
 
-CAREER_FILE   = '../data/nba_career_stats.json'
-PUBLIC_DIR    = '../draft-dashboard/public/data'
-BBREF_BASE    = 'https://www.basketball-reference.com'
-HEADERS       = {'User-Agent': 'Mozilla/5.0 (research / educational project)'}
-DELAY         = 1.2   # seconds between BBRef requests
-
-# NBA stats.nba.com — often blocked; set to False to skip entirely
-TRY_COMBINE   = True
-
-_NBA_STATS_HEADERS = {
-    'User-Agent': (
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-        'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-    ),
-    'Referer':            'https://www.nba.com/',
-    'Origin':             'https://www.nba.com',
-    'Accept':             'application/json, text/plain, */*',
-    'x-nba-stats-origin': 'stats',
-    'x-nba-stats-token':  'true',
-}
+CAREER_FILE       = '../data/nba_career_stats.json'
+PUBLIC_DIR        = '../draft-dashboard/public/data'
+BBREF_BASE        = 'https://www.basketball-reference.com'
+HEADERS           = {'User-Agent': 'Mozilla/5.0 (research / educational project)'}
+DELAY             = 1.2   # seconds between BBRef requests
+COMBINE_CSV_URL   = (
+    'https://raw.githubusercontent.com/BryanDfor3/'
+    'nba-draft-combine-command-center/main/data/nba_draft_combine_data.csv'
+)
 
 # ---------------------------------------------------------------------------
 # Name normalisation (mirrors fetch_nba_data.py)
@@ -168,51 +161,35 @@ def build_birth_registry() -> Dict[str, date]:
 
 
 # ---------------------------------------------------------------------------
-# Step 2 — Wingspan from NBA Draft Combine (stats.nba.com)
+# Step 2 — Wingspan from BryanDfor3 NBA Draft Combine GitHub CSV
 # ---------------------------------------------------------------------------
-def fetch_combine_wingspans(start: int = 2001, end: int = 2024) -> Dict[str, float]:
-    """Fetch NBA Draft Combine wingspans.  Returns {} if unreachable."""
+def fetch_combine_wingspans() -> Dict[str, float]:
+    """Download NBA Draft Combine wingspans from GitHub CSV.  Returns {} on failure.
+
+    Source: BryanDfor3/nba-draft-combine-command-center, covers 2000–2025.
+    CSV columns used: PLAYER_NAME, WINGSPAN (inches as float).
+    """
+    print('Fetching combine wingspans from GitHub CSV…')
+    try:
+        resp = requests.get(COMBINE_CSV_URL, headers=HEADERS, timeout=30)
+        resp.raise_for_status()
+    except requests.RequestException as e:
+        print(f'  Failed to download CSV: {e}\n')
+        return {}
+
     wingspans: Dict[str, float] = {}
-    print(f'Fetching combine wingspans ({start}–{end})…')
-
-    for draft_year in range(start, end + 1):
-        season = f'{draft_year}-{str(draft_year + 1)[-2:]}'
-        url = (
-            'https://stats.nba.com/stats/draftcombinestats'
-            f'?LeagueID=00&SeasonYear={season}'
-        )
+    reader = csv.DictReader(io.StringIO(resp.text))
+    for row in reader:
+        name   = row.get('PLAYER_NAME', '').strip()
+        ws_str = row.get('WINGSPAN', '').strip()
+        if not name or not ws_str:
+            continue
         try:
-            resp = requests.get(url, headers=_NBA_STATS_HEADERS, timeout=15)
-            if resp.status_code in (400, 404):
-                time.sleep(0.5)
-                continue
-            resp.raise_for_status()
-            data = resp.json()
-
-            rs   = (data.get('resultSets') or [{}])[0]
-            hdrs = rs.get('headers', [])
-            rows = rs.get('rowSet', [])
-
-            if 'PLAYER_NAME' not in hdrs or 'WINGSPAN' not in hdrs:
-                time.sleep(DELAY)
-                continue
-
-            ni = hdrs.index('PLAYER_NAME')
-            wi = hdrs.index('WINGSPAN')
-            found = 0
-            for row in rows:
-                name = row[ni] if ni < len(row) else None
-                ws   = row[wi] if wi < len(row) else None
-                if name and isinstance(ws, (int, float)) and 60 < ws < 108:
-                    wingspans[_norm(str(name))] = float(ws)
-                    found += 1
-
-            print(f'  Combine {season}: {found} wingspans')
-        except Exception as e:
-            print(f'  Combine {season}: {e} — skipping remaining years')
-            return wingspans    # bail out if the API is unreachable
-
-        time.sleep(DELAY)
+            ws = float(ws_str)
+        except ValueError:
+            continue
+        if 60 < ws < 108:
+            wingspans[_norm(name)] = ws   # last entry wins for dup names
 
     print(f'Total combine wingspans: {len(wingspans)}\n')
     return wingspans
@@ -291,11 +268,7 @@ def main():
     print()
 
     # --- Step 2: Wingspans ---
-    if TRY_COMBINE:
-        wingspans = fetch_combine_wingspans()
-    else:
-        print('Skipping combine wingspans (TRY_COMBINE=False)\n')
-        wingspans = {}
+    wingspans = fetch_combine_wingspans()
 
     if wingspans:
         wing_added = 0

@@ -322,14 +322,14 @@ function luminance([r, g, b]: [number, number, number]): number {
 }
 
 /**
- * Map z-score to a brightness adjustment factor.
- * Rule: darker = better, lighter = worse.
- *   z ≥ +2.5  → factor ≈ 0.25  (darkened primary)
- *   z =  0    → factor = 1.00  (primary as-is)
- *   z ≤ −2.5  → factor ≈ 1.75  (lightened toward white)
+ * Map z-score to a lightening factor.
+ *   z ≥ +2.5  → factor = 1.00  (exact primary color)
+ *   z =  0    → factor ≈ 1.46  (46 % toward white)
+ *   z ≤ −2.5  → factor ≈ 1.92  (nearly white)
  */
 function zToFactor(z: number): number {
-  return 1.0 - 0.30 * Math.max(-2.5, Math.min(2.5, z));
+  const pct = (Math.max(-2.5, Math.min(2.5, z)) + 2.5) / 5.0; // 0=poor → 1=elite
+  return 1.0 + (1 - pct) * 0.92;
 }
 
 function StatBox({

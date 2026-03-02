@@ -207,7 +207,7 @@ export function ComparisonCard({ comparison, className = '' }: Props) {
       </div>
 
       {/* Player headshot overlapping header / body */}
-      <div className="px-4 -mt-7 mb-1">
+      <div className="relative z-10 px-4 -mt-7 mb-1">
         <div className="w-14 h-14 rounded-full bg-gray-100 border-4 border-white shadow-md flex items-center justify-center overflow-hidden">
           {headshotSrc && !headErr ? (
             <Image
