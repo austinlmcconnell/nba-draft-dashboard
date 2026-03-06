@@ -248,7 +248,7 @@ export function getProspectComparisons(
   // single facet similarity below this threshold. A player who is wildly
   // dissimilar in one key dimension (e.g. a rim-protector matched to a
   // perimeter scorer on defense) is not a meaningful overall comparable.
-  const FACET_FLOOR = 50;
+  const FACET_FLOOR = 70;
   const passesFloor = (r: Row): boolean =>
     sim(r.sEff)    >= FACET_FLOOR &&
     sim(r.sVol, 2) >= FACET_FLOOR &&

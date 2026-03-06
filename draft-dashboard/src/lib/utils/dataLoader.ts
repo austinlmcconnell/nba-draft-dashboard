@@ -101,7 +101,9 @@ export async function loadHistoricalPlayers(): Promise<HistoricalPlayer[]> {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const raw: any[] = await res.json();
-    historicalCache = raw.map(r => ({
+    historicalCache = raw
+      .filter(r => (r.college_season ?? 0) < 2026) // exclude current class — they're prospects, not comps
+      .map(r => ({
       id:                   r.id ?? `hist_${r.name}_${r.college_season}`,
       name:                 r.name,
       college_team:         r.college_team ?? '',
