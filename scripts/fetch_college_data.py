@@ -70,7 +70,9 @@ def normalize_player(raw: Dict, season: int) -> Dict:
         'season': season,
         'conference': raw.get('conference', 'Unknown'),
         'position': raw.get('position', 'Unknown'),
-        'athlete_id': raw.get('athleteId'),
+        # athleteSourceId is ESPN's stable athlete ID (used for headshots + core API lookups).
+        # athleteId is CBBD's internal ID — not resolvable on any ESPN endpoint.
+        'athlete_id': int(raw['athleteSourceId']) if raw.get('athleteSourceId') else raw.get('athleteId'),
 
         # Volume stats (per game)
         'games': games,

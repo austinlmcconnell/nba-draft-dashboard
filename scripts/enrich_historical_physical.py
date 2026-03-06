@@ -1,22 +1,28 @@
 #!/usr/bin/env python3
 """
 Enrich historical players in nba_career_stats.json with height/weight
-from the ESPN college basketball historical roster API.
+from the ESPN core athlete API.
 
-ESPN supports season-specific team rosters:
-  GET https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball
-      /teams/{team_id}/roster?season={year}
+ESPN stores a profile for every college basketball player they have ever
+tracked — including non-NBA players going back decades.  The stable
+endpoint is:
 
-We iterate over all unique (team, season) pairs in nba_career_stats.json
-that are currently missing physical data, map team names to ESPN IDs via
-the existing team_metadata.json, and write height/weight back to both
-nba_career_stats.json and the public/data copy.
+  GET https://sports.core.api.espn.com/v2/sports/basketball
+      /leagues/mens-college-basketball/athletes/{espn_athlete_id}
+
+This works for any player whose record in historical_college_stats.json
+carries a real ESPN athlete ID (athleteSourceId).
+
+NOTE: The older historical records (seasons 2005-2021) were fetched by
+fetch_college_data.py before it was fixed to use athleteSourceId.  Those
+records carry CBBD-internal athlete IDs (< 200 000) which do not resolve
+on ESPN's modern APIs.  Re-run fetch_college_data.py + fetch_nba_data.py
+with a valid CBBD_API_KEY to regenerate nba_career_stats.json with proper
+ESPN IDs, then run this script again for full coverage.
 
 Usage:
     cd scripts/
     python3 enrich_historical_physical.py
-
-No API key required — ESPN's roster endpoint is public.
 """
 
 import json
@@ -25,188 +31,123 @@ import re
 import shutil
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Dict, List, Optional, Tuple
+from typing import Optional
 
 import requests
 
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
-CAREER_FILE    = '../data/nba_career_stats.json'
-METADATA_FILE  = '../draft-dashboard/public/data/team_metadata.json'
-PUBLIC_DIR     = '../draft-dashboard/public/data'
-ESPN_BASE      = 'https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball'
-HEADERS        = {'User-Agent': 'Mozilla/5.0 (research / educational project)'}
-MAX_WORKERS    = 16   # parallel roster fetches
-TIMEOUT        = 15   # seconds per request
+CAREER_FILE = '../data/nba_career_stats.json'
+PUBLIC_DIR  = '../draft-dashboard/public/data'
 
-# ---------------------------------------------------------------------------
-# Name normalisation (mirrors fetch_nba_data.py / fetch_physical_data.py)
-# ---------------------------------------------------------------------------
-_ACCENT_MAP = str.maketrans(
-    'àáâãäåèéêëìíîïòóôõöøùúûüñçý',
-    'aaaaaaeeeeiiiioooooouuuuncy'
+ESPN_CORE   = (
+    'https://sports.core.api.espn.com/v2/sports/basketball'
+    '/leagues/mens-college-basketball/athletes'
 )
-_SUFFIX_RE = re.compile(r'\s*\b(jr\.?|sr\.?|ii|iii|iv|v)\b\.?\s*$', re.IGNORECASE)
-_PUNCT_RE  = re.compile(r"[,\.'']")
+HEADERS = {'User-Agent': 'Mozilla/5.0 (research / educational project)'}
+MAX_WORKERS = 20   # ESPN core API handles parallel reads well
+TIMEOUT     = 10   # seconds per request
 
-
-def _norm(name: str) -> str:
-    name = name.translate(_ACCENT_MAP)
-    name = _SUFFIX_RE.sub('', name)
-    name = _PUNCT_RE.sub('', name)
-    return ' '.join(name.lower().split())
-
-
-def _names_match(a: str, b: str) -> bool:
-    na, nb = _norm(a), _norm(b)
-    if na == nb:
-        return True
-    pa, pb = na.split(), nb.split()
-    if len(pa) >= 2 and len(pb) >= 2:
-        # Last name + first 4 chars of first name
-        return pa[-1] == pb[-1] and pa[0][:4] == pb[0][:4]
-    return False
+# Only try IDs in the modern ESPN range — CBBD-internal IDs (<200 000)
+# return 404 and waste quota.
+MIN_VALID_ESPN_ID = 200_001
 
 
 # ---------------------------------------------------------------------------
-# ESPN roster fetch
+# Fetch one athlete's physical data from ESPN core API
 # ---------------------------------------------------------------------------
-def parse_height(val) -> Optional[int]:
-    if val is None:
-        return None
-    if isinstance(val, (int, float)):
-        return int(val)
-    m = re.match(r"(\d+)'(\d+)", str(val))
-    if m:
-        return int(m.group(1)) * 12 + int(m.group(2))
-    try:
-        return int(float(str(val)))
-    except ValueError:
-        return None
-
-
-def fetch_roster(team_id: int, season: int) -> List[Dict]:
+def fetch_athlete_physical(athlete_id: int) -> Optional[dict]:
     """
-    Fetch ESPN team roster for a specific season.
-    ESPN uses the end year of the season (e.g., 2007 for 2006-07).
-    Returns a list of {name, height_inches, weight_pounds}.
+    Return {'height_inches': float|None, 'weight_pounds': int|None}
+    or None on failure / 404.
     """
-    url = f'{ESPN_BASE}/teams/{team_id}/roster'
     try:
-        resp = requests.get(url, params={'season': season}, headers=HEADERS, timeout=TIMEOUT)
-        if resp.status_code != 200:
-            return []
-        data = resp.json()
-        athletes = data.get('athletes', [])
-        result = []
-        for a in athletes:
-            name = a.get('displayName') or a.get('fullName', '')
-            if not name:
-                continue
-            h = parse_height(a.get('height'))
-            w = int(a['weight']) if a.get('weight') else None
-            if h or w:
-                result.append({'name': name, 'height_inches': h, 'weight_pounds': w})
-        return result
+        r = requests.get(f'{ESPN_CORE}/{athlete_id}', headers=HEADERS, timeout=TIMEOUT)
+        if r.status_code == 404:
+            return None
+        r.raise_for_status()
+        d = r.json()
+        ht = d.get('height')
+        wt = d.get('weight')
+        return {
+            'height_inches': float(ht) if ht is not None else None,
+            'weight_pounds': int(wt)   if wt is not None else None,
+        }
     except Exception:
-        return []
+        return None
 
 
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 def main():
-    # Load data
     with open(CAREER_FILE) as f:
-        players: List[Dict] = json.load(f)
+        players = json.load(f)
 
-    with open(METADATA_FILE) as f:
-        team_meta: Dict[str, Dict] = json.load(f)
-
-    # Build team-name → ESPN source ID lookup (normalised keys)
-    team_id_map: Dict[str, int] = {}
-    for team_name, meta in team_meta.items():
-        eid = meta.get('espn_source_id')
-        if eid:
-            team_id_map[_norm(team_name)] = int(eid)
-
-    # Identify players that need physical data
-    needs_phys = [
+    # Identify players that need physical data AND have a valid ESPN athlete ID
+    needs = [
         p for p in players
         if (not p.get('physical')
-            or (not p['physical'].get('height_inches') and not p['physical'].get('weight_pounds')))
-        and p.get('college_team')
-        and p.get('college_season')
+            or (not (p.get('physical') or {}).get('height_inches')
+                and not (p.get('physical') or {}).get('weight_pounds')))
+        and isinstance((p.get('college_stats') or {}).get('athlete_id'), int)
+        and p['college_stats']['athlete_id'] >= MIN_VALID_ESPN_ID
     ]
-    print(f'Players needing physical data: {len(needs_phys)}')
 
-    # Collect unique (team_name, season) → ESPN team ID
-    combos: Dict[Tuple[str, int], int] = {}
-    skipped_teams = set()
-    for p in needs_phys:
-        team_norm = _norm(p['college_team'])
-        season    = int(p['college_season'])
-        if team_norm in team_id_map:
-            combos[(team_norm, season)] = team_id_map[team_norm]
-        else:
-            skipped_teams.add(p['college_team'])
+    total_missing = sum(
+        1 for p in players
+        if not p.get('physical')
+        or (not (p.get('physical') or {}).get('height_inches')
+            and not (p.get('physical') or {}).get('weight_pounds'))
+    )
+    print(f'Players missing physical data:  {total_missing}')
+    print(f'  — with valid ESPN ID (≥{MIN_VALID_ESPN_ID}): {len(needs)}')
+    print(f'  — with legacy CBBD ID (skipped): {total_missing - len(needs)}')
 
-    if skipped_teams:
-        print(f'Teams not found in metadata (will skip): {sorted(skipped_teams)}')
-
-    print(f'Unique (team, season) combos to fetch: {len(combos)}')
-    if not combos:
-        print('Nothing to fetch — exiting.')
+    if not needs:
+        print('\nNothing to fetch.  Re-run fetch_college_data.py with a valid')
+        print('CBBD_API_KEY to regenerate historical records with ESPN source IDs,')
+        print('then run this script again.')
         return
 
-    # Fetch all rosters in parallel
-    roster_cache: Dict[Tuple[str, int], List[Dict]] = {}  # (team_norm, season) → athletes
-    total   = len(combos)
-    done    = 0
-    matched_total = 0
+    print(f'\nFetching {len(needs)} athlete profiles from ESPN core API '
+          f'(up to {MAX_WORKERS} parallel)…')
 
-    print(f'Fetching {total} rosters (up to {MAX_WORKERS} parallel)…')
+    # Build id → player index for fast lookup
+    id_to_player = {p['college_stats']['athlete_id']: p for p in needs}
+
+    done    = 0
+    updated = 0
+    total   = len(needs)
+
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
         futures = {
-            pool.submit(fetch_roster, espn_id, season): (team_norm, season)
-            for (team_norm, season), espn_id in combos.items()
+            pool.submit(fetch_athlete_physical, aid): aid
+            for aid in id_to_player
         }
         for fut in as_completed(futures):
-            key = futures[fut]
-            athletes = fut.result()
-            roster_cache[key] = athletes
-            done += 1
-            if done % 100 == 0 or done == total:
-                print(f'  {done}/{total} rosters fetched')
+            aid    = futures[fut]
+            result = fut.result()
+            done  += 1
 
-    # Match players to roster entries
-    print('\nMatching players to roster entries…')
-    updated = 0
-    for p in needs_phys:
-        team_norm = _norm(p['college_team'])
-        season    = int(p['college_season'])
-        key       = (team_norm, season)
-        athletes  = roster_cache.get(key, [])
-        if not athletes:
-            continue
+            if result and (result['height_inches'] or result['weight_pounds']):
+                p = id_to_player[aid]
+                if not p.get('physical'):
+                    p['physical'] = {
+                        'height_inches': None, 'weight_pounds': None,
+                        'wingspan_inches': None, 'age_at_season_start': None,
+                    }
+                if result['height_inches'] and not p['physical'].get('height_inches'):
+                    p['physical']['height_inches'] = result['height_inches']
+                if result['weight_pounds'] and not p['physical'].get('weight_pounds'):
+                    p['physical']['weight_pounds'] = result['weight_pounds']
+                updated += 1
 
-        match = next((a for a in athletes if _names_match(p['name'], a['name'])), None)
-        if not match:
-            continue
+            if done % 200 == 0 or done == total:
+                print(f'  {done}/{total} fetched  ({updated} updated so far)')
 
-        if not p.get('physical'):
-            p['physical'] = {'height_inches': None, 'weight_pounds': None,
-                             'wingspan_inches': None, 'age_at_season_start': None}
-
-        if match['height_inches'] is not None and not p['physical'].get('height_inches'):
-            p['physical']['height_inches'] = match['height_inches']
-        if match['weight_pounds'] is not None and not p['physical'].get('weight_pounds'):
-            p['physical']['weight_pounds'] = match['weight_pounds']
-
-        updated += 1
-
-    print(f'Players updated with physical data: {updated} / {len(needs_phys)}')
+    print(f'\nPlayers updated: {updated} / {len(needs)}')
 
     # Save
     with open(CAREER_FILE, 'w') as f:
@@ -214,11 +155,15 @@ def main():
 
     os.makedirs(PUBLIC_DIR, exist_ok=True)
     shutil.copy(CAREER_FILE, f'{PUBLIC_DIR}/nba_career_stats.json')
-    print(f'\nSaved → {CAREER_FILE}  +  {PUBLIC_DIR}/')
+    print(f'Saved → {CAREER_FILE}  +  {PUBLIC_DIR}/')
 
     # Coverage summary
-    now_has  = sum(1 for p in players if p.get('physical') and p['physical'].get('height_inches'))
-    print(f'Physical data coverage: {now_has}/{len(players)} ({100*now_has//len(players)}%)')
+    now_has = sum(
+        1 for p in players
+        if p.get('physical') and p['physical'].get('height_inches')
+    )
+    print(f'Physical data coverage: {now_has}/{len(players)} '
+          f'({100 * now_has // len(players)}%)')
 
 
 if __name__ == '__main__':
