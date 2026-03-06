@@ -123,12 +123,14 @@ def normalize_player(raw: Dict, season: int, team_meta: Dict[str, dict]) -> Dict
 
     return {
         # Identity
+        # athleteSourceId is ESPN's athlete ID (for headshots + physical data API)
+        # athleteId is CBBD's internal ID — not useful for ESPN
         'name':       raw.get('name', 'Unknown'),
         'team':       team_name,
         'season':     season,
         'conference': raw.get('conference', 'Unknown'),
         'position':   raw.get('position', 'Unknown'),
-        'athlete_id': raw.get('athleteId'),
+        'athlete_id': int(raw['athleteSourceId']) if raw.get('athleteSourceId') else raw.get('athleteId'),
 
         # Team metadata
         'espn_team_id':        meta.get('espn_source_id'),
