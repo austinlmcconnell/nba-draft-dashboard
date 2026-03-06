@@ -256,26 +256,23 @@ export function getProspectComparisons(
     sim(r.sReb)    >= FACET_FLOOR &&
     sim(r.sDef)    >= FACET_FLOOR;
 
+  // Physical comp: restricted to players who have physical measurements.
   if (hasPhys(prospectPhysical)) {
-    // Restrict physical and overall to players with physical data — without
-    // this, unmeasured players all get pDist=null → oSim collapses to sSim.
     const withPhys = rows.filter(r => r.pDist != null);
-
     if (withPhys.length > 0) {
-      // Physical: minimum physical distance
       const sortedPhys = withPhys.slice().sort((a, b) => a.pDist! - b.pDist!);
       physical = make(sortedPhys[0], 'physical', sortedPhys[0].pSim);
-
-      // Overall: apply facet floor, fall back to full pool if too restrictive
-      const flooredPool = withPhys.filter(passesFloor);
-      const overallPool = flooredPool.length > 0 ? flooredPool : withPhys;
-      byOverall = overallPool.slice().sort((a, b) => b.oSim - a.oSim)[0];
-    } else {
-      byOverall = [...rows].sort((a, b) => b.oSim - a.oSim)[0];
     }
-  } else {
-    byOverall = [...rows].sort((a, b) => b.oSim - a.oSim)[0];
   }
+
+  // Overall comp: all rows are eligible regardless of physical data availability.
+  // Players without physical data fall back to oSim = sSim — they can still win
+  // if they are clearly a closer overall match than any measured candidate.
+  // The facet floor keeps the winner well-rounded; fall back to full pool if
+  // the floor is too restrictive (rare edge case).
+  const flooredAll  = rows.filter(passesFloor);
+  const overallPool = flooredAll.length > 0 ? flooredAll : rows;
+  byOverall = overallPool.slice().sort((a, b) => b.oSim - a.oSim)[0];
 
   return {
     statistical: make(byStat,    'statistical', byStat.sSim),
