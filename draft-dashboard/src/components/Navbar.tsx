@@ -4,47 +4,51 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-// CompBeasts logo mark — SVG recreation of the arc/node motif
-function LogoMark({ size = 32 }: { size?: number }) {
+// CompBeasts logo mark
+// Structure: outer semicircle arc + two inner curves (each from a node to the
+// apex) creating two eye/leaf shapes + two large solid dark endpoint nodes.
+function LogoMark({ size = 36 }: { size?: number }) {
+  // Geometry (all in 100×76 viewport):
+  //   Nodes at (12, 64) and (88, 64) — radius 38 semicircle
+  //   Arc apex at (50, 26)
+  //   Inner curves bow toward the centre, creating lens shapes with the outer arc
   return (
     <svg
       width={size}
-      height={size * 0.7}
-      viewBox="0 0 100 70"
+      height={size * 0.76}
+      viewBox="0 0 100 76"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
-      {/* Arc */}
+      {/* Outer semicircle — counterclockwise (sweep=0) goes through the top */}
       <path
-        d="M10 58 C10 20 90 20 90 58"
+        d="M 12 64 A 38 38 0 0 0 88 64"
         stroke="#1a7a3f"
-        strokeWidth="7"
-        fill="none"
+        strokeWidth="5.5"
         strokeLinecap="round"
+        fill="none"
       />
-      {/* Inner arc leaf left */}
+      {/* Left inner curve: node → apex, bowing toward centre */}
       <path
-        d="M10 58 C25 30 45 26 50 30"
+        d="M 12 64 Q 44 54 50 26"
         stroke="#1a7a3f"
-        strokeWidth="5"
-        fill="none"
+        strokeWidth="4.5"
         strokeLinecap="round"
+        fill="none"
       />
-      {/* Inner arc leaf right */}
+      {/* Right inner curve: node → apex, bowing toward centre */}
       <path
-        d="M90 58 C75 30 55 26 50 30"
+        d="M 88 64 Q 56 54 50 26"
         stroke="#1a7a3f"
-        strokeWidth="5"
-        fill="none"
+        strokeWidth="4.5"
         strokeLinecap="round"
+        fill="none"
       />
-      {/* Left node */}
-      <circle cx="10" cy="58" r="7" fill="#111827" stroke="#1a7a3f" strokeWidth="2" />
-      <circle cx="10" cy="58" r="4" fill="#1a7a3f" />
-      {/* Right node */}
-      <circle cx="90" cy="58" r="7" fill="#111827" stroke="#1a7a3f" strokeWidth="2" />
-      <circle cx="90" cy="58" r="4" fill="#1a7a3f" />
+      {/* Left endpoint node */}
+      <circle cx="12" cy="64" r="9" fill="#1e293b" />
+      {/* Right endpoint node */}
+      <circle cx="88" cy="64" r="9" fill="#1e293b" />
     </svg>
   );
 }
@@ -82,8 +86,8 @@ export default function Navbar() {
           {/* Brand */}
           <Link href="/" className="flex items-center gap-3 group" aria-label="CompBeasts home">
             <LogoMark size={36} />
-            <span className="font-extrabold text-xl tracking-tight select-none">
-              <span className="text-[#f9fafb]">COMP</span>
+            <span className="font-bold text-xl tracking-wide uppercase select-none">
+              <span className="text-[#f9fafb]">COMP </span>
               <span className="text-[#22a052]">BEASTS</span>
             </span>
           </Link>

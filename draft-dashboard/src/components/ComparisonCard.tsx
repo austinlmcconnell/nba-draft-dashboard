@@ -17,23 +17,23 @@ interface Props {
 }
 
 const TYPE_LABELS: Record<string, { label: string; color: string; bg: string }> = {
-  statistical: { label: 'Statistical',  color: 'text-blue-700',   bg: 'bg-blue-50 border-blue-200' },
-  physical:    { label: 'Physical',     color: 'text-purple-700', bg: 'bg-purple-50 border-purple-200' },
-  overall:     { label: 'Overall',      color: 'text-green-700',  bg: 'bg-green-50 border-green-200' },
+  statistical: { label: 'Statistical', color: 'text-[#93c5fd]', bg: 'bg-[#1e3a5f]/60 border-[#3b82f6]/40' },
+  physical:    { label: 'Physical',    color: 'text-[#c4b5fd]', bg: 'bg-[#2d1f4e]/60 border-[#7c3aed]/40' },
+  overall:     { label: 'Overall',     color: 'text-[#4ade80]', bg: 'bg-[#1a7a3f]/20 border-[#1a7a3f]/50' },
 };
 
 function similarityColor(score: number) {
-  if (score >= 75) return 'text-green-700 bg-green-50 border-green-300';
-  if (score >= 60) return 'text-blue-700 bg-blue-50 border-blue-300';
-  if (score >= 45) return 'text-yellow-700 bg-yellow-50 border-yellow-300';
-  return 'text-gray-600 bg-gray-50 border-gray-300';
+  if (score >= 75) return 'text-[#4ade80] bg-[#1a7a3f]/20 border-[#1a7a3f]/50';
+  if (score >= 60) return 'text-[#93c5fd] bg-[#1e3a5f]/60 border-[#3b82f6]/40';
+  if (score >= 45) return 'text-[#fbbf24] bg-[#3f2a00]/60 border-[#f59e0b]/40';
+  return 'text-[#9ca3af] bg-[#1a2332] border-[#374151]';
 }
 
 function barColor(score: number) {
-  if (score >= 75) return 'bg-green-500';
-  if (score >= 60) return 'bg-blue-500';
-  if (score >= 45) return 'bg-yellow-400';
-  return 'bg-gray-400';
+  if (score >= 75) return 'bg-[#1a7a3f]';
+  if (score >= 60) return 'bg-[#2563eb]';
+  if (score >= 45) return 'bg-[#d97706]';
+  return 'bg-[#374151]';
 }
 
 function fmtHeight(inches: number | null): string {
@@ -173,7 +173,7 @@ export function ComparisonCard({ comparison, className = '' }: Props) {
   ];
 
   return (
-    <div className={`relative bg-white rounded-xl shadow-md border border-gray-200 hover:shadow-lg transition-shadow duration-300 overflow-hidden ${className}`}>
+    <div className={`relative bg-[#111827] rounded-xl border border-[#1f2937] hover:border-[#1a7a3f]/40 transition-all duration-300 overflow-hidden ${className}`}>
 
       {/* School-colored gradient header */}
       <div
@@ -208,7 +208,7 @@ export function ComparisonCard({ comparison, className = '' }: Props) {
 
       {/* Player headshot overlapping header / body */}
       <div className="relative z-10 px-4 -mt-7 mb-1">
-        <div className="w-14 h-14 rounded-full bg-gray-100 border-4 border-white shadow-md flex items-center justify-center overflow-hidden">
+        <div className="w-14 h-14 rounded-full bg-[#1a2332] border-4 border-[#111827] shadow-md flex items-center justify-center overflow-hidden">
           {headshotSrc && !headErr ? (
             <Image
               src={headshotSrc}
@@ -220,7 +220,7 @@ export function ComparisonCard({ comparison, className = '' }: Props) {
               unoptimized
             />
           ) : (
-            <span className="text-lg font-bold text-gray-400">
+            <span className="text-lg font-bold text-[#6b7280]">
               {h.name.split(' ').map((n: string) => n[0]).join('')}
             </span>
           )}
@@ -229,15 +229,15 @@ export function ComparisonCard({ comparison, className = '' }: Props) {
 
       <div className="px-4 pb-5">
         {/* Player name + meta */}
-        <h3 className="text-xl font-bold text-gray-900 mb-1">{h.name}</h3>
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-gray-500 mb-4">
+        <h3 className="text-xl font-bold text-[#f9fafb] mb-1">{h.name}</h3>
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-[#6b7280] mb-4">
           <span>{h.college_team}</span>
           <span>·</span>
           <span>{h.college_season}</span>
           <span>·</span>
           {h.draft_pick != null
-            ? <span className="font-semibold text-blue-600">{ordinal(h.draft_pick)} pick ({h.draft_year})</span>
-            : <span className="font-semibold text-gray-400 italic">Undrafted</span>
+            ? <span className="font-semibold text-[#4ade80]">{ordinal(h.draft_pick)} pick ({h.draft_year})</span>
+            : <span className="font-semibold text-[#6b7280] italic">Undrafted</span>
           }
           {h.physical.height_inches && (
             <>
@@ -256,7 +256,7 @@ export function ComparisonCard({ comparison, className = '' }: Props) {
         {/* College ↔ NBA stats */}
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">College</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-[#6b7280] mb-2">College</p>
             <div className="space-y-1 text-sm">
               <StatLine label="PPG" value={h.college_stats.points_per_game.toFixed(1)} />
               <StatLine label="RPG" value={h.college_stats.rebounds_per_game.toFixed(1)} />
@@ -266,7 +266,7 @@ export function ComparisonCard({ comparison, className = '' }: Props) {
             </div>
           </div>
           <div>
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">NBA Career</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-[#6b7280] mb-2">NBA Career</p>
             <div className="space-y-1 text-sm">
               <StatLine label="PPG"     value={h.nba_career.career_ppg.toFixed(1)} bold />
               <StatLine label="RPG"     value={h.nba_career.career_rpg.toFixed(1)} bold />
@@ -278,16 +278,16 @@ export function ComparisonCard({ comparison, className = '' }: Props) {
         </div>
 
         {/* Similarity breakdown bars */}
-        <div className="border-t border-gray-100 pt-4">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Similarity breakdown</p>
-          <div className="space-y-2">
+        <div className="border-t border-[#1f2937] pt-4">
+          <p className="text-xs font-bold uppercase tracking-widest text-[#6b7280] mb-3">Similarity breakdown</p>
+          <div className="space-y-2.5">
             {facets.map(f => (
               <div key={f.label}>
                 <div className="flex justify-between text-xs mb-1">
-                  <span className="text-gray-600">{f.label}</span>
-                  <span className="font-semibold text-gray-800">{f.score}%</span>
+                  <span className="text-[#9ca3af]">{f.label}</span>
+                  <span className="font-bold text-[#d1d5db]">{f.score}%</span>
                 </div>
-                <div className="w-full bg-gray-100 rounded-full h-1.5">
+                <div className="w-full bg-[#1a2332] rounded-full h-1.5">
                   <div
                     className={`h-1.5 rounded-full transition-all duration-500 ${barColor(f.score)}`}
                     style={{ width: `${f.score}%` }}
@@ -305,32 +305,32 @@ export function ComparisonCard({ comparison, className = '' }: Props) {
 function StatLine({ label, value, bold = false }: { label: string; value: string; bold?: boolean }) {
   return (
     <div className="flex justify-between">
-      <span className="text-gray-500">{label}</span>
-      <span className={bold ? 'font-bold text-gray-900' : 'font-medium text-gray-700'}>{value}</span>
+      <span className="text-[#6b7280]">{label}</span>
+      <span className={bold ? 'font-bold text-[#f9fafb]' : 'font-medium text-[#d1d5db]'}>{value}</span>
     </div>
   );
 }
 
 export function ComparisonCardSkeleton() {
   return (
-    <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden animate-pulse">
-      <div className="h-20 bg-gray-200" />
+    <div className="bg-[#111827] rounded-xl border border-[#1f2937] overflow-hidden">
+      <div className="h-20 animate-shimmer" />
       <div className="px-4 -mt-7 mb-1">
-        <div className="w-14 h-14 rounded-full bg-gray-300 border-4 border-white" />
+        <div className="w-14 h-14 rounded-full animate-shimmer border-4 border-[#111827]" />
       </div>
       <div className="px-4 pb-5">
-        <div className="h-6 bg-gray-200 rounded w-2/3 mb-2" />
-        <div className="h-4 bg-gray-200 rounded w-1/2 mb-4" />
+        <div className="h-6 animate-shimmer rounded w-2/3 mb-2" />
+        <div className="h-4 animate-shimmer rounded w-1/2 mb-4" />
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div className="space-y-2">
-            {[...Array(5)].map((_, i) => <div key={i} className="h-4 bg-gray-200 rounded" />)}
+            {[...Array(5)].map((_, i) => <div key={i} className="h-4 animate-shimmer rounded" />)}
           </div>
           <div className="space-y-2">
-            {[...Array(5)].map((_, i) => <div key={i} className="h-4 bg-gray-200 rounded" />)}
+            {[...Array(5)].map((_, i) => <div key={i} className="h-4 animate-shimmer rounded" />)}
           </div>
         </div>
         <div className="space-y-2">
-          {[...Array(5)].map((_, i) => <div key={i} className="h-3 bg-gray-200 rounded" />)}
+          {[...Array(5)].map((_, i) => <div key={i} className="h-3 animate-shimmer rounded" />)}
         </div>
       </div>
     </div>

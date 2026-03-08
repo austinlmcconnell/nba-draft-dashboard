@@ -244,17 +244,18 @@ export function getProspectComparisons(
   let physical: PlayerComparison | null = null;
   let byOverall: Row;
 
-  // Minimum facet floor for overall comparison — skip candidates with any
-  // single facet similarity below this threshold. A player who is wildly
-  // dissimilar in one key dimension (e.g. a rim-protector matched to a
-  // perimeter scorer on defense) is not a meaningful overall comparable.
-  const FACET_FLOOR = 70;
-  const passesFloor = (r: Row): boolean =>
-    sim(r.sEff)    >= FACET_FLOOR &&
-    sim(r.sVol, 2) >= FACET_FLOOR &&
-    sim(r.sPlay)   >= FACET_FLOOR &&
-    sim(r.sReb)    >= FACET_FLOOR &&
-    sim(r.sDef)    >= FACET_FLOOR;
+  // Per-facet similarity helper — used for the floor check and tie-break logic.
+  const facetSims = (r: Row) => ({
+    eff:  sim(r.sEff),
+    vol:  sim(r.sVol, 2),
+    play: sim(r.sPlay),
+    reb:  sim(r.sReb),
+    def:  sim(r.sDef),
+  });
+  const minFacetSim = (r: Row): number => {
+    const f = facetSims(r);
+    return Math.min(f.eff, f.vol, f.play, f.reb, f.def);
+  };
 
   // Physical comp: restricted to players who have physical measurements.
   if (hasPhys(prospectPhysical)) {
@@ -265,13 +266,29 @@ export function getProspectComparisons(
     }
   }
 
-  // Overall comp: all rows are eligible regardless of physical data availability.
-  // Players without physical data fall back to oSim = sSim — they can still win
-  // if they are clearly a closer overall match than any measured candidate.
-  // The facet floor keeps the winner well-rounded; fall back to full pool if
-  // the floor is too restrictive (rare edge case).
-  const flooredAll  = rows.filter(passesFloor);
-  const overallPool = flooredAll.length > 0 ? flooredAll : rows;
+  // Overall comp — facet-floor enforcement with progressive relaxation.
+  //
+  // Goal: the displayed comp should have no individual facet below 70%.
+  // If no player in the 6 800+ pool clears all five floors simultaneously
+  // (very unusual — typically means an extreme statistical outlier prospect),
+  // we relax the floor in 5-point steps until we find qualifying candidates.
+  // The last-resort fallback picks the most *balanced* match (player with the
+  // highest minimum facet score) rather than the highest raw oSim, minimising
+  // the chance of showing a wildly lopsided comp.
+  const FLOORS = [70, 65, 60, 55, 50];
+  let overallPool: Row[] = [];
+  for (const floor of FLOORS) {
+    const filtered = rows.filter(r => minFacetSim(r) >= floor);
+    if (filtered.length > 0) {
+      overallPool = filtered;
+      break;
+    }
+  }
+  // True last resort: no player hit even the 50% floor — pick most balanced.
+  if (overallPool.length === 0) {
+    // Sort by minFacetSim desc so the "least bad" facet gap wins.
+    overallPool = rows.slice().sort((a, b) => minFacetSim(b) - minFacetSim(a)).slice(0, 50);
+  }
   byOverall = overallPool.slice().sort((a, b) => b.oSim - a.oSim)[0];
 
   return {
