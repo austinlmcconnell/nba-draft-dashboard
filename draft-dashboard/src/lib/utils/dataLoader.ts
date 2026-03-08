@@ -12,6 +12,8 @@ import type {
   HistoricalPlayer,
   PhysicalAttributes,
   DatasetNorms,
+  DraftRanking,
+  NormParams,
 } from '@/types/player';
 
 import { buildDatasetNorms } from './comparison';
@@ -19,19 +21,45 @@ import { buildDatasetNorms } from './comparison';
 let historicalCache: HistoricalPlayer[] | null = null;
 let prospectsCache: CollegePlayer[] | null = null;
 let normsCache: DatasetNorms | null = null;
+let rankingsCache: DraftRanking[] | null = null;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function computeTS(raw: any): number {
+  // CBBD API doesn't return trueShootingPct — derive it from available fields.
+  // TS% = PTS / (2 × (FGA + 0.44 × FTA))
+  // We estimate FGA from: PTS ≈ 2·FG%·FGA + FT%·FTR·FGA  (FTR = FTA/FGA)
+  // free_throw_rate is stored as a percentage (e.g. 38.9 = 38.9% = 0.389 ratio)
+  const ppg    = typeof raw.points_per_game  === 'number' ? raw.points_per_game  : 0;
+  const fgPct  = typeof raw.field_goal_percentage === 'number' ? raw.field_goal_percentage / 100 : 0;
+  const ftPct  = typeof raw.free_throw_percentage === 'number' ? raw.free_throw_percentage / 100 : 0;
+  const ftr    = typeof raw.free_throw_rate === 'number' ? raw.free_throw_rate / 100 : 0;  // ratio
+  if (ppg <= 0 || fgPct <= 0) return 0;
+  const denominator = 2 * fgPct + ftPct * ftr;
+  if (denominator <= 0) return 0;
+  const fgaEst = ppg / denominator;
+  const ftaEst = ftr * fgaEst;
+  return (ppg / (2 * (fgaEst + 0.44 * ftaEst))) * 100;
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function toCollegeStats(raw: any): CollegeStats {
   const n = (v: unknown) => (typeof v === 'number' && isFinite(v) ? v : 0);
+
+  // Derive stats the API doesn't compute
+  const ts_pct    = n(raw.true_shooting_pct) || computeTS(raw);
+  const apg       = n(raw.assists_per_game);
+  const tpg       = n(raw.turnovers_per_game);
+  const ast_tov   = n(raw.ast_tov_ratio)  || (tpg > 0 ? apg / tpg : 0);
+
   return {
     games:                      n(raw.games),
     minutes_per_game:           n(raw.minutes_per_game),
     points_per_game:            n(raw.points_per_game),
     rebounds_per_game:          n(raw.rebounds_per_game),
-    assists_per_game:           n(raw.assists_per_game),
+    assists_per_game:           apg,
     steals_per_game:            n(raw.steals_per_game),
     blocks_per_game:            n(raw.blocks_per_game),
-    turnovers_per_game:         n(raw.turnovers_per_game),
+    turnovers_per_game:         tpg,
     field_goal_percentage:      n(raw.field_goal_percentage),
     three_point_percentage:     n(raw.three_point_percentage),
     free_throw_percentage:      n(raw.free_throw_percentage),
@@ -41,12 +69,12 @@ function toCollegeStats(raw: any): CollegeStats {
     stl_per36:                  n(raw.stl_per36),
     blk_per36:                  n(raw.blk_per36),
     tov_per36:                  n(raw.tov_per36),
-    true_shooting_pct:          n(raw.true_shooting_pct),
+    true_shooting_pct:          ts_pct,
     effective_fg_pct:           n(raw.effective_fg_pct),
     usage_rate:                 n(raw.usage_rate),
     free_throw_rate:            n(raw.free_throw_rate),
     three_pt_attempts_per_game: n(raw.three_pt_attempts_per_game),
-    ast_tov_ratio:              n(raw.ast_tov_ratio),
+    ast_tov_ratio:              ast_tov,
     oreb_pct:                   n(raw.oreb_pct),
     net_rating:                 n(raw.net_rating),
     win_shares_per40:           n(raw.win_shares_per40),
@@ -73,13 +101,19 @@ export async function loadHistoricalPlayers(): Promise<HistoricalPlayer[]> {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const raw: any[] = await res.json();
-    historicalCache = raw.map(r => ({
-      id:             r.id ?? `hist_${r.name}_${r.college_season}`,
-      name:           r.name,
-      college_team:   r.college_team ?? '',
-      college_season: r.college_season ?? 0,
-      college_stats:  toCollegeStats(r.college_stats ?? r),
-      physical:       toPhysical(r.physical),
+    historicalCache = raw
+      .filter(r => (r.college_season ?? 0) < 2026) // exclude current class — they're prospects, not comps
+      .map(r => ({
+      id:                   r.id ?? `hist_${r.name}_${r.college_season}`,
+      name:                 r.name,
+      college_team:         r.college_team ?? '',
+      college_season:       r.college_season ?? 0,
+      college_stats:        toCollegeStats(r.college_stats ?? r),
+      physical:             toPhysical(r.physical),
+      athlete_id:           r.college_stats?.athlete_id          ?? undefined,
+      espn_team_id:         r.college_stats?.espn_team_id        ?? undefined,
+      team_primary_color:   r.college_stats?.team_primary_color  ?? undefined,
+      team_secondary_color: r.college_stats?.team_secondary_color ?? undefined,
       nba_career: {
         seasons_played: r.nba_career?.seasons_played ?? 0,
         games_played:   r.nba_career?.games_played   ?? 0,
@@ -126,7 +160,7 @@ export async function loadProspects(season = 2024): Promise<CollegePlayer[]> {
         team_primary_color:   r.team_primary_color ?? undefined,
         team_secondary_color: r.team_secondary_color ?? undefined,
         stats:                toCollegeStats(r),
-        physical:             undefined,
+        physical:             (r.height_inches != null || r.weight_pounds != null) ? toPhysical(r) : undefined,
       }));
     return prospectsCache;
   } catch (e) {
@@ -148,8 +182,99 @@ export async function getProspectById(id: string): Promise<CollegePlayer | null>
   return prospects.find(p => p.id === id) ?? null;
 }
 
+export async function loadDraftRankings(): Promise<DraftRanking[]> {
+  if (rankingsCache) return rankingsCache;
+  try {
+    const res = await fetch('/data/draft_rankings.json');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    rankingsCache = await res.json();
+    return rankingsCache!;
+  } catch (e) {
+    console.error('Failed to load draft rankings:', e);
+    return [];
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Season averages — used by the profile page to shade stat boxes relative
+// to same-position peers in the current season.
+// ---------------------------------------------------------------------------
+export interface StatAverages {
+  points_per_game:       NormParams;
+  rebounds_per_game:     NormParams;
+  assists_per_game:      NormParams;
+  steals_per_game:       NormParams;
+  blocks_per_game:       NormParams;
+  minutes_per_game:      NormParams;
+  field_goal_percentage: NormParams;
+  three_point_percentage:NormParams;
+  free_throw_percentage: NormParams;
+  true_shooting_pct:     NormParams;
+  usage_rate:            NormParams;
+}
+
+function normOf(vals: number[]): NormParams {
+  if (vals.length === 0) return { mean: 0, std_dev: 1 };
+  const mean = vals.reduce((a, b) => a + b, 0) / vals.length;
+  const std_dev = Math.sqrt(vals.reduce((a, b) => a + (b - mean) ** 2, 0) / vals.length) || 1;
+  return { mean, std_dev };
+}
+
+/**
+ * Group positions into three broad buckets so per-position samples are large
+ * enough to produce meaningful norms.
+ *   G  → PG, SG, G
+ *   F  → SF, PF, F
+ *   C  → C
+ */
+export function positionGroup(pos: string): 'G' | 'F' | 'C' {
+  if (['PG', 'SG', 'G'].includes(pos)) return 'G';
+  if (['SF', 'PF', 'F'].includes(pos)) return 'F';
+  return 'C';
+}
+
+const MIN_POOL_SIZE = 20; // fall back to full dataset if position group is too small
+
+/**
+ * Compute stat norms for a season, optionally filtered to the same position
+ * group (G / F / C). Falls back to all positions if the group has fewer than
+ * MIN_POOL_SIZE players so the stats are still meaningful.
+ */
+export async function getSeasonAverages(
+  season: number,
+  position?: string,
+): Promise<StatAverages | null> {
+  const all = await loadProspects(season);
+  if (all.length === 0) return null;
+
+  let pool = all;
+  if (position) {
+    const group  = positionGroup(position);
+    const byPos  = all.filter(p => positionGroup(p.position) === group);
+    pool = byPos.length >= MIN_POOL_SIZE ? byPos : all;
+  }
+
+  const pick = (fn: (s: CollegeStats) => number) =>
+    normOf(pool.map(p => fn(p.stats)).filter(v => isFinite(v) && v > 0));
+
+  return {
+    points_per_game:        pick(s => s.points_per_game),
+    rebounds_per_game:      pick(s => s.rebounds_per_game),
+    assists_per_game:       pick(s => s.assists_per_game),
+    steals_per_game:        pick(s => s.steals_per_game),
+    blocks_per_game:        pick(s => s.blocks_per_game),
+    minutes_per_game:       pick(s => s.minutes_per_game),
+    field_goal_percentage:  pick(s => s.field_goal_percentage),
+    three_point_percentage: pick(s => s.three_point_percentage),
+    free_throw_percentage:  pick(s => s.free_throw_percentage),
+    true_shooting_pct:      pick(s => s.true_shooting_pct),
+    usage_rate:             pick(s => s.usage_rate),
+  };
+}
+
 export function clearDataCache() {
   historicalCache = null;
   prospectsCache  = null;
   normsCache      = null;
+  rankingsCache   = null;
 }

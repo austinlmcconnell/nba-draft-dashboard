@@ -113,6 +113,11 @@ export interface HistoricalPlayer {
   draft_year: number | null;
   draft_round: number | null;
   draft_pick: number | null;
+  // School branding — sourced from ESPN via college stats record
+  athlete_id?: number;
+  espn_team_id?: number;
+  team_primary_color?: string;
+  team_secondary_color?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -149,6 +154,19 @@ export interface ProspectComparisons {
 }
 
 // ---------------------------------------------------------------------------
+// Draft Rankings (scraped from Tankathon)
+// ---------------------------------------------------------------------------
+export interface DraftRanking {
+  rank: number;
+  name: string;
+  position: string;
+  school: string;
+  height: string | null;
+  weight: number | null;
+  class: string | null;
+}
+
+// ---------------------------------------------------------------------------
 // Normalization helpers (used internally by the comparison algorithm)
 // ---------------------------------------------------------------------------
 export interface NormParams {
@@ -168,7 +186,7 @@ export interface DatasetNorms {
   true_shooting_pct: NormParams;
   usage_rate: NormParams;
   free_throw_rate: NormParams;
-  three_pt_attempts_per_game: NormParams;
+  three_point_pct: NormParams;   // replaces three_pt_attempts_per_game (was always 0)
   ast_tov_ratio: NormParams;
   oreb_pct: NormParams;
   win_shares_per40: NormParams;
@@ -176,4 +194,5 @@ export interface DatasetNorms {
   // Physical
   height_inches: NormParams;
   weight_pounds: NormParams;
+  age_at_season_start: NormParams;
 }
