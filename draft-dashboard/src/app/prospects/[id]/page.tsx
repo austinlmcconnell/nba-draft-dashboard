@@ -59,27 +59,27 @@ export default function ProspectDetailPage() {
   const s = prospect.stats;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+    <div className="min-h-screen bg-[#0d1117]">
       {/* Back nav */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <Link href="/" className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700">
+      <div className="border-b border-[#1f2937] bg-[#111827]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <Link href="/draft" className="inline-flex items-center text-sm font-medium text-[#9ca3af] hover:text-[#4ade80] transition-colors">
             <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            Back to Dashboard
+            Back to Draft Board
           </Link>
         </div>
-      </header>
+      </div>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Profile hero */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className="bg-[#111827] rounded-xl border border-[#1f2937] overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.4)]">
           <HeroSection prospect={prospect} />
 
           {/* Stat strip */}
           <div className="px-8 py-6">
-            <h2 className="text-lg font-bold text-gray-800 mb-4">Season Stats</h2>
+            <h2 className="text-lg font-bold text-[#f9fafb] mb-4">Season Stats</h2>
             <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
               {[
                 { label: 'PPG',  value: s.points_per_game.toFixed(1),   norm: seasonAvg?.points_per_game,   raw: s.points_per_game },
@@ -118,8 +118,8 @@ export default function ProspectDetailPage() {
               ))}
             </div>
             {/* Per-36 row */}
-            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Per 36 Minutes</p>
+            <div className="mt-4 p-4 bg-[#1a2332] rounded-lg border border-[#1f2937]">
+              <p className="text-xs font-semibold text-[#6b7280] uppercase tracking-wide mb-2">Per 36 Minutes</p>
               <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 text-sm">
                 {[
                   { l: 'PTS',  v: s.pts_per36 },
@@ -130,8 +130,8 @@ export default function ProspectDetailPage() {
                   { l: 'TOV',  v: s.tov_per36 },
                 ].map(x => (
                   <div key={x.l} className="text-center">
-                    <p className="text-xs text-gray-500">{x.l}</p>
-                    <p className="font-bold text-gray-800">{x.v.toFixed(1)}</p>
+                    <p className="text-xs text-[#6b7280]">{x.l}</p>
+                    <p className="font-bold text-[#d1d5db]">{x.v.toFixed(1)}</p>
                   </div>
                 ))}
               </div>
@@ -142,8 +142,8 @@ export default function ProspectDetailPage() {
         {/* Three comparisons */}
         {comparisons ? (
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Historical Comparisons</h2>
-            <p className="text-gray-500 mb-6 text-sm">
+            <h2 className="text-2xl font-bold text-[#f9fafb] mb-2">Historical Comparisons</h2>
+            <p className="text-[#6b7280] mb-6 text-sm">
               Three distinct lenses — statistical production, physical profile, and overall similarity.
             </p>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -195,7 +195,7 @@ function HeroSection({ prospect }: { prospect: CollegePlayer }) {
       {/* Team logo — top right, links back to dashboard filtered by this school */}
       {logoSrc && !logoErr && (
         <Link
-          href={`/?school=${encodeURIComponent(prospect.team)}`}
+          href={`/draft?school=${encodeURIComponent(prospect.team)}`}
           className="absolute top-4 right-4 w-14 h-14 bg-white rounded-full shadow-lg flex items-center justify-center overflow-hidden p-1 hover:scale-105 transition-transform"
           title={`View all ${prospect.team} prospects`}
         >
@@ -233,11 +233,11 @@ function HeroSection({ prospect }: { prospect: CollegePlayer }) {
       {/* Name / team / badges */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
-          <span className="px-2 py-0.5 bg-white/90 text-blue-900 text-xs font-bold rounded-full">{prospect.position}</span>
-          <span className="px-2 py-0.5 bg-white/90 text-blue-900 text-xs font-bold rounded-full">{prospect.conference}</span>
+          <span className="px-2 py-0.5 bg-white/90 text-gray-900 text-xs font-bold rounded-full">{prospect.position}</span>
+          <span className="px-2 py-0.5 bg-white/90 text-gray-900 text-xs font-bold rounded-full">{prospect.conference}</span>
         </div>
         <h1 className="text-4xl font-bold text-white truncate">{prospect.name}</h1>
-        <p className="text-blue-200 mt-1">{prospect.team}</p>
+        <p className="text-white/70 mt-1">{prospect.team}</p>
         <PhysicalBadges physical={prospect.physical} />
       </div>
     </div>
@@ -370,14 +370,14 @@ function StatBox({
 
 function NoPhysicalCard() {
   return (
-    <div className="bg-white rounded-xl shadow-md border border-dashed border-purple-200 flex flex-col items-center justify-center p-8 text-center min-h-64">
-      <div className="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center mb-4">
-        <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div className="bg-[#111827] rounded-xl border border-dashed border-[#374151] flex flex-col items-center justify-center p-8 text-center min-h-64">
+      <div className="w-12 h-12 rounded-full bg-[#1a7a3f]/10 flex items-center justify-center mb-4">
+        <svg className="w-6 h-6 text-[#6b7280]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
         </svg>
       </div>
-      <p className="text-sm font-semibold text-purple-700 mb-1">Physical Comp</p>
-      <p className="text-xs text-gray-400 leading-relaxed">
+      <p className="text-sm font-semibold text-[#9ca3af] mb-1">Physical Comp</p>
+      <p className="text-xs text-[#6b7280] leading-relaxed">
         Physical measurements (height, weight, wingspan) are not yet available for this prospect.
       </p>
     </div>
@@ -386,13 +386,13 @@ function NoPhysicalCard() {
 
 function LoadingSkeleton() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-8">
+    <div className="min-h-screen bg-[#0d1117] p-8">
       <div className="max-w-7xl mx-auto space-y-6">
-        <div className="h-52 bg-white rounded-xl shadow animate-pulse" />
+        <div className="h-52 bg-[#111827] rounded-xl animate-shimmer" />
         <div className="grid grid-cols-3 gap-6">
-          <div className="h-96 bg-white rounded-xl shadow animate-pulse" />
-          <div className="h-96 bg-white rounded-xl shadow animate-pulse" />
-          <div className="h-96 bg-white rounded-xl shadow animate-pulse" />
+          <div className="h-96 bg-[#111827] rounded-xl animate-shimmer" />
+          <div className="h-96 bg-[#111827] rounded-xl animate-shimmer" />
+          <div className="h-96 bg-[#111827] rounded-xl animate-shimmer" />
         </div>
       </div>
     </div>
@@ -401,12 +401,12 @@ function LoadingSkeleton() {
 
 function NotFound({ message }: { message: string }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center">
+    <div className="min-h-screen bg-[#0d1117] flex items-center justify-center">
       <div className="text-center">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">Not Found</h1>
-        <p className="text-gray-500 mb-6">{message}</p>
-        <Link href="/" className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-          Back to Dashboard
+        <h1 className="text-4xl font-bold text-[#f9fafb] mb-2">Not Found</h1>
+        <p className="text-[#9ca3af] mb-6">{message}</p>
+        <Link href="/draft" className="btn-primary">
+          Back to Draft Board
         </Link>
       </div>
     </div>
