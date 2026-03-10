@@ -91,7 +91,6 @@ export default function MethodologyPage() {
               ['#derived',     'Derived stats (TS%, AST/TOV, 3P% vs FT rate)'],
               ['#statboxes',   'Profile stat box shading'],
               ['#coverage',    'Data coverage & known gaps'],
-              ['#tuning',      'Tuning guide'],
             ].map(([href, label]) => (
               <li key={href}><a href={href} className="hover:text-[#4ade80] hover:underline transition-colors">{label}</a></li>
             ))}
@@ -543,72 +542,6 @@ z ≤ −2.0  →  factor ≈ 1.50  →  lightened toward white (below average)`
                 no profile.
               </p>
             </div>
-          </div>
-        </Section>
-
-        {/* ---------------------------------------------------------------- */}
-        <Section id="tuning" title="Tuning guide">
-          <p className="text-[#d1d5db] mb-4">
-            All weights are in <code>draft-dashboard/src/lib/utils/comparison.ts</code>.
-          </p>
-
-          <div className="space-y-5">
-            <Sub title="Change facet weights (statistical distance)">
-              <Formula>{`// statDistance() — const total line
-const total = eff * 0.25 + vol * 0.16 + play * 0.20 + reb * 0.19 + def * 0.20;
-//                  ^^^^        ^^^^         ^^^^        ^^^^        ^^^^
-// Must sum to 1.0  (e.g. emphasise playmaking: play * 0.25, reduce others)`}</Formula>
-            </Sub>
-
-            <Sub title="Change the overall blend (stat / physical / age)">
-              <Formula>{`// getProspectComparisons() — oSim computation
-const oSim = pDist != null
-  ? 0.70 * sSim + 0.25 * pSim + 0.05 * ageSim
-  : sSim;
-//  ^^^^           ^^^^          ^^^^
-// Physical useful range: 0.15–0.35.  Age useful range: 0.03–0.10.
-// Weights must sum to 1.0 (when physical is available)`}</Formula>
-            </Sub>
-
-            <Sub title="Change physical dimension weights">
-              <Formula>{`// physDistance() — lines ~130–136
-// Without wingspan:
-return Math.sqrt(0.55 * sq(h1,h2) + 0.45 * sq(w1,w2));
-//               ^^^^                ^^^^
-// With wingspan (when both players have it):
-return Math.sqrt(0.40 * sq(h1,h2) + 0.30 * sq(w1,w2) + 0.20 * sq(ws1,ws2));`}</Formula>
-            </Sub>
-
-            <Sub title="Change age sensitivity">
-              <Formula>{`// ageSim in getProspectComparisons()
-ageSim = sim(Math.abs(zA - zB), 1.5);
-//                               ^^^
-// Lower k → age matters more (harsher on age gaps)
-// Higher k → age matters less (more forgiving)`}</Formula>
-            </Sub>
-
-            <Sub title="Change similarity decay rate (k)">
-              <Formula>{`sim(sDist)          // stat similarity:   k = 3.0 (default)
-sim(pDist, 1.5)     // physical:           k = 1.5 (tighter)
-sim(volDist, 2)     // scoring volume:     k = 2.0
-sim(ageDist, 1.5)   // age:                k = 1.5
-
-// Higher k → scores decay slower → more players get high scores
-// Lower  k → harsher scale → only near-perfect matches score well`}</Formula>
-            </Sub>
-
-            <Sub title="Add a new stat dimension">
-              <p className="text-sm text-[#9ca3af] mb-2">
-                To incorporate a new stat (e.g. offensive rating once the API provides it):
-              </p>
-              <ol className="list-decimal list-inside text-sm text-[#9ca3af] space-y-1">
-                <li>Add the field to <code>DatasetNorms</code> in <code>player.ts</code></li>
-                <li>Add the field to the <code>StatVec</code> interface</li>
-                <li>Add <code>{'zScore(s.offensive_rating, n.net_rating)'}</code> in <code>toStatVec()</code></li>
-                <li>Include it in the relevant facet formula in <code>statDistance()</code></li>
-                <li>Add its norm computation in <code>buildDatasetNorms()</code></li>
-              </ol>
-            </Sub>
           </div>
         </Section>
 

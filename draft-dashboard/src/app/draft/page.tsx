@@ -179,8 +179,13 @@ export default function DraftBoardPage() {
     <div className="min-h-screen bg-[#0d1117]">
 
       {/* Page hero */}
-      <div className="bg-[#111827] border-b border-[#1f2937]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="relative bg-[#111827] border-b border-[#1f2937] overflow-hidden">
+        <div
+          className="absolute inset-0 pointer-events-none"
+          aria-hidden="true"
+          style={{ background: 'radial-gradient(ellipse 60% 80% at 0% 50%, rgba(26,122,63,0.12) 0%, transparent 70%)' }}
+        />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div>
               <p className="text-xs font-bold uppercase tracking-widest text-[#4ade80] mb-2">

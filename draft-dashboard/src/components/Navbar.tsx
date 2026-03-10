@@ -24,7 +24,7 @@ function LogoMark({ size = 36 }: { size?: number }) {
       {/* Outer semicircle — counterclockwise (sweep=0) goes through the top */}
       <path
         d="M 12 64 A 38 38 0 0 0 88 64"
-        stroke="#1a7a3f"
+        stroke="#4ade80"
         strokeWidth="5.5"
         strokeLinecap="round"
         fill="none"
@@ -32,7 +32,7 @@ function LogoMark({ size = 36 }: { size?: number }) {
       {/* Left inner curve: node → apex, bowing toward centre */}
       <path
         d="M 12 64 Q 44 54 50 26"
-        stroke="#1a7a3f"
+        stroke="#22a052"
         strokeWidth="4.5"
         strokeLinecap="round"
         fill="none"
@@ -40,15 +40,17 @@ function LogoMark({ size = 36 }: { size?: number }) {
       {/* Right inner curve: node → apex, bowing toward centre */}
       <path
         d="M 88 64 Q 56 54 50 26"
-        stroke="#1a7a3f"
+        stroke="#22a052"
         strokeWidth="4.5"
         strokeLinecap="round"
         fill="none"
       />
-      {/* Left endpoint node */}
-      <circle cx="12" cy="64" r="9" fill="#1e293b" />
+      {/* Left endpoint node — filled dark green, outlined bright */}
+      <circle cx="12" cy="64" r="9" fill="#14532d" stroke="#4ade80" strokeWidth="2" />
       {/* Right endpoint node */}
-      <circle cx="88" cy="64" r="9" fill="#1e293b" />
+      <circle cx="88" cy="64" r="9" fill="#14532d" stroke="#4ade80" strokeWidth="2" />
+      {/* Apex dot */}
+      <circle cx="50" cy="26" r="5" fill="#4ade80" />
     </svg>
   );
 }
@@ -87,8 +89,8 @@ export default function Navbar() {
           <Link href="/" className="flex items-center gap-3 group" aria-label="CompBeasts home">
             <LogoMark size={36} />
             <span className="font-bold text-xl tracking-wide uppercase select-none">
-              <span className="text-[#f9fafb]">COMP </span>
-              <span className="text-[#22a052]">BEASTS</span>
+              <span className="text-[#e2e8f0]">COMP </span>
+              <span className="gradient-text">BEASTS</span>
             </span>
           </Link>
 

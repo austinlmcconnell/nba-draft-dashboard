@@ -103,13 +103,15 @@ html {
 }
 .card-hover:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.6),
-              0 0 0 1px rgba(26, 122, 63, 0.3);
+  box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.7),
+              0 0 0 1px rgba(34, 160, 82, 0.4),
+              0 0 24px rgba(34, 160, 82, 0.08);
 }
 
 /* Green accent glow on focus */
 .cb-glow:hover {
-  box-shadow: 0 0 20px rgba(26, 122, 63, 0.25);
+  box-shadow: 0 0 24px rgba(34, 160, 82, 0.2),
+              0 0 0 1px rgba(34, 160, 82, 0.15);
 }
 
 /* ============================================================

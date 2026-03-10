@@ -147,19 +147,19 @@ export function PlayerCard({ player, rank, className = '' }: PlayerCardProps) {
           {/* Key Stats */}
           <div className="grid grid-cols-3 gap-2">
             <div className="text-center p-3 bg-[#1a2332] rounded-lg">
-              <p className="text-xl font-black text-[#4ade80]">
+              <p className="text-xl font-black text-[#f9fafb]">
                 {stats.points_per_game.toFixed(1)}
               </p>
               <p className="text-xs text-[#6b7280] uppercase mt-0.5">PPG</p>
             </div>
             <div className="text-center p-3 bg-[#1a2332] rounded-lg">
-              <p className="text-xl font-black text-[#22a052]">
+              <p className="text-xl font-black text-[#f9fafb]">
                 {stats.rebounds_per_game.toFixed(1)}
               </p>
               <p className="text-xs text-[#6b7280] uppercase mt-0.5">RPG</p>
             </div>
             <div className="text-center p-3 bg-[#1a2332] rounded-lg">
-              <p className="text-xl font-black text-[#d1d5db]">
+              <p className="text-xl font-black text-[#f9fafb]">
                 {stats.assists_per_game.toFixed(1)}
               </p>
               <p className="text-xs text-[#6b7280] uppercase mt-0.5">APG</p>

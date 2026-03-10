@@ -160,15 +160,14 @@ export function ComparisonCard({ comparison, className = '' }: Props) {
     ? `https://a.espncdn.com/i/teamlogos/ncaa/500/${teamId}.png`
     : null;
 
+  const hasPhysical = comparison_type === 'physical' && breakdown.physical > 0;
   const facets = [
     { label: 'Scoring Eff.',  score: breakdown.scoring_efficiency },
     { label: 'Scoring Vol.',  score: breakdown.scoring_volume },
     { label: 'Playmaking',    score: breakdown.playmaking },
     { label: 'Rebounding',    score: breakdown.rebounding },
     { label: 'Defense',       score: breakdown.defense },
-    ...(comparison_type === 'physical' && breakdown.physical > 0
-      ? [{ label: 'Physical', score: breakdown.physical }]
-      : []),
+    ...(hasPhysical ? [{ label: 'Physical', score: breakdown.physical }] : []),
   ];
 
   return (
@@ -276,7 +275,7 @@ export function ComparisonCard({ comparison, className = '' }: Props) {
           </div>
         </div>
 
-        {/* Similarity breakdown bars */}
+        {/* Similarity breakdown bars — always 6 rows so statistical and physical cards align */}
         <div className="border-t border-[#1f2937] pt-4">
           <p className="text-xs font-bold uppercase tracking-widest text-[#6b7280] mb-3">Similarity breakdown</p>
           <div className="space-y-2.5">
@@ -294,6 +293,15 @@ export function ComparisonCard({ comparison, className = '' }: Props) {
                 </div>
               </div>
             ))}
+            {/* Spacer row — keeps statistical cards the same height as physical cards (which have a 6th row) */}
+            {!hasPhysical && (
+              <div aria-hidden="true" className="opacity-0 pointer-events-none select-none">
+                <div className="flex justify-between text-xs mb-1">
+                  <span>—</span><span>—</span>
+                </div>
+                <div className="w-full bg-[#1a2332] rounded-full h-1.5" />
+              </div>
+            )}
           </div>
         </div>
       </div>
