@@ -110,6 +110,7 @@ export async function loadHistoricalPlayers(): Promise<HistoricalPlayer[]> {
       college_season:       r.college_season ?? 0,
       college_stats:        toCollegeStats(r.college_stats ?? r),
       physical:             toPhysical(r.physical),
+      position:             r.college_stats?.position ?? undefined,
       athlete_id:           r.college_stats?.athlete_id          ?? undefined,
       espn_team_id:         r.college_stats?.espn_team_id        ?? undefined,
       team_primary_color:   r.college_stats?.team_primary_color  ?? undefined,
