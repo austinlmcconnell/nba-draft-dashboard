@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ComparisonCard, ComparisonCardSkeleton } from '@/components/ComparisonCard';
-import type { CollegePlayer, ProspectComparisons, NormParams } from '@/types/player';
+import { ComparisonCard } from '@/components/ComparisonCard';
+import type { CollegePlayer, ProspectComparisons, NormParams, PlayerComparison } from '@/types/player';
 import { getProspectComparisons } from '@/lib/utils/comparison';
 import {
   loadHistoricalPlayers,
@@ -139,27 +139,32 @@ export default function ProspectDetailPage() {
           </div>
         </div>
 
-        {/* Three comparisons */}
+        {/* Comparisons */}
         {comparisons ? (
           <div>
             <h2 className="text-2xl font-bold text-[#f9fafb] mb-2">Historical Comparisons</h2>
             <p className="text-[#6b7280] mb-6 text-sm">
-              Three distinct lenses — statistical production, physical profile, and overall similarity.
+              Two lenses — statistical production and physical profile.
             </p>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <ComparisonCard comparison={comparisons.statistical} />
-              {comparisons.physical
-                ? <ComparisonCard comparison={comparisons.physical} />
-                : <NoPhysicalCard />
-              }
-              <ComparisonCard comparison={comparisons.overall} />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Statistical */}
+              <ComparisonColumn
+                label="Statistical Comp"
+                comps={comparisons.statistical}
+                emptyMessage="No statistical comparisons available."
+              />
+              {/* Physical */}
+              <ComparisonColumn
+                label="Physical Comp"
+                comps={comparisons.physical}
+                emptyMessage="Physical measurements not yet available for this prospect."
+              />
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <ComparisonCardSkeleton />
-            <ComparisonCardSkeleton />
-            <ComparisonCardSkeleton />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <ComparisonColumnSkeleton />
+            <ComparisonColumnSkeleton />
           </div>
         )}
       </main>
@@ -368,18 +373,90 @@ function StatBox({
   );
 }
 
-function NoPhysicalCard() {
-  return (
-    <div className="bg-[#111827] rounded-xl border border-dashed border-[#374151] flex flex-col items-center justify-center p-8 text-center min-h-64">
-      <div className="w-12 h-12 rounded-full bg-[#1a7a3f]/10 flex items-center justify-center mb-4">
-        <svg className="w-6 h-6 text-[#6b7280]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-        </svg>
+
+function ComparisonColumn({ label, comps, emptyMessage }: {
+  label: string;
+  comps: PlayerComparison[];
+  emptyMessage: string;
+}) {
+  if (comps.length === 0) {
+    return (
+      <div>
+        <h3 className="text-lg font-bold text-[#f9fafb] mb-4">{label}</h3>
+        <div className="bg-[#111827] rounded-xl border border-dashed border-[#374151] flex items-center justify-center p-10 text-center">
+          <p className="text-sm text-[#6b7280]">{emptyMessage}</p>
+        </div>
       </div>
-      <p className="text-sm font-semibold text-[#9ca3af] mb-1">Physical Comp</p>
-      <p className="text-xs text-[#6b7280] leading-relaxed">
-        Physical measurements (height, weight, wingspan) are not yet available for this prospect.
-      </p>
+    );
+  }
+
+  const [top, ...rest] = comps;
+
+  return (
+    <div>
+      <h3 className="text-lg font-bold text-[#f9fafb] mb-4">{label}</h3>
+      <ComparisonCard comparison={top} />
+      {rest.length > 0 && (
+        <div className="mt-4 bg-[#111827] rounded-xl border border-[#1f2937] divide-y divide-[#1f2937]">
+          {rest.map((comp, i) => {
+            const h = comp.historical_player;
+            const rank = i + 2;
+            return (
+              <div key={h.id} className="flex items-center justify-between px-4 py-3">
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-bold text-[#6b7280] w-5">{rank}.</span>
+                  <div>
+                    <span className="text-sm font-semibold text-[#f9fafb]">{h.name}</span>
+                    <span className="text-xs text-[#6b7280] ml-2">
+                      {h.college_season} · {h.college_team}
+                    </span>
+                  </div>
+                </div>
+                <span className={`text-xs font-bold tabular-nums ${comp.similarity_score >= 75 ? 'text-[#4ade80]' : comp.similarity_score >= 60 ? 'text-[#93c5fd]' : 'text-[#9ca3af]'}`}>
+                  {comp.similarity_score.toFixed(1)}% match
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ComparisonColumnSkeleton() {
+  return (
+    <div>
+      <div className="h-6 w-40 bg-[#111827] rounded animate-shimmer mb-4" />
+      <div className="bg-[#111827] rounded-xl border border-[#1f2937] overflow-hidden">
+        <div className="h-20 animate-shimmer" />
+        <div className="px-4 -mt-7 mb-1">
+          <div className="w-14 h-14 rounded-full animate-shimmer border-4 border-[#111827]" />
+        </div>
+        <div className="px-4 pb-5">
+          <div className="h-6 animate-shimmer rounded w-2/3 mb-2" />
+          <div className="h-4 animate-shimmer rounded w-1/2 mb-4" />
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="space-y-2">
+              {[...Array(5)].map((_, i) => <div key={i} className="h-4 animate-shimmer rounded" />)}
+            </div>
+            <div className="space-y-2">
+              {[...Array(5)].map((_, i) => <div key={i} className="h-4 animate-shimmer rounded" />)}
+            </div>
+          </div>
+          <div className="space-y-2">
+            {[...Array(5)].map((_, i) => <div key={i} className="h-3 animate-shimmer rounded" />)}
+          </div>
+        </div>
+      </div>
+      <div className="mt-4 bg-[#111827] rounded-xl border border-[#1f2937] divide-y divide-[#1f2937]">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="flex items-center justify-between px-4 py-3">
+            <div className="h-4 w-48 animate-shimmer rounded" />
+            <div className="h-4 w-20 animate-shimmer rounded" />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -389,8 +466,7 @@ function LoadingSkeleton() {
     <div className="min-h-screen bg-[#0d1117] p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="h-52 bg-[#111827] rounded-xl animate-shimmer" />
-        <div className="grid grid-cols-3 gap-6">
-          <div className="h-96 bg-[#111827] rounded-xl animate-shimmer" />
+        <div className="grid grid-cols-2 gap-8">
           <div className="h-96 bg-[#111827] rounded-xl animate-shimmer" />
           <div className="h-96 bg-[#111827] rounded-xl animate-shimmer" />
         </div>

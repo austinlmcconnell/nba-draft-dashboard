@@ -122,12 +122,11 @@ export interface HistoricalPlayer {
 
 // ---------------------------------------------------------------------------
 // Comparison Types
-// Three distinct comparison lenses per prospect:
+// Two distinct comparison lenses per prospect:
 //   statistical — how similarly did this player produce on the court
 //   physical    — how similar are body dimensions
-//   overall     — blended statistical + physical
 // ---------------------------------------------------------------------------
-export type ComparisonType = 'statistical' | 'physical' | 'overall';
+export type ComparisonType = 'statistical' | 'physical';
 
 export interface ComparisonBreakdown {
   // Statistical facets (0-100)
@@ -136,7 +135,7 @@ export interface ComparisonBreakdown {
   playmaking: number;          // Ast/36, AST/TOV ratio
   rebounding: number;          // Reb/36, ORB%
   defense: number;             // Stl/36, Blk/36
-  // Physical facets (0-100, only meaningful for physical/overall comparisons)
+  // Physical facets (0-100, only meaningful for physical comparisons)
   physical: number;
 }
 
@@ -148,9 +147,8 @@ export interface PlayerComparison {
 }
 
 export interface ProspectComparisons {
-  statistical: PlayerComparison;
-  physical: PlayerComparison | null;   // null when prospect has no physical data
-  overall: PlayerComparison;
+  statistical: PlayerComparison[];  // top 5, index 0 is best
+  physical: PlayerComparison[];     // top 5, empty when prospect has no physical data
 }
 
 // ---------------------------------------------------------------------------

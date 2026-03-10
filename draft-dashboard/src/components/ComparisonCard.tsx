@@ -19,7 +19,6 @@ interface Props {
 const TYPE_LABELS: Record<string, { label: string; color: string; bg: string }> = {
   statistical: { label: 'Statistical', color: 'text-[#93c5fd]', bg: 'bg-[#1e3a5f]/60 border-[#3b82f6]/40' },
   physical:    { label: 'Physical',    color: 'text-[#c4b5fd]', bg: 'bg-[#2d1f4e]/60 border-[#7c3aed]/40' },
-  overall:     { label: 'Overall',     color: 'text-[#4ade80]', bg: 'bg-[#1a7a3f]/20 border-[#1a7a3f]/50' },
 };
 
 function similarityColor(score: number) {
@@ -167,7 +166,7 @@ export function ComparisonCard({ comparison, className = '' }: Props) {
     { label: 'Playmaking',    score: breakdown.playmaking },
     { label: 'Rebounding',    score: breakdown.rebounding },
     { label: 'Defense',       score: breakdown.defense },
-    ...(comparison_type !== 'statistical' && breakdown.physical > 0
+    ...(comparison_type === 'physical' && breakdown.physical > 0
       ? [{ label: 'Physical', score: breakdown.physical }]
       : []),
   ];
