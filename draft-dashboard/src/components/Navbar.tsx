@@ -4,14 +4,10 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-// CompBeasts logo mark
-// Structure: outer semicircle arc + two inner curves (each from a node to the
-// apex) creating two eye/leaf shapes + two large solid dark endpoint nodes.
+// CompBeasts logo mark — matches the exact brand logo (green arcs + dark nodes)
+// On the dark background the nodes are rendered white so they contrast the same
+// way the original black nodes contrast on a white background.
 function LogoMark({ size = 36 }: { size?: number }) {
-  // Geometry (all in 100×76 viewport):
-  //   Nodes at (12, 64) and (88, 64) — radius 38 semicircle
-  //   Arc apex at (50, 26)
-  //   Inner curves bow toward the centre, creating lens shapes with the outer arc
   return (
     <svg
       width={size}
@@ -21,36 +17,33 @@ function LogoMark({ size = 36 }: { size?: number }) {
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
-      {/* Outer semicircle — counterclockwise (sweep=0) goes through the top */}
+      {/* Outer semicircle arc */}
       <path
         d="M 12 64 A 38 38 0 0 0 88 64"
-        stroke="#4ade80"
+        stroke="#1a7a3f"
         strokeWidth="5.5"
         strokeLinecap="round"
         fill="none"
       />
-      {/* Left inner curve: node → apex, bowing toward centre */}
+      {/* Left inner curve — same weight as outer arc, forms left lens shape */}
       <path
         d="M 12 64 Q 44 54 50 26"
-        stroke="#22a052"
-        strokeWidth="4.5"
+        stroke="#1a7a3f"
+        strokeWidth="5.5"
         strokeLinecap="round"
         fill="none"
       />
-      {/* Right inner curve: node → apex, bowing toward centre */}
+      {/* Right inner curve — mirrors left, forms right lens shape */}
       <path
         d="M 88 64 Q 56 54 50 26"
-        stroke="#22a052"
-        strokeWidth="4.5"
+        stroke="#1a7a3f"
+        strokeWidth="5.5"
         strokeLinecap="round"
         fill="none"
       />
-      {/* Left endpoint node — filled dark green, outlined bright */}
-      <circle cx="12" cy="64" r="9" fill="#14532d" stroke="#4ade80" strokeWidth="2" />
-      {/* Right endpoint node */}
-      <circle cx="88" cy="64" r="9" fill="#14532d" stroke="#4ade80" strokeWidth="2" />
-      {/* Apex dot */}
-      <circle cx="50" cy="26" r="5" fill="#4ade80" />
+      {/* Endpoint nodes — white on dark bg = same contrast as black on white in source logo */}
+      <circle cx="12" cy="64" r="9" fill="#f0f4f8" />
+      <circle cx="88" cy="64" r="9" fill="#f0f4f8" />
     </svg>
   );
 }
@@ -89,8 +82,8 @@ export default function Navbar() {
           <Link href="/" className="flex items-center gap-3 group" aria-label="CompBeasts home">
             <LogoMark size={36} />
             <span className="font-bold text-xl tracking-wide uppercase select-none">
-              <span className="text-[#e2e8f0]">COMP </span>
-              <span className="gradient-text">BEASTS</span>
+              <span className="text-[#f9fafb]">COMP </span>
+              <span className="text-[#1a7a3f]">BEASTS</span>
             </span>
           </Link>
 
