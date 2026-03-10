@@ -113,6 +113,7 @@ export interface HistoricalPlayer {
   draft_year: number | null;
   draft_round: number | null;
   draft_pick: number | null;
+  position?: string;            // G | F | C | G-F | F-C — used for position-group filtering
   // School branding — sourced from ESPN via college stats record
   athlete_id?: number;
   espn_team_id?: number;

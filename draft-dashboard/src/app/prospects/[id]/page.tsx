@@ -39,7 +39,7 @@ export default function ProspectDetailPage() {
         // Only compare against players from PREVIOUS seasons to avoid
         // self-comparison and comparisons against current-season teammates.
         const compPool = historical.filter(h => h.college_season < p.season);
-        const comps = getProspectComparisons(p.stats, p.physical ?? null, compPool, norms);
+        const comps = getProspectComparisons(p.stats, p.physical ?? null, compPool, norms, p.position);
         const avg = await getSeasonAverages(p.season, p.position);
         setProspect(p);
         setComparisons(comps);

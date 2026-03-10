@@ -145,6 +145,43 @@ function sim(dist: number, k = 3): number {
 }
 
 // ---------------------------------------------------------------------------
+// Position grouping — used to restrict the comparison pool so guards aren't
+// compared against forwards/centres and vice-versa.
+//
+// Group map:
+//   G  ← G, PG, SG
+//   F  ← F, SF, PF, ATH
+//   C  ← C
+//   G  or F ← G-F (wing; included in both)
+//   F  or C ← F-C (stretch big; included in both)
+// ---------------------------------------------------------------------------
+export function posGroup(pos: string | undefined): 'G' | 'F' | 'C' | 'G-F' | 'F-C' | null {
+  if (!pos) return null;
+  const p = pos.trim().toUpperCase();
+  if (p === 'G-F') return 'G-F';
+  if (p === 'F-C') return 'F-C';
+  if (['G', 'PG', 'SG'].includes(p)) return 'G';
+  if (['F', 'SF', 'PF', 'ATH'].includes(p)) return 'F';
+  if (p === 'C') return 'C';
+  return null;
+}
+
+/** Returns true if the historical player's position group is compatible with the prospect's. */
+function positionCompatible(prospectPos: string | undefined, histPos: string | undefined): boolean {
+  const pg = posGroup(prospectPos);
+  const hg = posGroup(histPos);
+  if (pg === null || hg === null) return true; // missing data → don't restrict
+  if (pg === hg) return true;
+  // Hybrid positions are included in adjacent groups
+  if (pg === 'G' && hg === 'G-F') return true;
+  if (pg === 'F' && (hg === 'G-F' || hg === 'F-C')) return true;
+  if (pg === 'C' && hg === 'F-C') return true;
+  if (pg === 'G-F' && (hg === 'G' || hg === 'F')) return true;
+  if (pg === 'F-C' && (hg === 'F' || hg === 'C')) return true;
+  return false;
+}
+
+// ---------------------------------------------------------------------------
 // Public: compute statistical and physical comparisons for a prospect
 // ---------------------------------------------------------------------------
 
@@ -152,8 +189,14 @@ export function getProspectComparisons(
   prospectStats: CollegeStats,
   prospectPhysical: PhysicalAttributes | undefined | null,
   pool: HistoricalPlayer[],
-  norms: DatasetNorms
+  norms: DatasetNorms,
+  prospectPosition?: string,
 ): ProspectComparisons {
+  // Filter pool to same position group. If too few players pass the filter,
+  // fall back to the full pool so we always have enough comps.
+  const MIN_POSITION_POOL = 50;
+  const posFiltered = pool.filter(h => positionCompatible(prospectPosition, h.position));
+  const effectivePool = posFiltered.length >= MIN_POSITION_POOL ? posFiltered : pool;
   const pVec = toStatVec(prospectStats, norms);
   const hasPhys = (p: PhysicalAttributes | undefined | null): p is PhysicalAttributes =>
     !!p && (p.height_inches != null || p.weight_pounds != null);
@@ -189,7 +232,7 @@ export function getProspectComparisons(
   //   blended_sim = 0.5 × weighted_avg + 0.5 × min_facet
   // Perfectly balanced comps are unaffected; every point the weakest facet
   // falls below the average costs the same amount in the final score.
-  const statRows = pool
+  const statRows = effectivePool
     .map(hist => {
       const hVec = toStatVec(hist.college_stats, norms);
       const s = statDistance(pVec, hVec);
@@ -222,7 +265,7 @@ export function getProspectComparisons(
   // Physical comparisons — only players with physical data, sorted by physical distance
   let physical: PlayerComparison[] = [];
   if (hasPhys(prospectPhysical)) {
-    const physRows = pool
+    const physRows = effectivePool
       .filter(hist => hasPhys(hist.physical))
       .map(hist => {
         const hVec = toStatVec(hist.college_stats, norms);
