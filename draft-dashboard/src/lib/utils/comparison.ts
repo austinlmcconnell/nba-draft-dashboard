@@ -181,12 +181,28 @@ export function getProspectComparisons(
     };
   }
 
-  // Compute statistical distances for all players in the pool
+  // Compute statistical distances for all players in the pool.
+  // Sort key: blend of weighted-average facet similarity and minimum facet
+  // similarity (50/50). This penalises lopsided comps — a player with a 55%
+  // rebounding outlier can no longer beat a balanced comp whose weakest facet
+  // is 78%, even if the outlier's other four dimensions are excellent.
+  //   blended_sim = 0.5 × weighted_avg + 0.5 × min_facet
+  // Perfectly balanced comps are unaffected; every point the weakest facet
+  // falls below the average costs the same amount in the final score.
   const statRows = pool
     .map(hist => {
       const hVec = toStatVec(hist.college_stats, norms);
       const s = statDistance(pVec, hVec);
-      const sSim = sim(s.total);
+
+      const sEff  = sim(s.eff);
+      const sVol  = sim(s.vol, 2);
+      const sPlay = sim(s.play);
+      const sReb  = sim(s.reb);
+      const sDef  = sim(s.def);
+
+      const weightedAvg = sEff * 0.25 + sVol * 0.16 + sPlay * 0.20 + sReb * 0.19 + sDef * 0.20;
+      const minFacet    = Math.min(sEff, sVol, sPlay, sReb, sDef);
+      const blendedSim  = 0.5 * weightedAvg + 0.5 * minFacet;
 
       let pDist: number | null = null;
       let pSimVal = 0;
@@ -195,12 +211,12 @@ export function getProspectComparisons(
         pSimVal = sim(pDist, 1.5);
       }
 
-      return { hist, s, sSim, pDist, pSimVal };
+      return { hist, s, sEff, sVol, sPlay, sReb, sDef, blendedSim, pDist, pSimVal };
     })
-    .sort((a, b) => a.s.total - b.s.total);
+    .sort((a, b) => b.blendedSim - a.blendedSim);
 
   const statistical: PlayerComparison[] = statRows.slice(0, 5).map(r =>
-    make(r.hist, 'statistical', r.sSim, r.s.eff, r.s.vol, r.s.play, r.s.reb, r.s.def, r.pDist, r.pSimVal)
+    make(r.hist, 'statistical', r.blendedSim, r.s.eff, r.s.vol, r.s.play, r.s.reb, r.s.def, r.pDist, r.pSimVal)
   );
 
   // Physical comparisons — only players with physical data, sorted by physical distance
