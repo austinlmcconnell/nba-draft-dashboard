@@ -127,13 +127,17 @@ _MEAS_FIELDS = {
 
 
 def _probe_nba_stats() -> bool:
-    """Quick reachability probe for stats.nba.com (3-second timeout)."""
+    """Quick reachability probe for stats.nba.com — verifies actual JSON data comes back."""
     try:
         r = requests.get(
             'https://stats.nba.com/stats/draftcombinestats?LeagueID=00&SeasonYear=2023-24',
-            headers=_NBA_STATS_HEADERS, timeout=3,
+            headers=_NBA_STATS_HEADERS, timeout=8,
         )
-        return r.status_code < 500
+        if r.status_code != 200:
+            return False
+        data = r.json()
+        rs = (data.get('resultSets') or [{}])[0]
+        return bool(rs.get('rowSet'))
     except Exception:
         return False
 
@@ -153,14 +157,19 @@ def fetch_nba_combine_all(start: int = 2001, end: int = 2025) -> Dict[str, dict]
 
     print(f'[NBA Combine API] Fetching {start}–{end} ({end - start + 1} calls)…')
 
+    consecutive_failures = 0
+    MAX_CONSECUTIVE_FAILURES = 3
+
     for year in range(start, end + 1):
         season = f'{year}-{str(year + 1)[-2:]}'
         url    = f'https://stats.nba.com/stats/draftcombinestats?LeagueID=00&SeasonYear={season}'
 
+        data = None
         for attempt in range(3):
             try:
                 resp = requests.get(url, headers=_NBA_STATS_HEADERS, timeout=TIMEOUT_NBA)
                 if resp.status_code in (400, 404):
+                    data = None
                     break   # season not available — normal for future years
                 resp.raise_for_status()
                 data = resp.json()
@@ -171,7 +180,19 @@ def fetch_nba_combine_all(start: int = 2001, end: int = 2025) -> Dict[str, dict]
                 time.sleep(wait)
         else:
             print(f'  {season}: failed after 3 attempts')
+            consecutive_failures += 1
+            if consecutive_failures >= MAX_CONSECUTIVE_FAILURES:
+                print(f'  {MAX_CONSECUTIVE_FAILURES} consecutive failures — '
+                      f'stats.nba.com appears to be blocking requests, skipping remainder.\n')
+                break
             continue
+
+        if data is None:
+            consecutive_failures = 0
+            time.sleep(0.4)
+            continue
+
+        consecutive_failures = 0
 
         rs   = (data.get('resultSets') or [{}])[0]
         hdrs = rs.get('headers', [])
