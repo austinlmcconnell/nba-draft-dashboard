@@ -1,5 +1,5 @@
 /**
- * PlayerCard Component
+ * PlayerCard Component — CompBeasts dark theme
  * Displays a prospect's basic info and stats in a card format
  */
 
@@ -14,20 +14,17 @@ interface PlayerCardProps {
   className?: string;
 }
 
-/** Build an ESPN headshot URL from an athleteId */
 function headshotUrl(athleteId: number): string {
   return `https://a.espncdn.com/combiner/i?img=/i/headshots/mens-college-basketball/players/full/${athleteId}.png`;
 }
 
-/** Build an ESPN team logo URL from a sourceId */
 function teamLogoUrl(espnTeamId: number): string {
   return `https://a.espncdn.com/i/teamlogos/ncaa/500/${espnTeamId}.png`;
 }
 
-/** Convert a hex color like "003087" to a CSS background-image gradient */
 function teamGradient(primary?: string, secondary?: string): string {
-  const p = primary   ? `#${primary.replace('#', '')}`   : '#1d4ed8';   // blue-700
-  const s = secondary ? `#${secondary.replace('#', '')}` : '#1e3a8a';   // blue-900
+  const p = primary   ? `#${primary.replace('#', '')}`   : '#1a7a3f';
+  const s = secondary ? `#${secondary.replace('#', '')}` : '#145f30';
   return `linear-gradient(135deg, ${p}, ${s})`;
 }
 
@@ -48,9 +45,11 @@ export function PlayerCard({ player, rank, className = '' }: PlayerCardProps) {
     <Link href={`/prospects/${player.id}`}>
       <div
         className={`
-          group relative overflow-hidden rounded-xl bg-white shadow-md
-          transition-all duration-300 hover:shadow-xl hover:-translate-y-1
-          border border-gray-100
+          group relative overflow-hidden rounded-xl
+          bg-[#111827] border border-[#1f2937]
+          transition-all duration-300
+          hover:border-[#1a7a3f]/50 hover:-translate-y-1
+          hover:shadow-[0_16px_40px_rgba(0,0,0,0.5),0_0_0_1px_rgba(26,122,63,0.25)]
           ${className}
         `}
       >
@@ -59,6 +58,9 @@ export function PlayerCard({ player, rank, className = '' }: PlayerCardProps) {
           className="relative h-48"
           style={{ background: teamGradient(player.team_primary_color, player.team_secondary_color) }}
         >
+          {/* Darkening overlay for readability */}
+          <div className="absolute inset-0 bg-black/20" />
+
           {/* Player headshot or initials */}
           <div className="absolute inset-0 flex items-center justify-center">
             {hasHeadshot ? (
@@ -67,13 +69,13 @@ export function PlayerCard({ player, rank, className = '' }: PlayerCardProps) {
                 alt={name}
                 width={128}
                 height={128}
-                className="w-32 h-32 rounded-full object-cover border-4 border-white/30"
+                className="w-32 h-32 rounded-full object-cover border-4 border-white/20 relative z-10"
                 onError={() => setHeadErr(true)}
                 unoptimized
               />
             ) : (
-              <div className="w-32 h-32 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                <span className="text-6xl font-bold text-white/60">
+              <div className="w-32 h-32 rounded-full bg-black/20 backdrop-blur-sm flex items-center justify-center relative z-10 border-4 border-white/10">
+                <span className="text-5xl font-bold text-white/60">
                   {name.split(' ').map(n => n[0]).join('')}
                 </span>
               </div>
@@ -81,13 +83,13 @@ export function PlayerCard({ player, rank, className = '' }: PlayerCardProps) {
           </div>
 
           {/* Team logo */}
-          <div className="absolute top-4 right-4 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center overflow-hidden">
+          <div className="absolute top-4 right-4 w-11 h-11 bg-white rounded-full shadow-lg flex items-center justify-center overflow-hidden z-10">
             {hasLogo ? (
               <Image
                 src={teamLogoUrl(player.espn_team_id!)}
                 alt={team}
-                width={40}
-                height={40}
+                width={36}
+                height={36}
                 className="object-contain p-1"
                 onError={() => setLogoErr(true)}
                 unoptimized
@@ -99,42 +101,42 @@ export function PlayerCard({ player, rank, className = '' }: PlayerCardProps) {
             )}
           </div>
 
-          {/* Position + Rank Badges */}
-          <div className="absolute top-4 left-4 flex flex-col gap-1.5">
+          {/* Rank + Position Badges */}
+          <div className="absolute top-4 left-4 flex flex-col gap-1.5 z-10">
             {rank !== undefined && (
-              <span className="px-2.5 py-0.5 bg-yellow-400 text-yellow-900 text-xs font-black rounded-full shadow">
+              <span className="px-2.5 py-0.5 bg-[#1a7a3f] text-white text-xs font-black rounded-full shadow border border-[#4ade80]/20">
                 #{rank}
               </span>
             )}
-            <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-blue-900 text-xs font-bold rounded-full">
+            <span className="px-2.5 py-1 bg-black/40 backdrop-blur-sm text-white text-xs font-bold rounded-full border border-white/10">
               {position}
             </span>
           </div>
         </div>
 
         {/* Player Info */}
-        <div className="p-6">
+        <div className="p-5">
           {/* Name and School */}
-          <h3 className="text-2xl font-bold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">
+          <h3 className="text-xl font-bold text-[#f9fafb] mb-0.5 group-hover:text-[#4ade80] transition-colors leading-tight">
             {name}
           </h3>
-          <p className="text-sm text-gray-600 mb-4">
-            {team} • {player.conference}
+          <p className="text-sm text-[#6b7280] mb-4">
+            {team} · {player.conference}
           </p>
 
           {/* Physical Stats — shown only when available */}
           {physical && (physical.height_inches || physical.weight_pounds) && (
-            <div className="flex gap-4 mb-4 pb-4 border-b border-gray-100">
+            <div className="flex gap-5 mb-4 pb-4 border-b border-[#1f2937]">
               <div>
-                <p className="text-xs text-gray-500 uppercase">Height</p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-xs text-[#6b7280] uppercase tracking-wide">Height</p>
+                <p className="text-base font-bold text-[#d1d5db]">
                   {formatHeight(physical.height_inches)}
                 </p>
               </div>
               {physical.weight_pounds && (
                 <div>
-                  <p className="text-xs text-gray-500 uppercase">Weight</p>
-                  <p className="text-lg font-semibold text-gray-900">
+                  <p className="text-xs text-[#6b7280] uppercase tracking-wide">Weight</p>
+                  <p className="text-base font-bold text-[#d1d5db]">
                     {physical.weight_pounds} lbs
                   </p>
                 </div>
@@ -143,65 +145,58 @@ export function PlayerCard({ player, rank, className = '' }: PlayerCardProps) {
           )}
 
           {/* Key Stats */}
-          <div className="grid grid-cols-3 gap-3">
-            <div className="text-center p-3 bg-gray-50 rounded-lg">
-              <p className="text-2xl font-bold text-blue-600">
+          <div className="grid grid-cols-3 gap-2">
+            <div className="text-center p-3 bg-[#1a2332] rounded-lg">
+              <p className="text-xl font-black text-[#f9fafb]">
                 {stats.points_per_game.toFixed(1)}
               </p>
-              <p className="text-xs text-gray-600 uppercase mt-1">PPG</p>
+              <p className="text-xs text-[#6b7280] uppercase mt-0.5">PPG</p>
             </div>
-            <div className="text-center p-3 bg-gray-50 rounded-lg">
-              <p className="text-2xl font-bold text-green-600">
+            <div className="text-center p-3 bg-[#1a2332] rounded-lg">
+              <p className="text-xl font-black text-[#f9fafb]">
                 {stats.rebounds_per_game.toFixed(1)}
               </p>
-              <p className="text-xs text-gray-600 uppercase mt-1">RPG</p>
+              <p className="text-xs text-[#6b7280] uppercase mt-0.5">RPG</p>
             </div>
-            <div className="text-center p-3 bg-gray-50 rounded-lg">
-              <p className="text-2xl font-bold text-purple-600">
+            <div className="text-center p-3 bg-[#1a2332] rounded-lg">
+              <p className="text-xl font-black text-[#f9fafb]">
                 {stats.assists_per_game.toFixed(1)}
               </p>
-              <p className="text-xs text-gray-600 uppercase mt-1">APG</p>
+              <p className="text-xs text-[#6b7280] uppercase mt-0.5">APG</p>
             </div>
           </div>
 
           {/* Shooting Stats */}
-          <div className="mt-4 flex justify-between text-sm">
+          <div className="mt-3 flex justify-between text-sm">
             <div>
-              <span className="text-gray-500">FG:</span>{' '}
-              <span className="font-semibold text-gray-900">
+              <span className="text-[#6b7280]">FG </span>
+              <span className="font-semibold text-[#d1d5db]">
                 {stats.field_goal_percentage.toFixed(1)}%
               </span>
             </div>
             <div>
-              <span className="text-gray-500">3P:</span>{' '}
-              <span className="font-semibold text-gray-900">
+              <span className="text-[#6b7280]">3P </span>
+              <span className="font-semibold text-[#d1d5db]">
                 {stats.three_point_percentage.toFixed(1)}%
               </span>
             </div>
             <div>
-              <span className="text-gray-500">FT:</span>{' '}
-              <span className="font-semibold text-gray-900">
+              <span className="text-[#6b7280]">FT </span>
+              <span className="font-semibold text-[#d1d5db]">
                 {stats.free_throw_percentage.toFixed(1)}%
               </span>
             </div>
           </div>
 
-          {/* View Details Link */}
-          <div className="mt-4 pt-4 border-t border-gray-100">
-            <span className="text-sm font-medium text-blue-600 group-hover:text-blue-700 flex items-center">
-              View Comparison
+          {/* View Details */}
+          <div className="mt-4 pt-3 border-t border-[#1f2937]">
+            <span className="text-sm font-semibold text-[#1a7a3f] group-hover:text-[#4ade80] flex items-center transition-colors">
+              View Comparisons
               <svg
                 className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </span>
           </div>
@@ -211,25 +206,22 @@ export function PlayerCard({ player, rank, className = '' }: PlayerCardProps) {
   );
 }
 
-/**
- * PlayerCardSkeleton - Loading state
- */
 export function PlayerCardSkeleton() {
   return (
-    <div className="rounded-xl bg-white shadow-md border border-gray-100 animate-pulse">
-      <div className="h-48 bg-gray-200" />
-      <div className="p-6">
-        <div className="h-8 bg-gray-200 rounded w-3/4 mb-2" />
-        <div className="h-4 bg-gray-200 rounded w-1/2 mb-4" />
-        <div className="flex gap-4 mb-4">
-          <div className="h-12 bg-gray-200 rounded w-20" />
-          <div className="h-12 bg-gray-200 rounded w-20" />
-          <div className="h-12 bg-gray-200 rounded w-20" />
+    <div className="rounded-xl bg-[#111827] border border-[#1f2937] overflow-hidden">
+      <div className="h-48 animate-shimmer" />
+      <div className="p-5 space-y-3">
+        <div className="h-6 animate-shimmer rounded w-3/4" />
+        <div className="h-4 animate-shimmer rounded w-1/2" />
+        <div className="grid grid-cols-3 gap-2 mt-4">
+          <div className="h-16 animate-shimmer rounded-lg" />
+          <div className="h-16 animate-shimmer rounded-lg" />
+          <div className="h-16 animate-shimmer rounded-lg" />
         </div>
-        <div className="grid grid-cols-3 gap-3">
-          <div className="h-20 bg-gray-200 rounded" />
-          <div className="h-20 bg-gray-200 rounded" />
-          <div className="h-20 bg-gray-200 rounded" />
+        <div className="flex justify-between pt-2">
+          <div className="h-4 animate-shimmer rounded w-16" />
+          <div className="h-4 animate-shimmer rounded w-16" />
+          <div className="h-4 animate-shimmer rounded w-16" />
         </div>
       </div>
     </div>

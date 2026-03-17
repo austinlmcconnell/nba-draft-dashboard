@@ -1,7 +1,7 @@
 /**
  * Player Comparison Algorithm
  *
- * Three comparison lenses per prospect:
+ * Two comparison lenses per prospect:
  *
  *   statistical — Who produced the most similarly on the court?
  *     Per-36 stats + efficiency rates, z-score normalised across the dataset.
@@ -16,12 +16,7 @@
  *     Height 55%, weight 45% (wingspan redistributes: h 40%, w 30%, ws 20%
  *     when available from NBA Draft Combine).
  *
- *   overall — Best single comparable blending both dimensions.
- *     Scored as: 70% × stat_sim + 25% × phys_sim + 5% × age_sim
- *     Searched by maximising this blended score so that no single dimension
- *     (e.g. a physically-identical but statistically-dissimilar player) can
- *     dominate the result.
- *     Falls back to statistical-only when prospect has no physical data.
+ * Returns top 5 matches for each lens. Index 0 is the best match.
  */
 
 import type {
@@ -117,8 +112,6 @@ function statDistance(a: StatVec, b: StatVec) {
   const reb  = Math.sqrt(sq(a.reb36, b.reb36) + sq(a.oreb_pct, b.oreb_pct));
   const def  = Math.sqrt(sq(a.stl36, b.stl36) + sq(a.blk36, b.blk36));
 
-  // Weighted total — defence and rebounding raised to better discriminate
-  // positional roles; scoring efficiency reduced slightly (sums to 1.0)
   const total = eff * 0.25 + vol * 0.16 + play * 0.20 + reb * 0.19 + def * 0.20;
 
   return { total, eff, vol, play, reb, def };
@@ -135,7 +128,7 @@ function physDistance(a: PhysicalAttributes, b: PhysicalAttributes, n: DatasetNo
   const w2 = b.weight_pounds != null ? zScore(b.weight_pounds, n.weight_pounds) : 0;
 
   if (a.wingspan_inches != null && b.wingspan_inches != null) {
-    const ws1 = zScore(a.wingspan_inches, n.height_inches); // same scale as height
+    const ws1 = zScore(a.wingspan_inches, n.height_inches);
     const ws2 = zScore(b.wingspan_inches, n.height_inches);
     return Math.sqrt(0.40 * sq(h1, h2) + 0.30 * sq(w1, w2) + 0.20 * sq(ws1, ws2));
   }
@@ -152,131 +145,141 @@ function sim(dist: number, k = 3): number {
 }
 
 // ---------------------------------------------------------------------------
-// Public: compute all three comparisons for a prospect
+// Position grouping — used to restrict the comparison pool so guards aren't
+// compared against forwards/centres and vice-versa.
+//
+// Group map:
+//   G  ← G, PG, SG
+//   F  ← F, SF, PF, ATH
+//   C  ← C
+//   G  or F ← G-F (wing; included in both)
+//   F  or C ← F-C (stretch big; included in both)
+// ---------------------------------------------------------------------------
+export function posGroup(pos: string | undefined): 'G' | 'F' | 'C' | 'G-F' | 'F-C' | null {
+  if (!pos) return null;
+  const p = pos.trim().toUpperCase();
+  if (p === 'G-F') return 'G-F';
+  if (p === 'F-C') return 'F-C';
+  if (['G', 'PG', 'SG'].includes(p)) return 'G';
+  if (['F', 'SF', 'PF', 'ATH'].includes(p)) return 'F';
+  if (p === 'C') return 'C';
+  return null;
+}
+
+/** Returns true if the historical player's position group is compatible with the prospect's. */
+function positionCompatible(prospectPos: string | undefined, histPos: string | undefined): boolean {
+  const pg = posGroup(prospectPos);
+  const hg = posGroup(histPos);
+  if (pg === null || hg === null) return true; // missing data → don't restrict
+  if (pg === hg) return true;
+  // Hybrid positions are included in adjacent groups
+  if (pg === 'G' && hg === 'G-F') return true;
+  if (pg === 'F' && (hg === 'G-F' || hg === 'F-C')) return true;
+  if (pg === 'C' && hg === 'F-C') return true;
+  if (pg === 'G-F' && (hg === 'G' || hg === 'F')) return true;
+  if (pg === 'F-C' && (hg === 'F' || hg === 'C')) return true;
+  return false;
+}
+
+// ---------------------------------------------------------------------------
+// Public: compute statistical and physical comparisons for a prospect
 // ---------------------------------------------------------------------------
 
 export function getProspectComparisons(
   prospectStats: CollegeStats,
   prospectPhysical: PhysicalAttributes | undefined | null,
   pool: HistoricalPlayer[],
-  norms: DatasetNorms
+  norms: DatasetNorms,
+  prospectPosition?: string,
 ): ProspectComparisons {
+  // Filter pool to same position group. If too few players pass the filter,
+  // fall back to the full pool so we always have enough comps.
+  const MIN_POSITION_POOL = 50;
+  const posFiltered = pool.filter(h => positionCompatible(prospectPosition, h.position));
+  const effectivePool = posFiltered.length >= MIN_POSITION_POOL ? posFiltered : pool;
   const pVec = toStatVec(prospectStats, norms);
   const hasPhys = (p: PhysicalAttributes | undefined | null): p is PhysicalAttributes =>
     !!p && (p.height_inches != null || p.weight_pounds != null);
 
-  const prospectAge = prospectPhysical?.age_at_season_start;
-
-  type Row = {
-    player: HistoricalPlayer;
-    // Statistical facets
-    sDist: number; sEff: number; sVol: number; sPlay: number; sReb: number; sDef: number;
-    sSim: number;   // 0-100 statistical similarity (sim(sDist))
-    // Physical
-    pDist: number | null;
-    pSim:  number;  // 0-100 physical similarity, 0 when unavailable
-    // Age
-    ageSim: number; // 0-100, defaults to 100 when age data is missing (neutral)
-    // Overall blended score (used for search AND as displayed score)
-    oSim: number;
-  };
-
-  const rows: Row[] = pool.map(hist => {
-    const hVec = toStatVec(hist.college_stats, norms);
-    const s    = statDistance(pVec, hVec);
-    const sSim = sim(s.total);
-
-    let pDist: number | null = null;
-    let pSim  = 0;
-    if (hasPhys(prospectPhysical) && hasPhys(hist.physical)) {
-      pDist = physDistance(prospectPhysical, hist.physical, norms);
-      pSim  = sim(pDist, 1.5);
-    }
-
-    // Age similarity — only meaningful when both players have the field.
-    // When missing, default to 100 (no penalty) so existing age data still
-    // helps distinguish comps without penalising players with no data.
-    let ageSim = 100;
-    const histAge = hist.physical?.age_at_season_start;
-    if (
-      prospectAge != null && histAge != null &&
-      norms.age_at_season_start && norms.age_at_season_start.std_dev > 0
-    ) {
-      const zA = zScore(prospectAge, norms.age_at_season_start);
-      const zB = zScore(histAge,     norms.age_at_season_start);
-      ageSim = sim(Math.abs(zA - zB), 1.5); // 1 year apart ≈ notable difference
-    }
-
-    // Overall blended similarity: maximising this is fairer than minimising a
-    // blended distance because each dimension's exponential decay is applied
-    // before combining — a physically-perfect-but-statistically-different
-    // player can no longer beat a well-rounded match.
-    const oSim = pDist != null
-      ? 0.70 * sSim + 0.25 * pSim + 0.05 * ageSim
-      : sSim;
-
+  function make(
+    player: HistoricalPlayer,
+    type: ComparisonType,
+    score: number,
+    sEff: number, sVol: number, sPlay: number, sReb: number, sDef: number,
+    pDist: number | null,
+    pSim: number
+  ): PlayerComparison {
     return {
-      player: hist,
-      sDist: s.total, sEff: s.eff, sVol: s.vol, sPlay: s.play, sReb: s.reb, sDef: s.def,
-      sSim, pDist, pSim, ageSim, oSim,
-    };
-  });
-
-  function make(row: Row, type: ComparisonType, score: number): PlayerComparison {
-    return {
-      historical_player: row.player,
+      historical_player: player,
       comparison_type: type,
       similarity_score: Math.round(score * 10) / 10,
       breakdown: {
-        scoring_efficiency: Math.round(sim(row.sEff)),
-        scoring_volume:     Math.round(sim(row.sVol, 2)),
-        playmaking:         Math.round(sim(row.sPlay)),
-        rebounding:         Math.round(sim(row.sReb)),
-        defense:            Math.round(sim(row.sDef)),
-        physical:           row.pDist != null ? Math.round(row.pSim) : 0,
+        scoring_efficiency: Math.round(sim(sEff)),
+        scoring_volume:     Math.round(sim(sVol, 2)),
+        playmaking:         Math.round(sim(sPlay)),
+        rebounding:         Math.round(sim(sReb)),
+        defense:            Math.round(sim(sDef)),
+        physical:           pDist != null ? Math.round(pSim) : 0,
       },
     };
   }
 
-  // Statistical: minimum stat distance
-  const byStat = [...rows].sort((a, b) => a.sDist - b.sDist)[0];
+  // Compute statistical distances for all players in the pool.
+  // Sort key: blend of weighted-average facet similarity and minimum facet
+  // similarity (50/50). This penalises lopsided comps — a player with a 55%
+  // rebounding outlier can no longer beat a balanced comp whose weakest facet
+  // is 78%, even if the outlier's other four dimensions are excellent.
+  //   blended_sim = 0.5 × weighted_avg + 0.5 × min_facet
+  // Perfectly balanced comps are unaffected; every point the weakest facet
+  // falls below the average costs the same amount in the final score.
+  const statRows = effectivePool
+    .map(hist => {
+      const hVec = toStatVec(hist.college_stats, norms);
+      const s = statDistance(pVec, hVec);
 
-  let physical: PlayerComparison | null = null;
-  let byOverall: Row;
+      const sEff  = sim(s.eff);
+      const sVol  = sim(s.vol, 2);
+      const sPlay = sim(s.play);
+      const sReb  = sim(s.reb);
+      const sDef  = sim(s.def);
 
-  // Minimum facet floor for overall comparison — skip candidates with any
-  // single facet similarity below this threshold. A player who is wildly
-  // dissimilar in one key dimension (e.g. a rim-protector matched to a
-  // perimeter scorer on defense) is not a meaningful overall comparable.
-  const FACET_FLOOR = 70;
-  const passesFloor = (r: Row): boolean =>
-    sim(r.sEff)    >= FACET_FLOOR &&
-    sim(r.sVol, 2) >= FACET_FLOOR &&
-    sim(r.sPlay)   >= FACET_FLOOR &&
-    sim(r.sReb)    >= FACET_FLOOR &&
-    sim(r.sDef)    >= FACET_FLOOR;
+      const weightedAvg = sEff * 0.25 + sVol * 0.16 + sPlay * 0.20 + sReb * 0.19 + sDef * 0.20;
+      const minFacet    = Math.min(sEff, sVol, sPlay, sReb, sDef);
+      const blendedSim  = 0.5 * weightedAvg + 0.5 * minFacet;
 
-  // Physical comp: restricted to players who have physical measurements.
+      let pDist: number | null = null;
+      let pSimVal = 0;
+      if (hasPhys(prospectPhysical) && hasPhys(hist.physical)) {
+        pDist = physDistance(prospectPhysical, hist.physical, norms);
+        pSimVal = sim(pDist, 1.5);
+      }
+
+      return { hist, s, sEff, sVol, sPlay, sReb, sDef, blendedSim, pDist, pSimVal };
+    })
+    .sort((a, b) => b.blendedSim - a.blendedSim);
+
+  const statistical: PlayerComparison[] = statRows.slice(0, 5).map(r =>
+    make(r.hist, 'statistical', r.blendedSim, r.s.eff, r.s.vol, r.s.play, r.s.reb, r.s.def, r.pDist, r.pSimVal)
+  );
+
+  // Physical comparisons — only players with physical data, sorted by physical distance
+  let physical: PlayerComparison[] = [];
   if (hasPhys(prospectPhysical)) {
-    const withPhys = rows.filter(r => r.pDist != null);
-    if (withPhys.length > 0) {
-      const sortedPhys = withPhys.slice().sort((a, b) => a.pDist! - b.pDist!);
-      physical = make(sortedPhys[0], 'physical', sortedPhys[0].pSim);
-    }
+    const physRows = effectivePool
+      .filter(hist => hasPhys(hist.physical))
+      .map(hist => {
+        const hVec = toStatVec(hist.college_stats, norms);
+        const s = statDistance(pVec, hVec);
+        const pDist = physDistance(prospectPhysical, hist.physical, norms);
+        const pSimVal = sim(pDist, 1.5);
+        return { hist, s, pDist, pSimVal };
+      })
+      .sort((a, b) => a.pDist - b.pDist);
+
+    physical = physRows.slice(0, 5).map(r =>
+      make(r.hist, 'physical', r.pSimVal, r.s.eff, r.s.vol, r.s.play, r.s.reb, r.s.def, r.pDist, r.pSimVal)
+    );
   }
 
-  // Overall comp: all rows are eligible regardless of physical data availability.
-  // Players without physical data fall back to oSim = sSim — they can still win
-  // if they are clearly a closer overall match than any measured candidate.
-  // The facet floor keeps the winner well-rounded; fall back to full pool if
-  // the floor is too restrictive (rare edge case).
-  const flooredAll  = rows.filter(passesFloor);
-  const overallPool = flooredAll.length > 0 ? flooredAll : rows;
-  byOverall = overallPool.slice().sort((a, b) => b.oSim - a.oSim)[0];
-
-  return {
-    statistical: make(byStat,    'statistical', byStat.sSim),
-    physical,
-    overall:     make(byOverall, 'overall',     byOverall.oSim),
-  };
+  return { statistical, physical };
 }
