@@ -255,10 +255,31 @@ def fetch_roster(team: str, season: int) -> Dict[str, dict]:
     return result
 
 
-def enrich_hist_from_sports_ref(hist: list) -> Tuple[int, int]:
+PROGRESS_FILE = os.path.join(PUBLIC_DIR, '.sports_ref_progress.json')
+
+
+def load_progress() -> set:
+    """Load set of already-completed (team, season) combos."""
+    if os.path.exists(PROGRESS_FILE):
+        try:
+            with open(PROGRESS_FILE) as f:
+                data = json.load(f)
+            return {tuple(x) for x in data}
+        except Exception:
+            pass
+    return set()
+
+
+def save_progress(done: set) -> None:
+    with open(PROGRESS_FILE, 'w') as f:
+        json.dump([list(x) for x in done], f)
+
+
+def enrich_hist_from_sports_ref(hist: list, career: list) -> Tuple[int, int]:
     """
     Scrape Sports Reference roster pages for all (team, season) combos that
     still have records missing height/weight.
+    Saves progress incrementally every 25 pages so crashes can be resumed.
     Returns (players_updated, fields_applied).
     """
     # Collect unique combos that are needed
@@ -270,13 +291,15 @@ def enrich_hist_from_sports_ref(hist: list) -> Tuple[int, int]:
             if team and season and team in _TEAM_SLUG:
                 needed.setdefault((team, season), []).append(p)
 
+    done          = load_progress()
+    remaining     = {k: v for k, v in needed.items() if k not in done}
     total_combos  = len(needed)
     total_updated = 0
     total_applied = 0
 
-    print(f'[Sports Ref] {total_combos} team-season pages to fetch…')
+    print(f'[Sports Ref] {total_combos} team-season pages total, {len(done)} already done, {len(remaining)} remaining…')
 
-    for i, ((team, season), players) in enumerate(sorted(needed.items()), 1):
+    for i, ((team, season), players) in enumerate(sorted(remaining.items()), 1):
         roster = fetch_roster(team, season)
 
         if roster:
@@ -284,7 +307,6 @@ def enrich_hist_from_sports_ref(hist: list) -> Tuple[int, int]:
                 norm = _norm(p.get('name', ''))
                 data = roster.get(norm)
                 if not data:
-                    # Fallback: last name + first 4 chars of first name
                     parts = norm.split()
                     if len(parts) >= 2:
                         last, fp4 = parts[-1], parts[0][:4]
@@ -307,8 +329,19 @@ def enrich_hist_from_sports_ref(hist: list) -> Tuple[int, int]:
                     if player_updated:
                         total_updated += 1
 
-        if i % 50 == 0 or i == total_combos:
-            print(f'  {i}/{total_combos} pages  ({total_updated} players updated so far)')
+        done.add((team, season))
+
+        # Save incrementally every 25 pages
+        if i % 25 == 0 or i == len(remaining):
+            completed_so_far = len(done)
+            print(f'  {completed_so_far}/{total_combos} pages done  ({total_updated} players updated so far) — saving…')
+            # Re-apply cross-reference and flush both files
+            crossref_career_from_hist(career, hist)
+            with open(HIST_FILE, 'w') as f:
+                json.dump(hist, f, indent=2)
+            with open(CAREER_FILE, 'w') as f:
+                json.dump(career, f, indent=2)
+            save_progress(done)
 
         time.sleep(DELAY)
 
@@ -363,35 +396,21 @@ def main():
     print(f'  Players updated: {u1:,}  fields applied: {a1:,}')
 
     # ------------------------------------------------------------------
-    # Step 2: Sports Reference scraping for hist
+    # Step 2: Sports Reference scraping for hist (saves incrementally)
     # ------------------------------------------------------------------
     print('\n[Step 2] Scrape Sports Reference CBB roster pages…')
-    u2, a2 = enrich_hist_from_sports_ref(hist)
+    u2, a2 = enrich_hist_from_sports_ref(hist, career)
     print(f'  Players updated: {u2:,}  fields applied: {a2:,}')
-
-    # ------------------------------------------------------------------
-    # Step 3: Re-apply cross-reference after hist was enriched
-    # ------------------------------------------------------------------
-    print('\n[Step 3] Re-apply cross-reference career ← hist (after scraping)…')
-    u3, a3 = crossref_career_from_hist(career, hist)
-    print(f'  Players updated: {u3:,}  fields applied: {a3:,}')
 
     # ------------------------------------------------------------------
     print('\nCOVERAGE AFTER:')
     report('nba_career_stats',        career, is_career=True)
     report('historical_college_stats', hist,  is_career=False)
 
-    # ------------------------------------------------------------------
-    # Save
-    # ------------------------------------------------------------------
-    with open(CAREER_FILE, 'w') as f:
-        json.dump(career, f, indent=2)
-    with open(HIST_FILE, 'w') as f:
-        json.dump(hist, f, indent=2)
-
-    print(f'\nSaved → {PUBLIC_DIR}/')
-    total_http = 1 + u2   # rough estimate
-    print(f'Total Sports Reference requests: ~{len({(p.get("team"), p.get("season")) for p in hist if not p.get("height_inches")})} roster pages')
+    # Clean up progress file on successful completion
+    if os.path.exists(PROGRESS_FILE):
+        os.remove(PROGRESS_FILE)
+    print(f'\nDone. Data saved → {PUBLIC_DIR}/')
 
 
 if __name__ == '__main__':
