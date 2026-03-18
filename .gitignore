@@ -8,3 +8,4 @@ draft-dashboard/.next/
 .env.local
 .DS_Store
 *.log
+draft-dashboard/public/data/.sports_ref_progress.json
