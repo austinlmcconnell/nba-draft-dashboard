@@ -15803,7 +15803,9 @@
     "oreb_pct": 0,
     "net_rating": 0,
     "offensive_rating": 103.4,
-    "defensive_rating": 0
+    "defensive_rating": 0,
+    "height_inches": 76.0,
+    "weight_pounds": 190
   },
   {
     "name": "Brett Collins",
@@ -15843,7 +15845,9 @@
     "oreb_pct": 0,
     "net_rating": 0,
     "offensive_rating": 93.7,
-    "defensive_rating": 0
+    "defensive_rating": 0,
+    "height_inches": 77.0,
+    "weight_pounds": 225
   },
   {
     "name": "Daniel Kickert",
@@ -15883,7 +15887,9 @@
     "oreb_pct": 0,
     "net_rating": 0,
     "offensive_rating": 122,
-    "defensive_rating": 0
+    "defensive_rating": 0,
+    "height_inches": 82.0,
+    "weight_pounds": 240
   },
   {
     "name": "Frederic Adjiwanou",
@@ -15923,7 +15929,9 @@
     "oreb_pct": 0,
     "net_rating": 0,
     "offensive_rating": 96.1,
-    "defensive_rating": 0
+    "defensive_rating": 0,
+    "height_inches": 81.0,
+    "weight_pounds": 230
   },
   {
     "name": "E.J. Rowland",
@@ -15963,7 +15971,9 @@
     "oreb_pct": 0,
     "net_rating": 0,
     "offensive_rating": 106.4,
-    "defensive_rating": 0
+    "defensive_rating": 0,
+    "height_inches": 74.0,
+    "weight_pounds": 190
   },
   {
     "name": "Jonathan Sanders",
@@ -16003,7 +16013,9 @@
     "oreb_pct": 0,
     "net_rating": 0,
     "offensive_rating": 102.6,
-    "defensive_rating": 0
+    "defensive_rating": 0,
+    "height_inches": 79.0,
+    "weight_pounds": 215
   },
   {
     "name": "Paul Marigney",
@@ -16043,7 +16055,9 @@
     "oreb_pct": 0,
     "net_rating": 0,
     "offensive_rating": 118.4,
-    "defensive_rating": 0
+    "defensive_rating": 0,
+    "height_inches": 75.0,
+    "weight_pounds": 195
   },
   {
     "name": "Matt Thomas",
@@ -16373,7 +16387,9 @@
     "oreb_pct": 0,
     "net_rating": 0,
     "offensive_rating": 119.5,
-    "defensive_rating": 0
+    "defensive_rating": 0,
+    "height_inches": 73.0,
+    "weight_pounds": 175
   },
   {
     "name": "Corey Belser",
@@ -16413,7 +16429,9 @@
     "oreb_pct": 0,
     "net_rating": 0,
     "offensive_rating": 116.5,
-    "defensive_rating": 0
+    "defensive_rating": 0,
+    "height_inches": 78.0,
+    "weight_pounds": 210
   },
   {
     "name": "Nick Lewis",
@@ -16453,7 +16471,9 @@
     "oreb_pct": 0,
     "net_rating": 0,
     "offensive_rating": 109.5,
-    "defensive_rating": 0
+    "defensive_rating": 0,
+    "height_inches": 82.0,
+    "weight_pounds": 235
   },
   {
     "name": "Brandon Gay",
@@ -16493,7 +16513,9 @@
     "oreb_pct": 0,
     "net_rating": 0,
     "offensive_rating": 116.7,
-    "defensive_rating": 0
+    "defensive_rating": 0,
+    "height_inches": 80.0,
+    "weight_pounds": 220
   },
   {
     "name": "Brice Vounang",
@@ -16533,7 +16555,9 @@
     "oreb_pct": 0,
     "net_rating": 0,
     "offensive_rating": 100.8,
-    "defensive_rating": 0
+    "defensive_rating": 0,
+    "height_inches": 80.0,
+    "weight_pounds": 250
   },
   {
     "name": "Avi Fogel",
@@ -16573,7 +16597,9 @@
     "oreb_pct": 0,
     "net_rating": 0,
     "offensive_rating": 90.2,
-    "defensive_rating": 0
+    "defensive_rating": 0,
+    "height_inches": 73.0,
+    "weight_pounds": 170
   },
   {
     "name": "Alan Wiggins Jr.",
@@ -41456,7 +41482,9 @@
     "oreb_pct": 0,
     "net_rating": -656.3,
     "offensive_rating": 100.1,
-    "defensive_rating": 756.4
+    "defensive_rating": 756.4,
+    "height_inches": 76.0,
+    "weight_pounds": 210
   },
   {
     "name": "Diamon Simpson",
@@ -41496,7 +41524,9 @@
     "oreb_pct": 0,
     "net_rating": -268.1,
     "offensive_rating": 105.9,
-    "defensive_rating": 374
+    "defensive_rating": 374,
+    "height_inches": 80.0,
+    "weight_pounds": 240
   },
   {
     "name": "Ian O'Leary",
@@ -41536,7 +41566,9 @@
     "oreb_pct": 0,
     "net_rating": -328.6,
     "offensive_rating": 112.2,
-    "defensive_rating": 440.8
+    "defensive_rating": 440.8,
+    "height_inches": 79.0,
+    "weight_pounds": 225
   },
   {
     "name": "Todd Golden",
@@ -41576,7 +41608,9 @@
     "oreb_pct": 0,
     "net_rating": -344.3,
     "offensive_rating": 116.6,
-    "defensive_rating": 460.9
+    "defensive_rating": 460.9,
+    "height_inches": 75.0,
+    "weight_pounds": 180
   },
   {
     "name": "Brett Collins",
@@ -41616,7 +41650,9 @@
     "oreb_pct": 0,
     "net_rating": -332.7,
     "offensive_rating": 104.3,
-    "defensive_rating": 437
+    "defensive_rating": 437,
+    "height_inches": 77.0,
+    "weight_pounds": 225
   },
   {
     "name": "John Winston",
@@ -41656,7 +41692,9 @@
     "oreb_pct": 0,
     "net_rating": -321.7,
     "offensive_rating": 95.6,
-    "defensive_rating": 417.3
+    "defensive_rating": 417.3,
+    "height_inches": 76.0,
+    "weight_pounds": 220
   },
   {
     "name": "Daniel Kickert",
@@ -41696,7 +41734,9 @@
     "oreb_pct": 0,
     "net_rating": -311.6,
     "offensive_rating": 114.5,
-    "defensive_rating": 426.1
+    "defensive_rating": 426.1,
+    "height_inches": 82.0,
+    "weight_pounds": 240
   },
   {
     "name": "Kyle Spain",
@@ -41988,7 +42028,9 @@
     "oreb_pct": 0,
     "net_rating": -636.7,
     "offensive_rating": 104.1,
-    "defensive_rating": 740.8
+    "defensive_rating": 740.8,
+    "height_inches": 72.0,
+    "weight_pounds": 200
   },
   {
     "name": "Gyno Pomare",
@@ -42028,7 +42070,9 @@
     "oreb_pct": 0,
     "net_rating": -582.7,
     "offensive_rating": 115,
-    "defensive_rating": 697.7
+    "defensive_rating": 697.7,
+    "height_inches": 79.0,
+    "weight_pounds": 240
   },
   {
     "name": "Ray Murdock",
@@ -42068,7 +42112,9 @@
     "oreb_pct": 0,
     "net_rating": -650.5,
     "offensive_rating": 94.7,
-    "defensive_rating": 745.2
+    "defensive_rating": 745.2,
+    "height_inches": 75.0,
+    "weight_pounds": 193
   },
   {
     "name": "Nir Cohen",
@@ -42108,7 +42154,9 @@
     "oreb_pct": 0,
     "net_rating": -616.4,
     "offensive_rating": 99.7,
-    "defensive_rating": 716.1
+    "defensive_rating": 716.1,
+    "height_inches": 79.0,
+    "weight_pounds": 245
   },
   {
     "name": "Ross DeRogatis",
@@ -42148,7 +42196,9 @@
     "oreb_pct": 0,
     "net_rating": -662.1,
     "offensive_rating": 111.6,
-    "defensive_rating": 773.7
+    "defensive_rating": 773.7,
+    "height_inches": 73.0,
+    "weight_pounds": 175
   },
   {
     "name": "Corey Belser",
@@ -42188,7 +42238,9 @@
     "oreb_pct": 0,
     "net_rating": -568.7,
     "offensive_rating": 112.9,
-    "defensive_rating": 681.6
+    "defensive_rating": 681.6,
+    "height_inches": 78.0,
+    "weight_pounds": 210
   },
   {
     "name": "Nick Lewis",
@@ -42228,7 +42280,9 @@
     "oreb_pct": 0,
     "net_rating": -620.9,
     "offensive_rating": 112.8,
-    "defensive_rating": 733.7
+    "defensive_rating": 733.7,
+    "height_inches": 82.0,
+    "weight_pounds": 235
   },
   {
     "name": "Drew Shiller",
@@ -67238,7 +67292,9 @@
     "oreb_pct": 0,
     "net_rating": -190.7,
     "offensive_rating": 110,
-    "defensive_rating": 300.7
+    "defensive_rating": 300.7,
+    "height_inches": 83.0,
+    "weight_pounds": 260
   },
   {
     "name": "Wayne Hunter",
@@ -67278,7 +67334,9 @@
     "oreb_pct": 0,
     "net_rating": -299.6,
     "offensive_rating": 92.8,
-    "defensive_rating": 392.4
+    "defensive_rating": 392.4,
+    "height_inches": 76.0,
+    "weight_pounds": 210
   },
   {
     "name": "Diamon Simpson",
@@ -67318,7 +67376,9 @@
     "oreb_pct": 0,
     "net_rating": -181.2,
     "offensive_rating": 102.7,
-    "defensive_rating": 283.9
+    "defensive_rating": 283.9,
+    "height_inches": 80.0,
+    "weight_pounds": 240
   },
   {
     "name": "Ian O'Leary",
@@ -67358,7 +67418,9 @@
     "oreb_pct": 0,
     "net_rating": -221,
     "offensive_rating": 108.1,
-    "defensive_rating": 329.1
+    "defensive_rating": 329.1,
+    "height_inches": 79.0,
+    "weight_pounds": 225
   },
   {
     "name": "Todd Golden",
@@ -67398,7 +67460,9 @@
     "oreb_pct": 0,
     "net_rating": -222.4,
     "offensive_rating": 115.8,
-    "defensive_rating": 338.2
+    "defensive_rating": 338.2,
+    "height_inches": 75.0,
+    "weight_pounds": 180
   },
   {
     "name": "Tron Smith",
@@ -67438,7 +67502,9 @@
     "oreb_pct": 0,
     "net_rating": -203.3,
     "offensive_rating": 100.5,
-    "defensive_rating": 303.8
+    "defensive_rating": 303.8,
+    "height_inches": 74.0,
+    "weight_pounds": 210
   },
   {
     "name": "Brett Collins",
@@ -67478,7 +67544,9 @@
     "oreb_pct": 0,
     "net_rating": -208.3,
     "offensive_rating": 113.2,
-    "defensive_rating": 321.5
+    "defensive_rating": 321.5,
+    "height_inches": 77.0,
+    "weight_pounds": 225
   },
   {
     "name": "John Winston",
@@ -67518,7 +67586,9 @@
     "oreb_pct": 0,
     "net_rating": -401.1,
     "offensive_rating": 85.3,
-    "defensive_rating": 486.4
+    "defensive_rating": 486.4,
+    "height_inches": 76.0,
+    "weight_pounds": 220
   },
   {
     "name": "Kyle Spain",
@@ -67806,7 +67876,9 @@
     "oreb_pct": 0,
     "net_rating": -267.4,
     "offensive_rating": 105.9,
-    "defensive_rating": 373.3
+    "defensive_rating": 373.3,
+    "height_inches": 79.0,
+    "weight_pounds": 215
   },
   {
     "name": "De'Jon Jackson",
@@ -67846,7 +67918,9 @@
     "oreb_pct": 0,
     "net_rating": -374.2,
     "offensive_rating": 92.4,
-    "defensive_rating": 466.6
+    "defensive_rating": 466.6,
+    "height_inches": 74.0,
+    "weight_pounds": 200
   },
   {
     "name": "Brandon Johnson",
@@ -67886,7 +67960,9 @@
     "oreb_pct": 0,
     "net_rating": -266.5,
     "offensive_rating": 99.9,
-    "defensive_rating": 366.4
+    "defensive_rating": 366.4,
+    "height_inches": 72.0,
+    "weight_pounds": 200
   },
   {
     "name": "Gyno Pomare",
@@ -67926,7 +68002,9 @@
     "oreb_pct": 0,
     "net_rating": -243.4,
     "offensive_rating": 116.5,
-    "defensive_rating": 359.9
+    "defensive_rating": 359.9,
+    "height_inches": 79.0,
+    "weight_pounds": 240
   },
   {
     "name": "Ray Murdock",
@@ -67966,7 +68044,9 @@
     "oreb_pct": 0,
     "net_rating": -242.8,
     "offensive_rating": 94,
-    "defensive_rating": 336.8
+    "defensive_rating": 336.8,
+    "height_inches": 75.0,
+    "weight_pounds": 193
   },
   {
     "name": "Daniel Fleming",
@@ -68006,7 +68086,9 @@
     "oreb_pct": 0,
     "net_rating": -270.7,
     "offensive_rating": 96.7,
-    "defensive_rating": 367.4
+    "defensive_rating": 367.4,
+    "height_inches": 80.0,
+    "weight_pounds": 215
   },
   {
     "name": "Theo White",
@@ -68046,7 +68128,9 @@
     "oreb_pct": 0,
     "net_rating": -308.4,
     "offensive_rating": 86.1,
-    "defensive_rating": 394.5
+    "defensive_rating": 394.5,
+    "height_inches": 76.0,
+    "weight_pounds": 240
   },
   {
     "name": "Nir Cohen",
@@ -68086,7 +68170,9 @@
     "oreb_pct": 0,
     "net_rating": -174.4,
     "offensive_rating": 120.3,
-    "defensive_rating": 294.7
+    "defensive_rating": 294.7,
+    "height_inches": 79.0,
+    "weight_pounds": 245
   },
   {
     "name": "Ross DeRogatis",
@@ -68126,7 +68212,9 @@
     "oreb_pct": 0,
     "net_rating": -281.2,
     "offensive_rating": 115,
-    "defensive_rating": 396.2
+    "defensive_rating": 396.2,
+    "height_inches": 73.0,
+    "weight_pounds": 175
   },
   {
     "name": "Jay Watkins",
@@ -93088,7 +93176,9 @@
     "oreb_pct": 0,
     "net_rating": -21.3,
     "offensive_rating": 111.6,
-    "defensive_rating": 132.9
+    "defensive_rating": 132.9,
+    "height_inches": 83.0,
+    "weight_pounds": 260
   },
   {
     "name": "Yusef Smith",
@@ -93128,7 +93218,9 @@
     "oreb_pct": 0,
     "net_rating": -38.5,
     "offensive_rating": 97.7,
-    "defensive_rating": 136.2
+    "defensive_rating": 136.2,
+    "height_inches": 80.0,
+    "weight_pounds": 235
   },
   {
     "name": "Diamon Simpson",
@@ -93168,7 +93260,9 @@
     "oreb_pct": 0,
     "net_rating": -11.3,
     "offensive_rating": 112,
-    "defensive_rating": 123.3
+    "defensive_rating": 123.3,
+    "height_inches": 80.0,
+    "weight_pounds": 240
   },
   {
     "name": "Ian O'Leary",
@@ -93208,7 +93302,9 @@
     "oreb_pct": 0,
     "net_rating": -30,
     "offensive_rating": 110,
-    "defensive_rating": 140
+    "defensive_rating": 140,
+    "height_inches": 79.0,
+    "weight_pounds": 225
   },
   {
     "name": "Patty Mills",
@@ -93293,7 +93389,9 @@
     "oreb_pct": 0,
     "net_rating": -35.4,
     "offensive_rating": 108.1,
-    "defensive_rating": 143.5
+    "defensive_rating": 143.5,
+    "height_inches": 74.0,
+    "weight_pounds": 190
   },
   {
     "name": "Todd Golden",
@@ -93333,7 +93431,9 @@
     "oreb_pct": 0,
     "net_rating": 0.6,
     "offensive_rating": 146.8,
-    "defensive_rating": 146.2
+    "defensive_rating": 146.2,
+    "height_inches": 75.0,
+    "weight_pounds": 180
   },
   {
     "name": "Tron Smith",
@@ -93373,7 +93473,9 @@
     "oreb_pct": 0,
     "net_rating": -47.3,
     "offensive_rating": 97.4,
-    "defensive_rating": 144.7
+    "defensive_rating": 144.7,
+    "height_inches": 74.0,
+    "weight_pounds": 210
   },
   {
     "name": "Billy White",
@@ -118700,7 +118802,9 @@
     "oreb_pct": 0,
     "net_rating": -3,
     "offensive_rating": 99.3,
-    "defensive_rating": 102.3
+    "defensive_rating": 102.3,
+    "height_inches": 77.0,
+    "weight_pounds": 215
   },
   {
     "name": "Gregory Echenique",
@@ -118740,7 +118844,9 @@
     "oreb_pct": 0,
     "net_rating": 14.4,
     "offensive_rating": 111.2,
-    "defensive_rating": 96.8
+    "defensive_rating": 96.8,
+    "height_inches": 81.0,
+    "weight_pounds": 260
   },
   {
     "name": "Mike Coburn",
@@ -118780,7 +118886,9 @@
     "oreb_pct": 0,
     "net_rating": -26.3,
     "offensive_rating": 81,
-    "defensive_rating": 107.3
+    "defensive_rating": 107.3,
+    "height_inches": 72.0,
+    "weight_pounds": 185
   },
   {
     "name": "Hamady Ndiaye",
@@ -118863,7 +118971,9 @@
     "oreb_pct": 0,
     "net_rating": -3.6,
     "offensive_rating": 103.6,
-    "defensive_rating": 107.2
+    "defensive_rating": 107.2,
+    "height_inches": 73.0,
+    "weight_pounds": 190
   },
   {
     "name": "Corey Chandler",
@@ -118903,7 +119013,9 @@
     "oreb_pct": 0,
     "net_rating": -21.4,
     "offensive_rating": 79.5,
-    "defensive_rating": 100.9
+    "defensive_rating": 100.9,
+    "height_inches": 74.0,
+    "weight_pounds": 198
   },
   {
     "name": "J.R. Inman",
@@ -118943,7 +119055,9 @@
     "oreb_pct": 0,
     "net_rating": -16.4,
     "offensive_rating": 86.7,
-    "defensive_rating": 103.1
+    "defensive_rating": 103.1,
+    "height_inches": 81.0,
+    "weight_pounds": 230
   },
   {
     "name": "Mickey McConnell",
@@ -118983,7 +119097,9 @@
     "oreb_pct": 0,
     "net_rating": -34.6,
     "offensive_rating": 106.7,
-    "defensive_rating": 141.3
+    "defensive_rating": 141.3,
+    "height_inches": 72.0,
+    "weight_pounds": 190
   },
   {
     "name": "Omar Samhan",
@@ -119023,7 +119139,9 @@
     "oreb_pct": 0,
     "net_rating": -6.2,
     "offensive_rating": 121.4,
-    "defensive_rating": 127.6
+    "defensive_rating": 127.6,
+    "height_inches": 83.0,
+    "weight_pounds": 260
   },
   {
     "name": "Wayne Hunter",
@@ -119063,7 +119181,9 @@
     "oreb_pct": 0,
     "net_rating": -42.3,
     "offensive_rating": 101.2,
-    "defensive_rating": 143.5
+    "defensive_rating": 143.5,
+    "height_inches": 76.0,
+    "weight_pounds": 210
   },
   {
     "name": "Diamon Simpson",
@@ -119103,7 +119223,9 @@
     "oreb_pct": 0,
     "net_rating": -4.2,
     "offensive_rating": 113.8,
-    "defensive_rating": 118
+    "defensive_rating": 118,
+    "height_inches": 80.0,
+    "weight_pounds": 240
   },
   {
     "name": "Ian O'Leary",
@@ -119143,7 +119265,9 @@
     "oreb_pct": 0,
     "net_rating": -27.3,
     "offensive_rating": 105,
-    "defensive_rating": 132.3
+    "defensive_rating": 132.3,
+    "height_inches": 79.0,
+    "weight_pounds": 225
   },
   {
     "name": "Patty Mills",
@@ -119228,7 +119352,9 @@
     "oreb_pct": 0,
     "net_rating": -20.2,
     "offensive_rating": 116.1,
-    "defensive_rating": 136.3
+    "defensive_rating": 136.3,
+    "height_inches": 74.0,
+    "weight_pounds": 190
   },
   {
     "name": "Tim Shelton",
@@ -144650,7 +144776,9 @@
     "oreb_pct": 0,
     "net_rating": -7.8,
     "offensive_rating": 91.5,
-    "defensive_rating": 99.3
+    "defensive_rating": 99.3,
+    "height_inches": 78.0,
+    "weight_pounds": 215
   },
   {
     "name": "Jonathan Mitchell",
@@ -144732,7 +144860,9 @@
     "oreb_pct": 0,
     "net_rating": 3.2,
     "offensive_rating": 105.7,
-    "defensive_rating": 102.5
+    "defensive_rating": 102.5,
+    "height_inches": 74.0,
+    "weight_pounds": 190
   },
   {
     "name": "Mike Coburn",
@@ -144772,7 +144902,9 @@
     "oreb_pct": 0,
     "net_rating": -9.8,
     "offensive_rating": 95.3,
-    "defensive_rating": 105.1
+    "defensive_rating": 105.1,
+    "height_inches": 72.0,
+    "weight_pounds": 185
   },
   {
     "name": "Hamady Ndiaye",
@@ -144855,7 +144987,9 @@
     "oreb_pct": 0,
     "net_rating": -50.6,
     "offensive_rating": 115,
-    "defensive_rating": 165.6
+    "defensive_rating": 165.6,
+    "height_inches": 79.0,
+    "weight_pounds": 195
   },
   {
     "name": "Matthew Dellavedova",
@@ -144938,7 +145072,9 @@
     "oreb_pct": 0,
     "net_rating": -54.1,
     "offensive_rating": 107.8,
-    "defensive_rating": 161.9
+    "defensive_rating": 161.9,
+    "height_inches": 73.0,
+    "weight_pounds": 180
   },
   {
     "name": "Mickey McConnell",
@@ -144978,7 +145114,9 @@
     "oreb_pct": 0,
     "net_rating": -34.8,
     "offensive_rating": 129.4,
-    "defensive_rating": 164.2
+    "defensive_rating": 164.2,
+    "height_inches": 72.0,
+    "weight_pounds": 190
   },
   {
     "name": "Ben Allen",
@@ -145060,7 +145198,9 @@
     "oreb_pct": 0,
     "net_rating": -24.9,
     "offensive_rating": 119.6,
-    "defensive_rating": 144.5
+    "defensive_rating": 144.5,
+    "height_inches": 83.0,
+    "weight_pounds": 260
   },
   {
     "name": "Chase Tapley",
@@ -170834,7 +170974,9 @@
     "oreb_pct": 0,
     "net_rating": 10.1,
     "offensive_rating": 113.3,
-    "defensive_rating": 103.2
+    "defensive_rating": 103.2,
+    "height_inches": 80.0,
+    "weight_pounds": 235
   },
   {
     "name": "Mike Poole",
@@ -170874,7 +171016,9 @@
     "oreb_pct": 0,
     "net_rating": -17.1,
     "offensive_rating": 85.8,
-    "defensive_rating": 102.9
+    "defensive_rating": 102.9,
+    "height_inches": 78.0,
+    "weight_pounds": 200
   },
   {
     "name": "Austin Johnson",
@@ -170914,7 +171058,9 @@
     "oreb_pct": 0,
     "net_rating": -14.1,
     "offensive_rating": 94.8,
-    "defensive_rating": 108.9
+    "defensive_rating": 108.9,
+    "height_inches": 80.0,
+    "weight_pounds": 250
   },
   {
     "name": "Dane Miller",
@@ -170954,7 +171100,9 @@
     "oreb_pct": 0,
     "net_rating": -9.6,
     "offensive_rating": 94,
-    "defensive_rating": 103.6
+    "defensive_rating": 103.6,
+    "height_inches": 78.0,
+    "weight_pounds": 215
   },
   {
     "name": "Jonathan Mitchell",
@@ -171036,7 +171184,9 @@
     "oreb_pct": 0,
     "net_rating": 3.5,
     "offensive_rating": 111.6,
-    "defensive_rating": 108.1
+    "defensive_rating": 108.1,
+    "height_inches": 74.0,
+    "weight_pounds": 190
   },
   {
     "name": "Mike Coburn",
@@ -171076,7 +171226,9 @@
     "oreb_pct": 0,
     "net_rating": -8.9,
     "offensive_rating": 102,
-    "defensive_rating": 110.9
+    "defensive_rating": 110.9,
+    "height_inches": 72.0,
+    "weight_pounds": 185
   },
   {
     "name": "Stephen Holt",
@@ -171116,7 +171268,9 @@
     "oreb_pct": 0,
     "net_rating": -17.4,
     "offensive_rating": 117.1,
-    "defensive_rating": 134.5
+    "defensive_rating": 134.5,
+    "height_inches": 76.0,
+    "weight_pounds": 195
   },
   {
     "name": "Mitchell Young",
@@ -171156,7 +171310,9 @@
     "oreb_pct": 0,
     "net_rating": -24,
     "offensive_rating": 115.1,
-    "defensive_rating": 139.1
+    "defensive_rating": 139.1,
+    "height_inches": 81.0,
+    "weight_pounds": 235
   },
   {
     "name": "Rob Jones",
@@ -171196,7 +171352,9 @@
     "oreb_pct": 0,
     "net_rating": -25.7,
     "offensive_rating": 109.5,
-    "defensive_rating": 135.2
+    "defensive_rating": 135.2,
+    "height_inches": 78.0,
+    "weight_pounds": 240
   },
   {
     "name": "Kenton Walker II",
@@ -171236,7 +171394,9 @@
     "oreb_pct": 0,
     "net_rating": -21.5,
     "offensive_rating": 110.7,
-    "defensive_rating": 132.2
+    "defensive_rating": 132.2,
+    "height_inches": 81.0,
+    "weight_pounds": 240
   },
   {
     "name": "Clint Steindl",
@@ -171276,7 +171436,9 @@
     "oreb_pct": 0,
     "net_rating": -27.4,
     "offensive_rating": 119.1,
-    "defensive_rating": 146.5
+    "defensive_rating": 146.5,
+    "height_inches": 79.0,
+    "weight_pounds": 195
   },
   {
     "name": "Matthew Dellavedova",
@@ -171359,7 +171521,9 @@
     "oreb_pct": 0,
     "net_rating": -13.6,
     "offensive_rating": 133.4,
-    "defensive_rating": 147
+    "defensive_rating": 147,
+    "height_inches": 72.0,
+    "weight_pounds": 190
   },
   {
     "name": "Chase Tapley",
@@ -197596,7 +197760,9 @@
     "oreb_pct": 0,
     "net_rating": -80.1,
     "offensive_rating": 105,
-    "defensive_rating": 185.1
+    "defensive_rating": 185.1,
+    "height_inches": 73.0,
+    "weight_pounds": 180
   },
   {
     "name": "Eli Carter",
@@ -197678,7 +197844,9 @@
     "oreb_pct": 0,
     "net_rating": -74.6,
     "offensive_rating": 100.2,
-    "defensive_rating": 174.8
+    "defensive_rating": 174.8,
+    "height_inches": 80.0,
+    "weight_pounds": 235
   },
   {
     "name": "Myles Mack",
@@ -197718,7 +197886,9 @@
     "oreb_pct": 0,
     "net_rating": -68.9,
     "offensive_rating": 108.7,
-    "defensive_rating": 177.6
+    "defensive_rating": 177.6,
+    "height_inches": 70.0,
+    "weight_pounds": 175
   },
   {
     "name": "Mike Poole",
@@ -197758,7 +197928,9 @@
     "oreb_pct": 0,
     "net_rating": -71,
     "offensive_rating": 95.9,
-    "defensive_rating": 166.9
+    "defensive_rating": 166.9,
+    "height_inches": 78.0,
+    "weight_pounds": 200
   },
   {
     "name": "Austin Johnson",
@@ -197798,7 +197970,9 @@
     "oreb_pct": 0,
     "net_rating": -83.8,
     "offensive_rating": 90.4,
-    "defensive_rating": 174.2
+    "defensive_rating": 174.2,
+    "height_inches": 80.0,
+    "weight_pounds": 250
   },
   {
     "name": "Dane Miller",
@@ -197838,7 +198012,9 @@
     "oreb_pct": 0,
     "net_rating": -55.2,
     "offensive_rating": 105.9,
-    "defensive_rating": 161.1
+    "defensive_rating": 161.1,
+    "height_inches": 78.0,
+    "weight_pounds": 215
   },
   {
     "name": "Brad Waldow",
@@ -197878,7 +198054,9 @@
     "oreb_pct": 0,
     "net_rating": -35.7,
     "offensive_rating": 122.5,
-    "defensive_rating": 158.2
+    "defensive_rating": 158.2,
+    "height_inches": 81.0,
+    "weight_pounds": 260
   },
   {
     "name": "Stephen Holt",
@@ -197918,7 +198096,9 @@
     "oreb_pct": 0,
     "net_rating": -21.6,
     "offensive_rating": 128,
-    "defensive_rating": 149.6
+    "defensive_rating": 149.6,
+    "height_inches": 76.0,
+    "weight_pounds": 195
   },
   {
     "name": "Rob Jones",
@@ -197958,7 +198138,9 @@
     "oreb_pct": 0,
     "net_rating": -36.7,
     "offensive_rating": 111,
-    "defensive_rating": 147.7
+    "defensive_rating": 147.7,
+    "height_inches": 78.0,
+    "weight_pounds": 240
   },
   {
     "name": "Clint Steindl",
@@ -197998,7 +198180,9 @@
     "oreb_pct": 0,
     "net_rating": -31.1,
     "offensive_rating": 133.8,
-    "defensive_rating": 164.9
+    "defensive_rating": 164.9,
+    "height_inches": 79.0,
+    "weight_pounds": 195
   },
   {
     "name": "Matthew Dellavedova",
@@ -198081,7 +198265,9 @@
     "oreb_pct": 0,
     "net_rating": -72.5,
     "offensive_rating": 101.2,
-    "defensive_rating": 173.7
+    "defensive_rating": 173.7,
+    "height_inches": 73.0,
+    "weight_pounds": 180
   },
   {
     "name": "Xavier Thames",
@@ -224463,7 +224649,9 @@
     "oreb_pct": 0,
     "net_rating": -61.8,
     "offensive_rating": 96,
-    "defensive_rating": 157.8
+    "defensive_rating": 157.8,
+    "height_inches": 73.0,
+    "weight_pounds": 180
   },
   {
     "name": "Eli Carter",
@@ -224545,7 +224733,9 @@
     "oreb_pct": 0,
     "net_rating": -26.4,
     "offensive_rating": 121.8,
-    "defensive_rating": 148.2
+    "defensive_rating": 148.2,
+    "height_inches": 70.0,
+    "weight_pounds": 175
   },
   {
     "name": "Kadeem Jack",
@@ -224585,7 +224775,9 @@
     "oreb_pct": 0,
     "net_rating": -44.4,
     "offensive_rating": 98.1,
-    "defensive_rating": 142.5
+    "defensive_rating": 142.5,
+    "height_inches": 81.0,
+    "weight_pounds": 235
   },
   {
     "name": "Wally  Judge",
@@ -224667,7 +224859,9 @@
     "oreb_pct": 0,
     "net_rating": -59.9,
     "offensive_rating": 86.1,
-    "defensive_rating": 146
+    "defensive_rating": 146,
+    "height_inches": 78.0,
+    "weight_pounds": 200
   },
   {
     "name": "Austin Johnson",
@@ -224707,7 +224901,9 @@
     "oreb_pct": 0,
     "net_rating": -60,
     "offensive_rating": 96.9,
-    "defensive_rating": 156.9
+    "defensive_rating": 156.9,
+    "height_inches": 80.0,
+    "weight_pounds": 250
   },
   {
     "name": "Dane Miller",
@@ -224747,7 +224943,9 @@
     "oreb_pct": 0,
     "net_rating": -47.4,
     "offensive_rating": 101.1,
-    "defensive_rating": 148.5
+    "defensive_rating": 148.5,
+    "height_inches": 78.0,
+    "weight_pounds": 215
   },
   {
     "name": "Brad Waldow",
@@ -224787,7 +224985,9 @@
     "oreb_pct": 0,
     "net_rating": 0,
     "offensive_rating": 119.1,
-    "defensive_rating": 119.1
+    "defensive_rating": 119.1,
+    "height_inches": 81.0,
+    "weight_pounds": 260
   },
   {
     "name": "Beau Levesque",
@@ -224827,7 +225027,9 @@
     "oreb_pct": 0,
     "net_rating": 12.3,
     "offensive_rating": 131.4,
-    "defensive_rating": 119.1
+    "defensive_rating": 119.1,
+    "height_inches": 79.0,
+    "weight_pounds": 220
   },
   {
     "name": "Jordan Giusti",
@@ -224867,7 +225069,9 @@
     "oreb_pct": 0,
     "net_rating": -6.1,
     "offensive_rating": 113,
-    "defensive_rating": 119.1
+    "defensive_rating": 119.1,
+    "height_inches": 74.0,
+    "weight_pounds": 185
   },
   {
     "name": "Stephen Holt",
@@ -224907,7 +225111,9 @@
     "oreb_pct": 0,
     "net_rating": -4.8,
     "offensive_rating": 123.1,
-    "defensive_rating": 127.9
+    "defensive_rating": 127.9,
+    "height_inches": 76.0,
+    "weight_pounds": 195
   },
   {
     "name": "James Walker III",
@@ -224947,7 +225153,9 @@
     "oreb_pct": 0,
     "net_rating": 8,
     "offensive_rating": 112.5,
-    "defensive_rating": 104.5
+    "defensive_rating": 104.5,
+    "height_inches": 74.0,
+    "weight_pounds": 180
   },
   {
     "name": "Mitchell Young",
@@ -224987,7 +225195,9 @@
     "oreb_pct": 0,
     "net_rating": 3.1,
     "offensive_rating": 115.5,
-    "defensive_rating": 112.4
+    "defensive_rating": 112.4,
+    "height_inches": 81.0,
+    "weight_pounds": 235
   },
   {
     "name": "Matthew Dellavedova",
@@ -225070,7 +225280,9 @@
     "oreb_pct": 0,
     "net_rating": -5.2,
     "offensive_rating": 112.3,
-    "defensive_rating": 117.5
+    "defensive_rating": 117.5,
+    "height_inches": 73.0,
+    "weight_pounds": 180
   },
   {
     "name": "Skylar Spencer",
@@ -253053,7 +253265,9 @@
     "oreb_pct": 0,
     "net_rating": -20.1,
     "offensive_rating": 96,
-    "defensive_rating": 116.1
+    "defensive_rating": 116.1,
+    "height_inches": 79.0,
+    "weight_pounds": 230
   },
   {
     "name": "Jerome Seagears",
@@ -253093,7 +253307,9 @@
     "oreb_pct": 0,
     "net_rating": -5.5,
     "offensive_rating": 110.5,
-    "defensive_rating": 116
+    "defensive_rating": 116,
+    "height_inches": 73.0,
+    "weight_pounds": 180
   },
   {
     "name": "Myles Mack",
@@ -253133,7 +253349,9 @@
     "oreb_pct": 0,
     "net_rating": -1.4,
     "offensive_rating": 111.1,
-    "defensive_rating": 112.5
+    "defensive_rating": 112.5,
+    "height_inches": 70.0,
+    "weight_pounds": 175
   },
   {
     "name": "Malick Kone",
@@ -253173,7 +253391,9 @@
     "oreb_pct": 0,
     "net_rating": -15.1,
     "offensive_rating": 96.1,
-    "defensive_rating": 111.2
+    "defensive_rating": 111.2,
+    "height_inches": 77.0,
+    "weight_pounds": 200
   },
   {
     "name": "Kadeem Jack",
@@ -253213,7 +253433,9 @@
     "oreb_pct": 0,
     "net_rating": -0.8,
     "offensive_rating": 107.9,
-    "defensive_rating": 108.7
+    "defensive_rating": 108.7,
+    "height_inches": 81.0,
+    "weight_pounds": 235
   },
   {
     "name": "JJ Moore",
@@ -253253,7 +253475,9 @@
     "oreb_pct": 0,
     "net_rating": -0.2,
     "offensive_rating": 114,
-    "defensive_rating": 114.2
+    "defensive_rating": 114.2,
+    "height_inches": 78.0,
+    "weight_pounds": 215
   },
   {
     "name": "Wally  Judge",
@@ -253335,7 +253559,9 @@
     "oreb_pct": 0,
     "net_rating": -15.3,
     "offensive_rating": 105,
-    "defensive_rating": 120.3
+    "defensive_rating": 120.3,
+    "height_inches": 72.0,
+    "weight_pounds": 170
   },
   {
     "name": "Sterling Brown",
@@ -253418,7 +253644,9 @@
     "oreb_pct": 0,
     "net_rating": 20.3,
     "offensive_rating": 108.3,
-    "defensive_rating": 88
+    "defensive_rating": 88,
+    "height_inches": 81.0,
+    "weight_pounds": 245
   },
   {
     "name": "Nic Moore",
@@ -253458,7 +253686,9 @@
     "oreb_pct": 0,
     "net_rating": 19.5,
     "offensive_rating": 120.8,
-    "defensive_rating": 101.3
+    "defensive_rating": 101.3,
+    "height_inches": 69.0,
+    "weight_pounds": 170
   },
   {
     "name": "Ryan Manuel",
@@ -253498,7 +253728,9 @@
     "oreb_pct": 0,
     "net_rating": 8.9,
     "offensive_rating": 108.2,
-    "defensive_rating": 99.3
+    "defensive_rating": 99.3,
+    "height_inches": 76.0,
+    "weight_pounds": 185
   },
   {
     "name": "Shawn Williams",
@@ -253624,7 +253856,9 @@
     "oreb_pct": 0,
     "net_rating": 19.3,
     "offensive_rating": 120.2,
-    "defensive_rating": 100.9
+    "defensive_rating": 100.9,
+    "height_inches": 81.0,
+    "weight_pounds": 260
   },
   {
     "name": "Kerry Carter",
@@ -253664,7 +253898,9 @@
     "oreb_pct": 0,
     "net_rating": 9.8,
     "offensive_rating": 113.3,
-    "defensive_rating": 103.5
+    "defensive_rating": 103.5,
+    "height_inches": 74.0,
+    "weight_pounds": 205
   },
   {
     "name": "Beau Levesque",
@@ -253704,7 +253940,9 @@
     "oreb_pct": 0,
     "net_rating": 7.6,
     "offensive_rating": 110.1,
-    "defensive_rating": 102.5
+    "defensive_rating": 102.5,
+    "height_inches": 79.0,
+    "weight_pounds": 220
   },
   {
     "name": "Jordan Giusti",
@@ -253744,7 +253982,9 @@
     "oreb_pct": 0,
     "net_rating": -0.3,
     "offensive_rating": 104.1,
-    "defensive_rating": 104.4
+    "defensive_rating": 104.4,
+    "height_inches": 74.0,
+    "weight_pounds": 185
   },
   {
     "name": "Stephen Holt",
@@ -253784,7 +254024,9 @@
     "oreb_pct": 0,
     "net_rating": 20.9,
     "offensive_rating": 129.1,
-    "defensive_rating": 108.2
+    "defensive_rating": 108.2,
+    "height_inches": 76.0,
+    "weight_pounds": 195
   },
   {
     "name": "James Walker III",
@@ -253824,7 +254066,9 @@
     "oreb_pct": 0,
     "net_rating": 4.1,
     "offensive_rating": 107.1,
-    "defensive_rating": 103
+    "defensive_rating": 103,
+    "height_inches": 74.0,
+    "weight_pounds": 180
   },
   {
     "name": "Matt Shrigley",
@@ -284098,7 +284342,9 @@
     "oreb_pct": 0,
     "net_rating": -25.4,
     "offensive_rating": 85.7,
-    "defensive_rating": 111.1
+    "defensive_rating": 111.1,
+    "height_inches": 80.0,
+    "weight_pounds": 240
   },
   {
     "name": "Junior Etou",
@@ -284138,7 +284384,9 @@
     "oreb_pct": 0,
     "net_rating": -11,
     "offensive_rating": 95.7,
-    "defensive_rating": 106.7
+    "defensive_rating": 106.7,
+    "height_inches": 79.0,
+    "weight_pounds": 230
   },
   {
     "name": "Mike Williams",
@@ -284222,7 +284470,9 @@
     "oreb_pct": 0,
     "net_rating": -10.7,
     "offensive_rating": 95.3,
-    "defensive_rating": 106
+    "defensive_rating": 106,
+    "height_inches": 81.0,
+    "weight_pounds": 245
   },
   {
     "name": "Bishop Daniels",
@@ -284262,7 +284512,9 @@
     "oreb_pct": 0,
     "net_rating": -27.2,
     "offensive_rating": 84.8,
-    "defensive_rating": 112
+    "defensive_rating": 112,
+    "height_inches": 75.0,
+    "weight_pounds": 176
   },
   {
     "name": "Myles Mack",
@@ -284302,7 +284554,9 @@
     "oreb_pct": 0,
     "net_rating": -2.5,
     "offensive_rating": 104.7,
-    "defensive_rating": 107.2
+    "defensive_rating": 107.2,
+    "height_inches": 70.0,
+    "weight_pounds": 175
   },
   {
     "name": "Kadeem Jack",
@@ -284342,7 +284596,9 @@
     "oreb_pct": 0,
     "net_rating": -18.4,
     "offensive_rating": 89.9,
-    "defensive_rating": 108.3
+    "defensive_rating": 108.3,
+    "height_inches": 81.0,
+    "weight_pounds": 235
   },
   {
     "name": "Keith Frazier",
@@ -284382,7 +284638,9 @@
     "oreb_pct": 0,
     "net_rating": 18.4,
     "offensive_rating": 117.5,
-    "defensive_rating": 99.1
+    "defensive_rating": 99.1,
+    "height_inches": 77.0,
+    "weight_pounds": 190
   },
   {
     "name": "Ben Moore",
@@ -284508,7 +284766,9 @@
     "oreb_pct": 0,
     "net_rating": 25.4,
     "offensive_rating": 113.7,
-    "defensive_rating": 88.3
+    "defensive_rating": 88.3,
+    "height_inches": 81.0,
+    "weight_pounds": 245
   },
   {
     "name": "Nic Moore",
@@ -284548,7 +284808,9 @@
     "oreb_pct": 0,
     "net_rating": 15.3,
     "offensive_rating": 117.5,
-    "defensive_rating": 102.2
+    "defensive_rating": 102.2,
+    "height_inches": 69.0,
+    "weight_pounds": 170
   },
   {
     "name": "Yanick Moreira",
@@ -284588,7 +284850,9 @@
     "oreb_pct": 0,
     "net_rating": 15,
     "offensive_rating": 108.5,
-    "defensive_rating": 93.5
+    "defensive_rating": 93.5,
+    "height_inches": 83.0,
+    "weight_pounds": 220
   },
   {
     "name": "Cannen Cunningham",
@@ -284628,7 +284892,9 @@
     "oreb_pct": 0,
     "net_rating": 14.1,
     "offensive_rating": 108,
-    "defensive_rating": 93.9
+    "defensive_rating": 93.9,
+    "height_inches": 82.0,
+    "weight_pounds": 225
   },
   {
     "name": "Ryan Manuel",
@@ -284668,7 +284934,9 @@
     "oreb_pct": 0,
     "net_rating": 8,
     "offensive_rating": 110.1,
-    "defensive_rating": 102.1
+    "defensive_rating": 102.1,
+    "height_inches": 76.0,
+    "weight_pounds": 185
   },
   {
     "name": "Emmett Naar",
@@ -284708,7 +284976,9 @@
     "oreb_pct": 0,
     "net_rating": 0.2,
     "offensive_rating": 108.5,
-    "defensive_rating": 108.3
+    "defensive_rating": 108.3,
+    "height_inches": 73.0,
+    "weight_pounds": 195
   },
   {
     "name": "Brad Waldow",
@@ -284748,7 +285018,9 @@
     "oreb_pct": 0,
     "net_rating": 16,
     "offensive_rating": 117.3,
-    "defensive_rating": 101.3
+    "defensive_rating": 101.3,
+    "height_inches": 81.0,
+    "weight_pounds": 260
   },
   {
     "name": "Desmond Simmons",
@@ -284788,7 +285060,9 @@
     "oreb_pct": 0,
     "net_rating": 5.7,
     "offensive_rating": 106.1,
-    "defensive_rating": 100.4
+    "defensive_rating": 100.4,
+    "height_inches": 79.0,
+    "weight_pounds": 225
   },
   {
     "name": "Kerry Carter",
@@ -284828,7 +285102,9 @@
     "oreb_pct": 0,
     "net_rating": 6.9,
     "offensive_rating": 107.5,
-    "defensive_rating": 100.6
+    "defensive_rating": 100.6,
+    "height_inches": 74.0,
+    "weight_pounds": 205
   },
   {
     "name": "Garrett Jackson",
@@ -284868,7 +285144,9 @@
     "oreb_pct": 0,
     "net_rating": 16.5,
     "offensive_rating": 119.8,
-    "defensive_rating": 103.3
+    "defensive_rating": 103.3,
+    "height_inches": 77.0,
+    "weight_pounds": 225
   },
   {
     "name": "Aaron Bright",
@@ -284908,7 +285186,9 @@
     "oreb_pct": 0,
     "net_rating": -4.7,
     "offensive_rating": 103.7,
-    "defensive_rating": 108.4
+    "defensive_rating": 108.4,
+    "height_inches": 71.0,
+    "weight_pounds": 175
   },
   {
     "name": "Trey Kell",
@@ -315036,7 +315316,9 @@
     "oreb_pct": 0,
     "net_rating": -10.1,
     "offensive_rating": 98.5,
-    "defensive_rating": 108.6
+    "defensive_rating": 108.6,
+    "height_inches": 78.0,
+    "weight_pounds": 215
   },
   {
     "name": "D.J. Foreman",
@@ -315076,7 +315358,9 @@
     "oreb_pct": 0,
     "net_rating": -17.8,
     "offensive_rating": 91.6,
-    "defensive_rating": 109.4
+    "defensive_rating": 109.4,
+    "height_inches": 80.0,
+    "weight_pounds": 240
   },
   {
     "name": "Corey Sanders",
@@ -315116,7 +315400,9 @@
     "oreb_pct": 0,
     "net_rating": -12.8,
     "offensive_rating": 98.6,
-    "defensive_rating": 111.4
+    "defensive_rating": 111.4,
+    "height_inches": 74.0,
+    "weight_pounds": 175
   },
   {
     "name": "Mike Williams",
@@ -315200,7 +315486,9 @@
     "oreb_pct": 0,
     "net_rating": -32.8,
     "offensive_rating": 77.2,
-    "defensive_rating": 110
+    "defensive_rating": 110,
+    "height_inches": 81.0,
+    "weight_pounds": 245
   },
   {
     "name": "Bishop Daniels",
@@ -315240,7 +315528,9 @@
     "oreb_pct": 0,
     "net_rating": -27,
     "offensive_rating": 83.9,
-    "defensive_rating": 110.9
+    "defensive_rating": 110.9,
+    "height_inches": 75.0,
+    "weight_pounds": 176
   },
   {
     "name": "Omari Grier",
@@ -315280,7 +315570,9 @@
     "oreb_pct": 0,
     "net_rating": -10.1,
     "offensive_rating": 107.9,
-    "defensive_rating": 118
+    "defensive_rating": 118,
+    "height_inches": 76.0,
+    "weight_pounds": 180
   },
   {
     "name": "Jarrey Foster",
@@ -315320,7 +315612,9 @@
     "oreb_pct": 0,
     "net_rating": 8.1,
     "offensive_rating": 106.9,
-    "defensive_rating": 98.8
+    "defensive_rating": 98.8,
+    "height_inches": 78.0,
+    "weight_pounds": 220
   },
   {
     "name": "Shake Milton",
@@ -315491,7 +315785,9 @@
     "oreb_pct": 0,
     "net_rating": 15.2,
     "offensive_rating": 107.9,
-    "defensive_rating": 92.7
+    "defensive_rating": 92.7,
+    "height_inches": 81.0,
+    "weight_pounds": 245
   },
   {
     "name": "Nic Moore",
@@ -315531,7 +315827,9 @@
     "oreb_pct": 0,
     "net_rating": 22.7,
     "offensive_rating": 122.3,
-    "defensive_rating": 99.6
+    "defensive_rating": 99.6,
+    "height_inches": 69.0,
+    "weight_pounds": 170
   },
   {
     "name": "Jordan Tolbert",
@@ -315571,7 +315869,9 @@
     "oreb_pct": 0,
     "net_rating": 29.5,
     "offensive_rating": 122.6,
-    "defensive_rating": 93.1
+    "defensive_rating": 93.1,
+    "height_inches": 79.0,
+    "weight_pounds": 240
   },
   {
     "name": "Evan Fitzner",
@@ -315653,7 +315953,9 @@
     "oreb_pct": 0,
     "net_rating": -31.2,
     "offensive_rating": 107,
-    "defensive_rating": 138.2
+    "defensive_rating": 138.2,
+    "height_inches": 79.0,
+    "weight_pounds": 220
   },
   {
     "name": "Calvin Hermanson",
@@ -315693,7 +315995,9 @@
     "oreb_pct": 0,
     "net_rating": -25.5,
     "offensive_rating": 118.7,
-    "defensive_rating": 144.2
+    "defensive_rating": 144.2,
+    "height_inches": 78.0,
+    "weight_pounds": 200
   },
   {
     "name": "Emmett Naar",
@@ -315733,7 +316037,9 @@
     "oreb_pct": 0,
     "net_rating": -13,
     "offensive_rating": 125.8,
-    "defensive_rating": 138.8
+    "defensive_rating": 138.8,
+    "height_inches": 73.0,
+    "weight_pounds": 195
   },
   {
     "name": "Joe Rahon",
@@ -315815,7 +316121,9 @@
     "oreb_pct": 0,
     "net_rating": 3.8,
     "offensive_rating": 128,
-    "defensive_rating": 124.2
+    "defensive_rating": 124.2,
+    "height_inches": 81.0,
+    "weight_pounds": 225
   },
   {
     "name": "Zylan Cheatham",
@@ -346051,7 +346359,9 @@
     "oreb_pct": 0,
     "net_rating": -13.8,
     "offensive_rating": 91.3,
-    "defensive_rating": 105.1
+    "defensive_rating": 105.1,
+    "height_inches": 82.0,
+    "weight_pounds": 190
   },
   {
     "name": "Nigel Johnson",
@@ -346133,7 +346443,9 @@
     "oreb_pct": 0,
     "net_rating": 8.3,
     "offensive_rating": 103.9,
-    "defensive_rating": 95.6
+    "defensive_rating": 95.6,
+    "height_inches": 79.0,
+    "weight_pounds": 220
   },
   {
     "name": "Corey Sanders",
@@ -346173,7 +346485,9 @@
     "oreb_pct": 0,
     "net_rating": -8.7,
     "offensive_rating": 91.8,
-    "defensive_rating": 100.5
+    "defensive_rating": 100.5,
+    "height_inches": 74.0,
+    "weight_pounds": 175
   },
   {
     "name": "Mike Williams",
@@ -346257,7 +346571,9 @@
     "oreb_pct": 0,
     "net_rating": 6.7,
     "offensive_rating": 106.4,
-    "defensive_rating": 99.7
+    "defensive_rating": 99.7,
+    "height_inches": 84.0,
+    "weight_pounds": 275
   },
   {
     "name": "Jarrey Foster",
@@ -346297,7 +346613,9 @@
     "oreb_pct": 0,
     "net_rating": 25.1,
     "offensive_rating": 123.9,
-    "defensive_rating": 98.8
+    "defensive_rating": 98.8,
+    "height_inches": 78.0,
+    "weight_pounds": 220
   },
   {
     "name": "Shake Milton",
@@ -346382,7 +346700,9 @@
     "oreb_pct": 0,
     "net_rating": -3.1,
     "offensive_rating": 94.9,
-    "defensive_rating": 98
+    "defensive_rating": 98,
+    "height_inches": 77.0,
+    "weight_pounds": 205
   },
   {
     "name": "Semi Ojeleye",
@@ -346595,7 +346915,9 @@
     "oreb_pct": 0,
     "net_rating": 32.2,
     "offensive_rating": 129.5,
-    "defensive_rating": 97.3
+    "defensive_rating": 97.3,
+    "height_inches": 78.0,
+    "weight_pounds": 200
   },
   {
     "name": "Jock Landale",
@@ -346678,7 +347000,9 @@
     "oreb_pct": 0,
     "net_rating": 18.6,
     "offensive_rating": 116.2,
-    "defensive_rating": 97.6
+    "defensive_rating": 97.6,
+    "height_inches": 73.0,
+    "weight_pounds": 195
   },
   {
     "name": "Joe Rahon",
@@ -346760,7 +347084,9 @@
     "oreb_pct": 0,
     "net_rating": 31.2,
     "offensive_rating": 118.3,
-    "defensive_rating": 87.1
+    "defensive_rating": 87.1,
+    "height_inches": 81.0,
+    "weight_pounds": 225
   },
   {
     "name": "Zylan Cheatham",
@@ -377230,7 +377556,9 @@
     "oreb_pct": 0,
     "net_rating": 2.1,
     "offensive_rating": 102.6,
-    "defensive_rating": 100.5
+    "defensive_rating": 100.5,
+    "height_inches": 76.0,
+    "weight_pounds": 195
   },
   {
     "name": "Eugene Omoruyi",
@@ -377313,7 +377641,9 @@
     "oreb_pct": 0,
     "net_rating": 10.5,
     "offensive_rating": 111,
-    "defensive_rating": 100.5
+    "defensive_rating": 100.5,
+    "height_inches": 82.0,
+    "weight_pounds": 190
   },
   {
     "name": "Deshawn Freeman",
@@ -377353,7 +377683,9 @@
     "oreb_pct": 0,
     "net_rating": 5.4,
     "offensive_rating": 95.9,
-    "defensive_rating": 90.5
+    "defensive_rating": 90.5,
+    "height_inches": 79.0,
+    "weight_pounds": 220
   },
   {
     "name": "Corey Sanders",
@@ -377393,7 +377725,9 @@
     "oreb_pct": 0,
     "net_rating": -1.2,
     "offensive_rating": 97.3,
-    "defensive_rating": 98.5
+    "defensive_rating": 98.5,
+    "height_inches": 74.0,
+    "weight_pounds": 175
   },
   {
     "name": "Mike Williams",
@@ -377477,7 +377811,9 @@
     "oreb_pct": 0,
     "net_rating": 8.5,
     "offensive_rating": 108.2,
-    "defensive_rating": 99.7
+    "defensive_rating": 99.7,
+    "height_inches": 81.0,
+    "weight_pounds": 235
   },
   {
     "name": "Elijah Landrum",
@@ -377517,7 +377853,9 @@
     "oreb_pct": 0,
     "net_rating": -15.7,
     "offensive_rating": 89.8,
-    "defensive_rating": 105.5
+    "defensive_rating": 105.5,
+    "height_inches": 72.0,
+    "weight_pounds": 180
   },
   {
     "name": "Jimmy Whitt Jr.",
@@ -377641,7 +377979,9 @@
     "oreb_pct": 0,
     "net_rating": -2.1,
     "offensive_rating": 110.3,
-    "defensive_rating": 112.4
+    "defensive_rating": 112.4,
+    "height_inches": 72.0,
+    "weight_pounds": 175
   },
   {
     "name": "Jarrey Foster",
@@ -377681,7 +378021,9 @@
     "oreb_pct": 0,
     "net_rating": 16.9,
     "offensive_rating": 117.1,
-    "defensive_rating": 100.2
+    "defensive_rating": 100.2,
+    "height_inches": 78.0,
+    "weight_pounds": 220
   },
   {
     "name": "Shake Milton",
@@ -377766,7 +378108,9 @@
     "oreb_pct": 0,
     "net_rating": 13.1,
     "offensive_rating": 115.6,
-    "defensive_rating": 102.5
+    "defensive_rating": 102.5,
+    "height_inches": 77.0,
+    "weight_pounds": 205
   },
   {
     "name": "Jordan Ford",
@@ -377849,7 +378193,9 @@
     "oreb_pct": 0,
     "net_rating": 18,
     "offensive_rating": 123.1,
-    "defensive_rating": 105.1
+    "defensive_rating": 105.1,
+    "height_inches": 78.0,
+    "weight_pounds": 205
   },
   {
     "name": "Evan Fitzner",
@@ -377931,7 +378277,9 @@
     "oreb_pct": 0,
     "net_rating": 17.5,
     "offensive_rating": 125.6,
-    "defensive_rating": 108.1
+    "defensive_rating": 108.1,
+    "height_inches": 78.0,
+    "weight_pounds": 200
   },
   {
     "name": "Jock Landale",
@@ -378014,7 +378362,9 @@
     "oreb_pct": 0,
     "net_rating": 6.5,
     "offensive_rating": 116.2,
-    "defensive_rating": 109.7
+    "defensive_rating": 109.7,
+    "height_inches": 73.0,
+    "weight_pounds": 195
   },
   {
     "name": "Matt Mitchell",
@@ -409328,7 +409678,9 @@
     "oreb_pct": 0,
     "net_rating": -12.5,
     "offensive_rating": 91.4,
-    "defensive_rating": 103.9
+    "defensive_rating": 103.9,
+    "height_inches": 76.0,
+    "weight_pounds": 210
   },
   {
     "name": "Caleb McConnell",
@@ -409368,7 +409720,9 @@
     "oreb_pct": 0,
     "net_rating": 3.8,
     "offensive_rating": 103,
-    "defensive_rating": 99.2
+    "defensive_rating": 99.2,
+    "height_inches": 79.0,
+    "weight_pounds": 195
   },
   {
     "name": "Myles Johnson",
@@ -409408,7 +409762,9 @@
     "oreb_pct": 0,
     "net_rating": 7.9,
     "offensive_rating": 103.9,
-    "defensive_rating": 96
+    "defensive_rating": 96,
+    "height_inches": 83.0,
+    "weight_pounds": 255
   },
   {
     "name": "Peter Kiss",
@@ -409448,7 +409804,9 @@
     "oreb_pct": 0,
     "net_rating": -8.1,
     "offensive_rating": 97.7,
-    "defensive_rating": 105.8
+    "defensive_rating": 105.8,
+    "height_inches": 77.0,
+    "weight_pounds": 200
   },
   {
     "name": "Ron Harper Jr.",
@@ -409532,7 +409890,9 @@
     "oreb_pct": 0,
     "net_rating": -7.5,
     "offensive_rating": 94.3,
-    "defensive_rating": 101.8
+    "defensive_rating": 101.8,
+    "height_inches": 76.0,
+    "weight_pounds": 195
   },
   {
     "name": "Eugene Omoruyi",
@@ -409615,7 +409975,9 @@
     "oreb_pct": 0,
     "net_rating": -7.6,
     "offensive_rating": 94,
-    "defensive_rating": 101.6
+    "defensive_rating": 101.6,
+    "height_inches": 82.0,
+    "weight_pounds": 190
   },
   {
     "name": "Shaquille Doorson",
@@ -409655,7 +410017,9 @@
     "oreb_pct": 0,
     "net_rating": 5.9,
     "offensive_rating": 106.7,
-    "defensive_rating": 100.8
+    "defensive_rating": 100.8,
+    "height_inches": 84.0,
+    "weight_pounds": 275
   },
   {
     "name": "Ethan Chargois",
@@ -409695,7 +410059,9 @@
     "oreb_pct": 0,
     "net_rating": 4.6,
     "offensive_rating": 109.9,
-    "defensive_rating": 105.3
+    "defensive_rating": 105.3,
+    "height_inches": 81.0,
+    "weight_pounds": 235
   },
   {
     "name": "Feron Hunt",
@@ -409778,7 +410144,9 @@
     "oreb_pct": 0,
     "net_rating": 6.8,
     "offensive_rating": 112.8,
-    "defensive_rating": 106
+    "defensive_rating": 106,
+    "height_inches": 80.0,
+    "weight_pounds": 215
   },
   {
     "name": "Jimmy Whitt Jr.",
@@ -409860,7 +410228,9 @@
     "oreb_pct": 0,
     "net_rating": -3.6,
     "offensive_rating": 108.9,
-    "defensive_rating": 112.5
+    "defensive_rating": 112.5,
+    "height_inches": 76.0,
+    "weight_pounds": 180
   },
   {
     "name": "Jahmal McMurray",
@@ -409900,7 +410270,9 @@
     "oreb_pct": 0,
     "net_rating": 7.1,
     "offensive_rating": 119,
-    "defensive_rating": 111.9
+    "defensive_rating": 111.9,
+    "height_inches": 72.0,
+    "weight_pounds": 175
   },
   {
     "name": "Jarrey Foster",
@@ -409940,7 +410312,9 @@
     "oreb_pct": 0,
     "net_rating": -9,
     "offensive_rating": 97.8,
-    "defensive_rating": 106.8
+    "defensive_rating": 106.8,
+    "height_inches": 78.0,
+    "weight_pounds": 220
   },
   {
     "name": "Elijah Thomas",
@@ -409980,7 +410354,9 @@
     "oreb_pct": 0,
     "net_rating": -6.4,
     "offensive_rating": 100.9,
-    "defensive_rating": 107.3
+    "defensive_rating": 107.3,
+    "height_inches": 77.0,
+    "weight_pounds": 220
   },
   {
     "name": "Tommy Kuhse",
@@ -410020,7 +410396,9 @@
     "oreb_pct": 0,
     "net_rating": -1.6,
     "offensive_rating": 104.4,
-    "defensive_rating": 106
+    "defensive_rating": 106,
+    "height_inches": 74.0,
+    "weight_pounds": 185
   },
   {
     "name": "Malik Fitts",
@@ -410146,7 +410524,9 @@
     "oreb_pct": 0,
     "net_rating": 7.5,
     "offensive_rating": 114.4,
-    "defensive_rating": 106.9
+    "defensive_rating": 106.9,
+    "height_inches": 78.0,
+    "weight_pounds": 205
   },
   {
     "name": "Jordan Hunter",
@@ -410186,7 +410566,9 @@
     "oreb_pct": 0,
     "net_rating": 22.9,
     "offensive_rating": 120.5,
-    "defensive_rating": 97.6
+    "defensive_rating": 97.6,
+    "height_inches": 82.0,
+    "weight_pounds": 230
   },
   {
     "name": "Nathan Mensah",
@@ -441270,7 +441652,9 @@
     "oreb_pct": 0,
     "net_rating": 11.8,
     "offensive_rating": 113.1,
-    "defensive_rating": 101.3
+    "defensive_rating": 101.3,
+    "height_inches": 78.0,
+    "weight_pounds": 210
   },
   {
     "name": "Montez Mathis",
@@ -441310,7 +441694,9 @@
     "oreb_pct": 0,
     "net_rating": -0.9,
     "offensive_rating": 97.5,
-    "defensive_rating": 98.4
+    "defensive_rating": 98.4,
+    "height_inches": 76.0,
+    "weight_pounds": 210
   },
   {
     "name": "Caleb McConnell",
@@ -441350,7 +441736,9 @@
     "oreb_pct": 0,
     "net_rating": -0.3,
     "offensive_rating": 98,
-    "defensive_rating": 98.3
+    "defensive_rating": 98.3,
+    "height_inches": 79.0,
+    "weight_pounds": 195
   },
   {
     "name": "Myles Johnson",
@@ -441390,7 +441778,9 @@
     "oreb_pct": 0,
     "net_rating": 14.2,
     "offensive_rating": 107.3,
-    "defensive_rating": 93.1
+    "defensive_rating": 93.1,
+    "height_inches": 83.0,
+    "weight_pounds": 255
   },
   {
     "name": "Jacob Young",
@@ -441430,7 +441820,9 @@
     "oreb_pct": 0,
     "net_rating": -9,
     "offensive_rating": 90.6,
-    "defensive_rating": 99.6
+    "defensive_rating": 99.6,
+    "height_inches": 74.0,
+    "weight_pounds": 185
   },
   {
     "name": "Ron Harper Jr.",
@@ -441514,7 +441906,9 @@
     "oreb_pct": 0,
     "net_rating": 3.8,
     "offensive_rating": 104.4,
-    "defensive_rating": 100.6
+    "defensive_rating": 100.6,
+    "height_inches": 76.0,
+    "weight_pounds": 195
   },
   {
     "name": "Akwasi Yeboah",
@@ -441554,7 +441948,9 @@
     "oreb_pct": 0,
     "net_rating": 14.3,
     "offensive_rating": 111.1,
-    "defensive_rating": 96.8
+    "defensive_rating": 96.8,
+    "height_inches": 78.0,
+    "weight_pounds": 230
   },
   {
     "name": "CJ White",
@@ -441594,7 +441990,9 @@
     "oreb_pct": 0,
     "net_rating": -2.9,
     "offensive_rating": 103.6,
-    "defensive_rating": 106.5
+    "defensive_rating": 106.5,
+    "height_inches": 77.0,
+    "weight_pounds": 215
   },
   {
     "name": "Emmanuel Bandoumel",
@@ -441760,7 +442158,9 @@
     "oreb_pct": 0,
     "net_rating": -6.4,
     "offensive_rating": 97.5,
-    "defensive_rating": 103.9
+    "defensive_rating": 103.9,
+    "height_inches": 81.0,
+    "weight_pounds": 235
   },
   {
     "name": "Feron Hunt",
@@ -441843,7 +442243,9 @@
     "oreb_pct": 0,
     "net_rating": 17.7,
     "offensive_rating": 116.6,
-    "defensive_rating": 98.9
+    "defensive_rating": 98.9,
+    "height_inches": 80.0,
+    "weight_pounds": 215
   },
   {
     "name": "Alex Ducas",
@@ -441926,7 +442328,9 @@
     "oreb_pct": 0,
     "net_rating": -7,
     "offensive_rating": 102.1,
-    "defensive_rating": 109.1
+    "defensive_rating": 109.1,
+    "height_inches": 74.0,
+    "weight_pounds": 185
   },
   {
     "name": "Dan Fotu",
@@ -441966,7 +442370,9 @@
     "oreb_pct": 0,
     "net_rating": 18.4,
     "offensive_rating": 125.5,
-    "defensive_rating": 107.1
+    "defensive_rating": 107.1,
+    "height_inches": 79.0,
+    "weight_pounds": 225
   },
   {
     "name": "Malik Fitts",
@@ -442092,7 +442498,9 @@
     "oreb_pct": 0,
     "net_rating": 4,
     "offensive_rating": 110.5,
-    "defensive_rating": 106.5
+    "defensive_rating": 106.5,
+    "height_inches": 78.0,
+    "weight_pounds": 205
   },
   {
     "name": "Trey Pulliam",
@@ -472942,7 +473350,9 @@
     "oreb_pct": 0,
     "net_rating": 4,
     "offensive_rating": 107.8,
-    "defensive_rating": 103.8
+    "defensive_rating": 103.8,
+    "height_inches": 78.0,
+    "weight_pounds": 210
   },
   {
     "name": "Montez Mathis",
@@ -472982,7 +473392,9 @@
     "oreb_pct": 0,
     "net_rating": -9.6,
     "offensive_rating": 93.1,
-    "defensive_rating": 102.7
+    "defensive_rating": 102.7,
+    "height_inches": 76.0,
+    "weight_pounds": 210
   },
   {
     "name": "Caleb McConnell",
@@ -473022,7 +473434,9 @@
     "oreb_pct": 0,
     "net_rating": -7.9,
     "offensive_rating": 87.5,
-    "defensive_rating": 95.4
+    "defensive_rating": 95.4,
+    "height_inches": 79.0,
+    "weight_pounds": 195
   },
   {
     "name": "Myles Johnson",
@@ -473062,7 +473476,9 @@
     "oreb_pct": 0,
     "net_rating": 24.6,
     "offensive_rating": 113.7,
-    "defensive_rating": 89.1
+    "defensive_rating": 89.1,
+    "height_inches": 83.0,
+    "weight_pounds": 255
   },
   {
     "name": "Jacob Young",
@@ -473102,7 +473518,9 @@
     "oreb_pct": 0,
     "net_rating": -2.1,
     "offensive_rating": 99.8,
-    "defensive_rating": 101.9
+    "defensive_rating": 101.9,
+    "height_inches": 74.0,
+    "weight_pounds": 185
   },
   {
     "name": "Ron Harper Jr.",
@@ -473186,7 +473604,9 @@
     "oreb_pct": 0,
     "net_rating": -2.2,
     "offensive_rating": 100.7,
-    "defensive_rating": 102.9
+    "defensive_rating": 102.9,
+    "height_inches": 76.0,
+    "weight_pounds": 195
   },
   {
     "name": "Emmanuel Bandoumel",
@@ -473310,7 +473730,9 @@
     "oreb_pct": 0,
     "net_rating": -20,
     "offensive_rating": 76.5,
-    "defensive_rating": 96.5
+    "defensive_rating": 96.5,
+    "height_inches": 82.0,
+    "weight_pounds": 250
   },
   {
     "name": "Ethan Chargois",
@@ -473350,7 +473772,9 @@
     "oreb_pct": 0,
     "net_rating": 0.3,
     "offensive_rating": 95.4,
-    "defensive_rating": 95.1
+    "defensive_rating": 95.1,
+    "height_inches": 81.0,
+    "weight_pounds": 235
   },
   {
     "name": "Feron Hunt",
@@ -473433,7 +473857,9 @@
     "oreb_pct": 0,
     "net_rating": -18.4,
     "offensive_rating": 80.7,
-    "defensive_rating": 99.1
+    "defensive_rating": 99.1,
+    "height_inches": 77.0,
+    "weight_pounds": 190
   },
   {
     "name": "Kyle Bowen",
@@ -473473,7 +473899,9 @@
     "oreb_pct": 0,
     "net_rating": 0.3,
     "offensive_rating": 95.5,
-    "defensive_rating": 95.2
+    "defensive_rating": 95.2,
+    "height_inches": 80.0,
+    "weight_pounds": 225
   },
   {
     "name": "Logan Johnson",
@@ -473555,7 +473983,9 @@
     "oreb_pct": 0,
     "net_rating": 6.4,
     "offensive_rating": 102.3,
-    "defensive_rating": 95.9
+    "defensive_rating": 95.9,
+    "height_inches": 82.0,
+    "weight_pounds": 245
   },
   {
     "name": "Tommy Kuhse",
@@ -473595,7 +474025,9 @@
     "oreb_pct": 0,
     "net_rating": 4.8,
     "offensive_rating": 102,
-    "defensive_rating": 97.2
+    "defensive_rating": 97.2,
+    "height_inches": 74.0,
+    "weight_pounds": 185
   },
   {
     "name": "Dan Fotu",
@@ -473635,7 +474067,9 @@
     "oreb_pct": 0,
     "net_rating": 10.7,
     "offensive_rating": 105.8,
-    "defensive_rating": 95.1
+    "defensive_rating": 95.1,
+    "height_inches": 79.0,
+    "weight_pounds": 225
   },
   {
     "name": "Nathan Mensah",
@@ -504530,7 +504964,9 @@
     "oreb_pct": 0,
     "net_rating": 19.3,
     "offensive_rating": 117.1,
-    "defensive_rating": 97.8
+    "defensive_rating": 97.8,
+    "height_inches": 83.0,
+    "weight_pounds": 240
   },
   {
     "name": "Paul Mulcahy",
@@ -504570,7 +505006,9 @@
     "oreb_pct": 0,
     "net_rating": -0.9,
     "offensive_rating": 102.1,
-    "defensive_rating": 103
+    "defensive_rating": 103,
+    "height_inches": 78.0,
+    "weight_pounds": 210
   },
   {
     "name": "Caleb McConnell",
@@ -504610,7 +505048,9 @@
     "oreb_pct": 0,
     "net_rating": -1.6,
     "offensive_rating": 93,
-    "defensive_rating": 94.6
+    "defensive_rating": 94.6,
+    "height_inches": 79.0,
+    "weight_pounds": 195
   },
   {
     "name": "Ron Harper Jr.",
@@ -504694,7 +505134,9 @@
     "oreb_pct": 0,
     "net_rating": 2.7,
     "offensive_rating": 106,
-    "defensive_rating": 103.3
+    "defensive_rating": 103.3,
+    "height_inches": 76.0,
+    "weight_pounds": 195
   },
   {
     "name": "Emmanuel Bandoumel",
@@ -504818,7 +505260,9 @@
     "oreb_pct": 0,
     "net_rating": -5.5,
     "offensive_rating": 96,
-    "defensive_rating": 101.5
+    "defensive_rating": 101.5,
+    "height_inches": 75.0,
+    "weight_pounds": 185
   },
   {
     "name": "Marcus Weathers",
@@ -504858,7 +505302,9 @@
     "oreb_pct": 0,
     "net_rating": 17.5,
     "offensive_rating": 115.3,
-    "defensive_rating": 97.8
+    "defensive_rating": 97.8,
+    "height_inches": 77.0,
+    "weight_pounds": 215
   },
   {
     "name": "Michael Weathers",
@@ -504898,7 +505344,9 @@
     "oreb_pct": 0,
     "net_rating": 8.4,
     "offensive_rating": 101.2,
-    "defensive_rating": 92.8
+    "defensive_rating": 92.8,
+    "height_inches": 75.0,
+    "weight_pounds": 175
   },
   {
     "name": "Augustas Marciulionis",
@@ -504938,7 +505386,9 @@
     "oreb_pct": 0,
     "net_rating": -16.6,
     "offensive_rating": 79,
-    "defensive_rating": 95.6
+    "defensive_rating": 95.6,
+    "height_inches": 76.0,
+    "weight_pounds": 185
   },
   {
     "name": "Alex Ducas",
@@ -505021,7 +505471,9 @@
     "oreb_pct": 0,
     "net_rating": 30.8,
     "offensive_rating": 127,
-    "defensive_rating": 96.2
+    "defensive_rating": 96.2,
+    "height_inches": 80.0,
+    "weight_pounds": 225
   },
   {
     "name": "Logan Johnson",
@@ -505103,7 +505555,9 @@
     "oreb_pct": 0,
     "net_rating": 23.3,
     "offensive_rating": 120,
-    "defensive_rating": 96.7
+    "defensive_rating": 96.7,
+    "height_inches": 82.0,
+    "weight_pounds": 245
   },
   {
     "name": "Tommy Kuhse",
@@ -505143,7 +505597,9 @@
     "oreb_pct": 0,
     "net_rating": 15.6,
     "offensive_rating": 112.8,
-    "defensive_rating": 97.2
+    "defensive_rating": 97.2,
+    "height_inches": 74.0,
+    "weight_pounds": 185
   },
   {
     "name": "Lamont Butler",
@@ -536042,7 +536498,9 @@
     "oreb_pct": 0,
     "net_rating": 17.4,
     "offensive_rating": 105.5,
-    "defensive_rating": 88.1
+    "defensive_rating": 88.1,
+    "height_inches": 83.0,
+    "weight_pounds": 240
   },
   {
     "name": "Derek Simpson",
@@ -536082,7 +536540,9 @@
     "oreb_pct": 0,
     "net_rating": -1.2,
     "offensive_rating": 96.3,
-    "defensive_rating": 97.5
+    "defensive_rating": 97.5,
+    "height_inches": 75.0,
+    "weight_pounds": 170
   },
   {
     "name": "Mawot Mag",
@@ -536122,7 +536582,9 @@
     "oreb_pct": 0,
     "net_rating": 19.1,
     "offensive_rating": 106.2,
-    "defensive_rating": 87.1
+    "defensive_rating": 87.1,
+    "height_inches": 79.0,
+    "weight_pounds": 215
   },
   {
     "name": "Cam Spencer",
@@ -536249,7 +536711,9 @@
     "oreb_pct": 0,
     "net_rating": 8.9,
     "offensive_rating": 104.3,
-    "defensive_rating": 95.4
+    "defensive_rating": 95.4,
+    "height_inches": 78.0,
+    "weight_pounds": 210
   },
   {
     "name": "Caleb McConnell",
@@ -536289,7 +536753,9 @@
     "oreb_pct": 0,
     "net_rating": 1.6,
     "offensive_rating": 93.2,
-    "defensive_rating": 91.6
+    "defensive_rating": 91.6,
+    "height_inches": 79.0,
+    "weight_pounds": 195
   },
   {
     "name": "Zhuric Phelps",
@@ -536329,7 +536795,9 @@
     "oreb_pct": 0,
     "net_rating": -8.2,
     "offensive_rating": 95.4,
-    "defensive_rating": 103.6
+    "defensive_rating": 103.6,
+    "height_inches": 75.0,
+    "weight_pounds": 175
   },
   {
     "name": "Jalen Smith",
@@ -536414,7 +536882,9 @@
     "oreb_pct": 0,
     "net_rating": -5.6,
     "offensive_rating": 103.6,
-    "defensive_rating": 109.2
+    "defensive_rating": 109.2,
+    "height_inches": 80.0,
+    "weight_pounds": 190
   },
   {
     "name": "Samuell Williamson",
@@ -536496,7 +536966,9 @@
     "oreb_pct": 0,
     "net_rating": -5.3,
     "offensive_rating": 102.6,
-    "defensive_rating": 107.9
+    "defensive_rating": 107.9,
+    "height_inches": 81.0,
+    "weight_pounds": 255
   },
   {
     "name": "Zach Nutall",
@@ -536536,7 +537008,9 @@
     "oreb_pct": 0,
     "net_rating": -7.5,
     "offensive_rating": 103,
-    "defensive_rating": 110.5
+    "defensive_rating": 110.5,
+    "height_inches": 75.0,
+    "weight_pounds": 185
   },
   {
     "name": "Mitchell Saxen",
@@ -536576,7 +537050,9 @@
     "oreb_pct": 0,
     "net_rating": 21.6,
     "offensive_rating": 114.5,
-    "defensive_rating": 92.9
+    "defensive_rating": 92.9,
+    "height_inches": 82.0,
+    "weight_pounds": 230
   },
   {
     "name": "Augustas Marciulionis",
@@ -536616,7 +537092,9 @@
     "oreb_pct": 0,
     "net_rating": 12.5,
     "offensive_rating": 109.5,
-    "defensive_rating": 97
+    "defensive_rating": 97,
+    "height_inches": 76.0,
+    "weight_pounds": 185
   },
   {
     "name": "Aidan Mahaney",
@@ -536656,7 +537134,9 @@
     "oreb_pct": 0,
     "net_rating": 11.6,
     "offensive_rating": 110.1,
-    "defensive_rating": 98.5
+    "defensive_rating": 98.5,
+    "height_inches": 75.0,
+    "weight_pounds": 180
   },
   {
     "name": "Alex Ducas",
@@ -536739,7 +537219,9 @@
     "oreb_pct": 0,
     "net_rating": 28.6,
     "offensive_rating": 120.7,
-    "defensive_rating": 92.1
+    "defensive_rating": 92.1,
+    "height_inches": 80.0,
+    "weight_pounds": 225
   },
   {
     "name": "Logan Johnson",
@@ -569000,7 +569482,9 @@
     "oreb_pct": 0,
     "net_rating": 15.9,
     "offensive_rating": 105.4,
-    "defensive_rating": 89.5
+    "defensive_rating": 89.5,
+    "height_inches": 83.0,
+    "weight_pounds": 240
   },
   {
     "name": "Derek Simpson",
@@ -569040,7 +569524,9 @@
     "oreb_pct": 0,
     "net_rating": -7,
     "offensive_rating": 91.3,
-    "defensive_rating": 98.3
+    "defensive_rating": 98.3,
+    "height_inches": 75.0,
+    "weight_pounds": 170
   },
   {
     "name": "Gavin Griffiths",
@@ -569080,7 +569566,9 @@
     "oreb_pct": 0,
     "net_rating": -17.2,
     "offensive_rating": 84.8,
-    "defensive_rating": 102
+    "defensive_rating": 102,
+    "height_inches": 80.0,
+    "weight_pounds": 193
   },
   {
     "name": "Mawot Mag",
@@ -569120,7 +569608,9 @@
     "oreb_pct": 0,
     "net_rating": -5.3,
     "offensive_rating": 93.2,
-    "defensive_rating": 98.5
+    "defensive_rating": 98.5,
+    "height_inches": 79.0,
+    "weight_pounds": 215
   },
   {
     "name": "Jamichael Davis",
@@ -569160,7 +569650,9 @@
     "oreb_pct": 0,
     "net_rating": -10.2,
     "offensive_rating": 88.2,
-    "defensive_rating": 98.4
+    "defensive_rating": 98.4,
+    "height_inches": 73.0,
+    "weight_pounds": 175
   },
   {
     "name": "Aundre Hyatt",
@@ -569242,7 +569734,9 @@
     "oreb_pct": 0,
     "net_rating": -1.6,
     "offensive_rating": 98.7,
-    "defensive_rating": 100.3
+    "defensive_rating": 100.3,
+    "height_inches": 71.0,
+    "weight_pounds": 175
   },
   {
     "name": "Austin Williams",
@@ -569282,7 +569776,9 @@
     "oreb_pct": 0,
     "net_rating": -15,
     "offensive_rating": 86.5,
-    "defensive_rating": 101.5
+    "defensive_rating": 101.5,
+    "height_inches": 76.0,
+    "weight_pounds": 200
   },
   {
     "name": "Ja'Heim Hudson",
@@ -569322,7 +569818,9 @@
     "oreb_pct": 0,
     "net_rating": 16.5,
     "offensive_rating": 116.8,
-    "defensive_rating": 100.3
+    "defensive_rating": 100.3,
+    "height_inches": 79.0,
+    "weight_pounds": 230
   },
   {
     "name": "Zhuric Phelps",
@@ -569362,7 +569860,9 @@
     "oreb_pct": 0,
     "net_rating": 5.3,
     "offensive_rating": 104.5,
-    "defensive_rating": 99.2
+    "defensive_rating": 99.2,
+    "height_inches": 75.0,
+    "weight_pounds": 175
   },
   {
     "name": "Tyreek Smith",
@@ -569402,7 +569902,9 @@
     "oreb_pct": 0,
     "net_rating": 32,
     "offensive_rating": 125.6,
-    "defensive_rating": 93.6
+    "defensive_rating": 93.6,
+    "height_inches": 79.0,
+    "weight_pounds": 220
   },
   {
     "name": "B.J. Edwards",
@@ -569442,7 +569944,9 @@
     "oreb_pct": 0,
     "net_rating": 7.1,
     "offensive_rating": 107.8,
-    "defensive_rating": 100.7
+    "defensive_rating": 100.7,
+    "height_inches": 75.0,
+    "weight_pounds": 188
   },
   {
     "name": "Keon Ambrose-Hylton",
@@ -569653,7 +570157,9 @@
     "oreb_pct": 0,
     "net_rating": 26.7,
     "offensive_rating": 112.4,
-    "defensive_rating": 85.7
+    "defensive_rating": 85.7,
+    "height_inches": 80.0,
+    "weight_pounds": 220
   },
   {
     "name": "Luke Barrett",
@@ -569693,7 +570199,9 @@
     "oreb_pct": 0,
     "net_rating": 34.8,
     "offensive_rating": 130.1,
-    "defensive_rating": 95.3
+    "defensive_rating": 95.3,
+    "height_inches": 78.0,
+    "weight_pounds": 190
   },
   {
     "name": "Mitchell Saxen",
@@ -569733,7 +570241,9 @@
     "oreb_pct": 0,
     "net_rating": 26,
     "offensive_rating": 117.9,
-    "defensive_rating": 91.9
+    "defensive_rating": 91.9,
+    "height_inches": 82.0,
+    "weight_pounds": 230
   },
   {
     "name": "Augustas Marciulionis",
@@ -569773,7 +570283,9 @@
     "oreb_pct": 0,
     "net_rating": 24,
     "offensive_rating": 118.9,
-    "defensive_rating": 94.9
+    "defensive_rating": 94.9,
+    "height_inches": 76.0,
+    "weight_pounds": 185
   },
   {
     "name": "Aidan Mahaney",
@@ -569813,7 +570325,9 @@
     "oreb_pct": 0,
     "net_rating": 15.2,
     "offensive_rating": 113.5,
-    "defensive_rating": 98.3
+    "defensive_rating": 98.3,
+    "height_inches": 75.0,
+    "weight_pounds": 180
   },
   {
     "name": "Alex Ducas",
@@ -569896,7 +570410,9 @@
     "oreb_pct": 0,
     "net_rating": 27.1,
     "offensive_rating": 121,
-    "defensive_rating": 93.9
+    "defensive_rating": 93.9,
+    "height_inches": 80.0,
+    "weight_pounds": 205
   },
   {
     "name": "Micah Parrish",
