@@ -4,6 +4,8 @@
  * /big-board/[slug] — Individual prospect profile page.
  * Shows full scouting details, headshot, school logo, NBA comp,
  * mock draft assignment (with team logo), and auto-searched YouTube highlights.
+ *
+ * Headshots and NBA comp player photos are auto-fetched via /api/espn-lookup.
  */
 
 import React, { useEffect, useState, useCallback } from 'react';
@@ -40,13 +42,55 @@ function ScoutValue({ value, accent = false }: { value: string; accent?: boolean
   );
 }
 
+// ─── ESPN auto-lookup hook ────────────────────────────────────────────────────
+function useESPNLookup(
+  name: string | null,
+  school: string,
+  sport: 'mens-college-basketball' | 'nba' = 'mens-college-basketball',
+  manualAthleteId?: number,
+) {
+  const [athleteId, setAthleteId] = useState<number | null>(manualAthleteId ?? null);
+  const [teamId,    setTeamId]    = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!name) return;
+    if (manualAthleteId) { setAthleteId(manualAthleteId); return; }
+
+    let cancelled = false;
+    const key = `espn::${sport}::${name.toLowerCase()}::${school.toLowerCase()}`;
+
+    try {
+      const stored = sessionStorage.getItem(key);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (!cancelled) { setAthleteId(parsed.athleteId ?? null); setTeamId(parsed.teamId ?? null); }
+        return;
+      }
+    } catch { /* ignore */ }
+
+    fetch(`/api/espn-lookup?name=${encodeURIComponent(name)}&school=${encodeURIComponent(school)}&sport=${sport}`)
+      .then(r => r.json())
+      .then(data => {
+        if (cancelled) return;
+        setAthleteId(data.athleteId ?? null);
+        setTeamId(data.teamId    ?? null);
+        try { sessionStorage.setItem(key, JSON.stringify(data)); } catch { /* ignore */ }
+      })
+      .catch(() => { /* silently fail */ });
+
+    return () => { cancelled = true; };
+  }, [name, school, sport, manualAthleteId]);
+
+  return { athleteId, teamId };
+}
+
 // ─── YouTube embed ─────────────────────────────────────────────────────────────
 function HighlightsEmbed({ videoId, onRefresh }: { videoId: string; onRefresh: () => void }) {
   return (
     <div className="space-y-3">
       <div className="aspect-video w-full rounded-xl overflow-hidden border border-[#1f2937] shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
         <iframe
-          src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`}
+          src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&autoplay=1`}
           title="Highlights"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
@@ -179,9 +223,11 @@ export default function ProspectProfilePage() {
   const [videoSearched, setVideoSearched] = useState(false);
 
   // Image error states
-  const [headErr,   setHeadErr]   = useState(false);
-  const [schoolErr, setSchoolErr] = useState(false);
-  const [nbaErr,    setNbaErr]    = useState(false);
+  const [headErr,       setHeadErr]       = useState(false);
+  const [schoolErr,     setSchoolErr]     = useState(false);
+  const [nbaErr,        setNbaErr]        = useState(false);
+  const [compHeadErr,   setCompHeadErr]   = useState(false);
+  const [compTeamErr,   setCompTeamErr]   = useState(false);
 
   // ── Load player data ────────────────────────────────────────────────────────
   useEffect(() => {
@@ -203,7 +249,6 @@ export default function ProspectProfilePage() {
           setConfig(cfg);
         }
 
-        // If a YouTube ID is pinned in config, use it immediately
         const pinnedId = cfg?.players?.[found.name]?.youtubeVideoId;
         if (pinnedId) {
           setVideoId(pinnedId);
@@ -212,7 +257,6 @@ export default function ProspectProfilePage() {
 
         setIsLoading(false);
 
-        // Auto-search YouTube highlights if no pinned ID
         if (!pinnedId) {
           searchHighlights(found.name, found.school);
         }
@@ -223,6 +267,28 @@ export default function ProspectProfilePage() {
     }
     load();
   }, [slug]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── ESPN auto-lookup for this prospect ─────────────────────────────────────
+  const manualAthleteId = player ? config?.players?.[player.name]?.espnAthleteId : undefined;
+  const { athleteId: prospectAthleteId } = useESPNLookup(
+    player?.name ?? null,
+    player?.school ?? '',
+    'mens-college-basketball',
+    manualAthleteId,
+  );
+
+  // Reset headshot error if a new athleteId arrives
+  useEffect(() => { setHeadErr(false); }, [prospectAthleteId]);
+
+  // ── ESPN auto-lookup for the NBA comparison player ─────────────────────────
+  const { athleteId: nbaCompAthleteId, teamId: nbaCompTeamId } = useESPNLookup(
+    player?.nbaComparison ?? null,
+    '',
+    'nba',
+  );
+
+  // Reset comp errors if new IDs arrive
+  useEffect(() => { setCompHeadErr(false); setCompTeamErr(false); }, [nbaCompAthleteId]);
 
   // ── YouTube search ──────────────────────────────────────────────────────────
   const searchHighlights = useCallback(async (name: string, school: string) => {
@@ -243,7 +309,6 @@ export default function ProspectProfilePage() {
 
   const handleRefresh = useCallback(() => {
     if (player) {
-      // Clear cached video and re-search (server cache is 24 h, but UX still resets)
       setVideoId(null);
       setVideoSearched(false);
       searchHighlights(player.name, player.school);
@@ -254,13 +319,14 @@ export default function ProspectProfilePage() {
   if (isLoading) return <LoadingSkeleton />;
   if (notFound || !player) return <NotFound />;
 
-  const school    = findSchool(player.school);
-  const nbaTeam   = player.mockTeam ? findNBATeam(player.mockTeam) : null;
-  const cfg       = config?.players?.[player.name];
+  const school  = findSchool(player.school);
+  const nbaTeam = player.mockTeam ? findNBATeam(player.mockTeam) : null;
 
-  const hasHeadshot = !!cfg?.espnAthleteId && !headErr;
-  const hasSchool   = !!school && school.espnTeamId > 0 && !schoolErr;
-  const hasNbaLogo  = !!nbaTeam && !nbaErr;
+  const hasHeadshot   = !!prospectAthleteId && !headErr;
+  const hasSchool     = !!school && school.espnTeamId > 0 && !schoolErr;
+  const hasNbaLogo    = !!nbaTeam && !nbaErr;
+  const hasCompHead   = !!nbaCompAthleteId && !compHeadErr;
+  const hasCompTeam   = !!nbaCompTeamId && !compTeamErr;
 
   const primaryColor   = school?.primary   ?? '1a7a3f';
   const secondaryColor = school?.secondary ?? '145f30';
@@ -328,11 +394,11 @@ export default function ProspectProfilePage() {
           <div className="px-6 pb-6 pt-4">
             <div className="flex items-start gap-5 flex-wrap">
 
-              {/* Headshot */}
+              {/* Headshot (auto-resolved via ESPN lookup) */}
               <div className="-mt-12 flex-shrink-0">
                 {hasHeadshot ? (
                   <Image
-                    src={collegeHeadshotUrl(cfg!.espnAthleteId!)}
+                    src={collegeHeadshotUrl(prospectAthleteId!)}
                     alt={player.name}
                     width={96} height={96}
                     className="w-24 h-24 rounded-full object-cover border-4 border-[#111827] shadow-xl"
@@ -392,11 +458,40 @@ export default function ProspectProfilePage() {
             <div className="pt-2 border-t border-[#1f2937]">
               <ScoutLabel label="NBA Comparison" />
               {player.nbaComparison ? (
-                <div className="mt-2 inline-flex items-center gap-2 px-3 py-1.5 bg-[#1a2332] rounded-lg border border-[#374151]">
-                  <svg className="w-3.5 h-3.5 text-[#4ade80]" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
-                  </svg>
-                  <span className="text-sm font-semibold text-[#d1d5db]">{player.nbaComparison}</span>
+                <div className="mt-2 flex items-center gap-3 px-3 py-2 bg-[#1a2332] rounded-lg border border-[#374151]">
+                  {/* NBA comp player headshot */}
+                  {hasCompHead ? (
+                    <Image
+                      src={`https://a.espncdn.com/i/headshots/nba/players/full/${nbaCompAthleteId}.png`}
+                      alt={player.nbaComparison}
+                      width={40} height={40}
+                      className="w-10 h-10 rounded-full object-cover border border-white/10 flex-shrink-0"
+                      onError={() => setCompHeadErr(true)}
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-[#0d1117] border border-white/10 flex items-center justify-center flex-shrink-0">
+                      <span className="text-xs font-bold text-[#6b7280]">
+                        {player.nbaComparison.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <span className="text-sm font-semibold text-[#d1d5db] truncate">
+                      {player.nbaComparison}
+                    </span>
+                    {/* NBA comp player's current team logo */}
+                    {hasCompTeam && (
+                      <Image
+                        src={`https://a.espncdn.com/i/teamlogos/nba/500/${nbaCompTeamId}.png`}
+                        alt="NBA team"
+                        width={20} height={20}
+                        className="object-contain flex-shrink-0"
+                        onError={() => setCompTeamErr(true)}
+                        unoptimized
+                      />
+                    )}
+                  </div>
                 </div>
               ) : (
                 <ScoutValue value="" />

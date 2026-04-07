@@ -1,68 +1,109 @@
 /**
  * ESPN auto-lookup route.
  * GET /api/espn-lookup?name=Cooper+Flagg&school=Duke
+ * GET /api/espn-lookup?name=LeBron+James&sport=nba
  *
- * Searches ESPN's unofficial college basketball athlete API to find
- * the ESPN athlete ID and team ID for a prospect. Results are cached
- * in-memory for 7 days so repeat renders are instant.
+ * Searches ESPN's unofficial athlete API to find the ESPN athlete ID
+ * and team ID for a prospect or NBA player. Uses a scoring algorithm
+ * to find the best match by name + school. Results are cached in-memory
+ * for 7 days so repeat renders are instant.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 
 interface ESPNResult {
   athleteId: number | null;
-  teamId: number | null;
+  teamId:    number | null;
 }
 
 // ─── In-memory cache (7-day TTL) ─────────────────────────────────────────────
 const cache = new Map<string, ESPNResult & { cachedAt: number }>();
 const TTL   = 7 * 24 * 60 * 60 * 1000;
 
-// ─── ESPN search ─────────────────────────────────────────────────────────────
-async function searchESPN(name: string, school: string): Promise<ESPNResult> {
-  const encoded = encodeURIComponent(name);
+// ─── Scoring helper ───────────────────────────────────────────────────────────
+function scoreMatch(athlete: any, name: string, school: string): number {
+  let score = 0;
+  const fullName  = (athlete.fullName  ?? '').toLowerCase();
+  const teamName  = (athlete.team?.displayName ?? athlete.team?.name ?? '').toLowerCase();
+  const nameLower = name.toLowerCase();
 
-  // 1️⃣  Try college basketball first
-  const cbUrl = `https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/athletes?search=${encoded}&limit=10`;
-  const cbRes  = await fetch(cbUrl, { next: { revalidate: 86400 } });
+  const parts     = nameLower.trim().split(/\s+/);
+  const lastName  = parts[parts.length - 1];
+  const firstName = parts[0];
 
-  if (cbRes.ok) {
-    const data = await cbRes.json();
-    const athletes: any[] = data.athletes ?? [];
+  // ── Name scoring ──
+  if (fullName === nameLower)                      score += 100; // exact match
+  else if (fullName.includes(nameLower))           score +=  80; // full name substring
+  else {
+    if (fullName.endsWith(lastName))               score +=  50; // last name exact end
+    else if (fullName.includes(lastName))          score +=  30; // last name anywhere
+    if (fullName.startsWith(firstName))            score +=  20; // first name
+  }
 
-    // Prefer exact name match; fall back to first result
-    const nameLower   = name.toLowerCase();
-    const schoolLower = school.toLowerCase();
-
-    const match =
-      athletes.find(a => a.fullName?.toLowerCase() === nameLower) ??
-      athletes.find(a => {
-        const teamName = a.team?.displayName?.toLowerCase() ?? '';
-        return a.fullName?.toLowerCase().includes(nameLower.split(' ').pop()!) &&
-               teamName.includes(schoolLower.split(' ')[0]);
-      }) ??
-      athletes[0];
-
-    if (match) {
-      return {
-        athleteId: match.id   ? parseInt(match.id)      : null,
-        teamId:    match.team?.id ? parseInt(match.team.id) : null,
-      };
+  // ── School scoring (college only) ──
+  if (school) {
+    const schoolWords = school.toLowerCase().split(/\s+/).filter(w => w.length > 3);
+    for (const word of schoolWords) {
+      if (teamName.includes(word)) score += 25;
     }
   }
 
-  // 2️⃣  Fallback: ESPN site search (broader)
-  const siteUrl = `https://site.api.espn.com/apis/common/v3/search?query=${encoded}&limit=5&type=athlete&sport=basketball`;
-  const siteRes  = await fetch(siteUrl, { next: { revalidate: 86400 } });
+  return score;
+}
 
-  if (siteRes.ok) {
-    const data = await siteRes.json();
-    const hits  = (data.results ?? []).flatMap((r: any) => r.contents ?? []);
-    const hit   = hits.find((h: any) => h.type === 'athlete');
-    if (hit) {
-      return { athleteId: hit.id ? parseInt(hit.id) : null, teamId: null };
-    }
+// ─── ESPN search ──────────────────────────────────────────────────────────────
+async function searchESPN(name: string, school: string, sport: string): Promise<ESPNResult> {
+  const parts    = name.trim().split(/\s+/);
+  const lastName = parts[parts.length - 1];
+
+  // Try multiple query strategies: full name first, then last name only
+  const queries = Array.from(new Set([name, lastName])).map(encodeURIComponent);
+
+  let bestMatch: any    = null;
+  let bestScore: number = 0;
+
+  for (const encoded of queries) {
+    const url = `https://site.api.espn.com/apis/site/v2/sports/basketball/${sport}/athletes?search=${encoded}&limit=15`;
+
+    try {
+      const res = await fetch(url, { next: { revalidate: 86400 } });
+      if (!res.ok) continue;
+
+      const data       = await res.json();
+      const athletes: any[] = data.athletes ?? [];
+
+      for (const athlete of athletes) {
+        const score = scoreMatch(athlete, name, school);
+        if (score > bestScore) {
+          bestScore = score;
+          bestMatch = athlete;
+        }
+      }
+    } catch { /* continue to next query */ }
+
+    // If we found a high-confidence match, stop searching
+    if (bestScore >= 80) break;
   }
+
+  if (bestMatch && bestScore > 0) {
+    return {
+      athleteId: bestMatch.id       ? parseInt(bestMatch.id)       : null,
+      teamId:    bestMatch.team?.id ? parseInt(bestMatch.team.id)  : null,
+    };
+  }
+
+  // ── Fallback: ESPN site-wide search ──────────────────────────────────────
+  try {
+    const siteUrl = `https://site.api.espn.com/apis/common/v3/search?query=${encodeURIComponent(name)}&limit=5&type=athlete&sport=basketball`;
+    const siteRes = await fetch(siteUrl, { next: { revalidate: 86400 } });
+
+    if (siteRes.ok) {
+      const data = await siteRes.json();
+      const hits = (data.results ?? []).flatMap((r: any) => r.contents ?? []);
+      const hit  = hits.find((h: any) => h.type === 'athlete');
+      if (hit) return { athleteId: hit.id ? parseInt(hit.id) : null, teamId: null };
+    }
+  } catch { /* ignore */ }
 
   return { athleteId: null, teamId: null };
 }
@@ -72,12 +113,13 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const name   = (searchParams.get('name')   ?? '').trim();
   const school = (searchParams.get('school') ?? '').trim();
+  const sport  = (searchParams.get('sport')  ?? 'mens-college-basketball').trim();
 
   if (!name) {
     return NextResponse.json({ error: 'name is required' }, { status: 400 });
   }
 
-  const key    = `${name.toLowerCase()}::${school.toLowerCase()}`;
+  const key    = `${sport}::${name.toLowerCase()}::${school.toLowerCase()}`;
   const cached = cache.get(key);
 
   if (cached && Date.now() - cached.cachedAt < TTL) {
@@ -88,7 +130,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const result = await searchESPN(name, school);
+    const result = await searchESPN(name, school, sport);
     cache.set(key, { ...result, cachedAt: Date.now() });
 
     return NextResponse.json<ESPNResult>(result, {
