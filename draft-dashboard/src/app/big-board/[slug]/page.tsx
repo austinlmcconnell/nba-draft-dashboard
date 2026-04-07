@@ -34,10 +34,10 @@ function ScoutLabel({ label }: { label: string }) {
   );
 }
 
-function ScoutValue({ value, accent = false }: { value: string; accent?: boolean }) {
+function ScoutValue({ value, color }: { value: string; color?: string }) {
   if (!value) return <span className="text-[#374151] text-sm">—</span>;
   return (
-    <p className={`text-sm mt-1 leading-relaxed ${accent ? 'text-[#4ade80] font-semibold' : 'text-[#d1d5db]'}`}>
+    <p className="text-sm mt-1 leading-relaxed font-semibold" style={{ color: color ?? '#d1d5db' }}>
       {value}
     </p>
   );
