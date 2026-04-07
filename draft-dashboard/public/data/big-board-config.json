@@ -1,0 +1,9 @@
+{
+  "_comment": "Add ESPN athlete IDs and YouTube highlight reel video IDs for your prospects here. Keys must match the player name EXACTLY as it appears in your Google Sheet.",
+  "players": {
+    "Example Player": {
+      "espnAthleteId": 0,
+      "youtubeVideoId": "YOUTUBE_VIDEO_ID_HERE"
+    }
+  }
+}

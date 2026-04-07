@@ -1,0 +1,86 @@
+// Server-side proxy for the Google Sheets API.
+// Keeps the API key out of the browser bundle.
+// Returns Austin's ranked big board data as JSON.
+
+import { NextResponse } from 'next/server';
+import type { BigBoardPlayer, BigBoardApiResponse } from '@/types/bigboard';
+
+const SHEET_ID = process.env.BIG_BOARD_SHEET_ID ?? '1X0l92tV3ZPAiWsJ_-NEINBtVv50kYix7s4EbKHK-XxM';
+const RANGE    = 'Sheet1!A2:M200'; // skip header row; allow up to 200 prospects
+const API_KEY  = process.env.GOOGLE_SHEETS_API_KEY;
+
+function slugify(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/['']/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+function parseRow(row: string[]): BigBoardPlayer | null {
+  const name = (row[1] ?? '').trim();
+  if (!name) return null; // skip empty rows
+
+  return {
+    rank:            parseInt(row[0]) || 0,
+    name,
+    slug:            slugify(name),
+    draftAge:        parseFloat(row[2]) || 0,
+    school:          (row[3] ?? '').trim(),
+    position:        (row[4] ?? '').trim(),
+    height:          (row[5] ?? '').trim(),
+    weight:          parseInt(row[6]) || 0,
+    wingspan:        (row[7] ?? '').trim(),
+    nbaComparison:   (row[8] ?? '').trim(),
+    biggestSkill:    (row[9] ?? '').trim(),
+    biggestWeakness: (row[10] ?? '').trim(),
+    mockPickNo:      row[11] ? parseInt(row[11]) || null : null,
+    mockTeam:        (row[12] ?? '').trim() || null,
+  };
+}
+
+export async function GET() {
+  if (!API_KEY) {
+    return NextResponse.json<BigBoardApiResponse>(
+      { players: [], updatedAt: new Date().toISOString(), error: 'GOOGLE_SHEETS_API_KEY not set' },
+      { status: 500 }
+    );
+  }
+
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(RANGE)}?key=${API_KEY}`;
+
+  try {
+    const res = await fetch(url, {
+      // Revalidate every 60 s so edits in the sheet surface quickly
+      next: { revalidate: 60 },
+    });
+
+    if (!res.ok) {
+      const body = await res.text();
+      throw new Error(`Sheets API ${res.status}: ${body}`);
+    }
+
+    const json = await res.json();
+    const rows: string[][] = json.values ?? [];
+
+    const players = rows
+      .map(parseRow)
+      .filter((p): p is BigBoardPlayer => p !== null)
+      .sort((a, b) => a.rank - b.rank);
+
+    return NextResponse.json<BigBoardApiResponse>(
+      { players, updatedAt: new Date().toISOString() },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+        },
+      }
+    );
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return NextResponse.json<BigBoardApiResponse>(
+      { players: [], updatedAt: new Date().toISOString(), error: message },
+      { status: 502 }
+    );
+  }
+}
