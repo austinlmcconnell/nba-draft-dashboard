@@ -50,8 +50,13 @@ function useESPNLookup(
   sport: 'mens-college-basketball' | 'nba' = 'mens-college-basketball',
   manualAthleteId?: number,
 ) {
-  const [athleteId, setAthleteId] = useState<number | null>(manualAthleteId ?? null);
-  const [teamId,    setTeamId]    = useState<number | null>(null);
+  const [athleteId,   setAthleteId]   = useState<number | null>(manualAthleteId ?? null);
+  const [headshotUrl, setHeadshotUrl] = useState<string | null>(
+    manualAthleteId
+      ? `https://a.espncdn.com/i/headshots/mens-college-basketball/players/full/${manualAthleteId}.png`
+      : null
+  );
+  const [teamName, setTeamName] = useState<string | null>(null);
 
   useEffect(() => {
     if (!name) return;
@@ -64,7 +69,11 @@ function useESPNLookup(
       const stored = sessionStorage.getItem(key);
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (!cancelled) { setAthleteId(parsed.athleteId ?? null); setTeamId(parsed.teamId ?? null); }
+        if (!cancelled) {
+          setAthleteId(parsed.athleteId ?? null);
+          setHeadshotUrl(parsed.headshotUrl ?? null);
+          setTeamName(parsed.teamName ?? null);
+        }
         return;
       }
     } catch { /* ignore */ }
@@ -74,7 +83,8 @@ function useESPNLookup(
       .then(data => {
         if (cancelled) return;
         setAthleteId(data.athleteId ?? null);
-        setTeamId(data.teamId    ?? null);
+        setHeadshotUrl(data.headshotUrl ?? null);
+        setTeamName(data.teamName ?? null);
         try { sessionStorage.setItem(key, JSON.stringify(data)); } catch { /* ignore */ }
       })
       .catch(() => { /* silently fail */ });
@@ -82,7 +92,7 @@ function useESPNLookup(
     return () => { cancelled = true; };
   }, [name, school, sport, manualAthleteId]);
 
-  return { athleteId, teamId };
+  return { athleteId, headshotUrl, teamName };
 }
 
 // ─── Season stats bar ─────────────────────────────────────────────────────────
@@ -294,15 +304,15 @@ export default function ProspectProfilePage() {
 
   // ── ESPN auto-lookup for this prospect ─────────────────────────────────────
   const manualAthleteId = player ? config?.players?.[player.name]?.espnAthleteId : undefined;
-  const { athleteId: prospectAthleteId } = useESPNLookup(
+  const { athleteId: prospectAthleteId, headshotUrl: prospectHeadshotUrl } = useESPNLookup(
     player?.name ?? null,
     player?.school ?? '',
     'mens-college-basketball',
     manualAthleteId,
   );
 
-  // Reset headshot error if a new athleteId arrives
-  useEffect(() => { setHeadErr(false); }, [prospectAthleteId]);
+  // Reset headshot error if a new URL arrives
+  useEffect(() => { setHeadErr(false); }, [prospectHeadshotUrl]);
 
   // Fetch season stats once we have the ESPN athlete ID
   useEffect(() => {
@@ -314,14 +324,17 @@ export default function ProspectProfilePage() {
   }, [prospectAthleteId]);
 
   // ── ESPN auto-lookup for the NBA comparison player ─────────────────────────
-  const { athleteId: nbaCompAthleteId, teamId: nbaCompTeamId } = useESPNLookup(
+  const { headshotUrl: nbaCompHeadshotUrl, teamName: nbaCompTeamName } = useESPNLookup(
     player?.nbaComparison ?? null,
     '',
     'nba',
   );
 
-  // Reset comp errors if new IDs arrive
-  useEffect(() => { setCompHeadErr(false); setCompTeamErr(false); }, [nbaCompAthleteId]);
+  // Resolve NBA comp team from name returned by ESPN
+  const nbaCompTeam = nbaCompTeamName ? findNBATeam(nbaCompTeamName) : null;
+
+  // Reset comp errors if new data arrives
+  useEffect(() => { setCompHeadErr(false); setCompTeamErr(false); }, [nbaCompHeadshotUrl]);
 
   // ── YouTube search ──────────────────────────────────────────────────────────
   const searchHighlights = useCallback(async (name: string, school: string) => {
@@ -355,11 +368,11 @@ export default function ProspectProfilePage() {
   const school  = findSchool(player.school);
   const nbaTeam = player.mockTeam ? findNBATeam(player.mockTeam) : null;
 
-  const hasHeadshot   = !!prospectAthleteId && !headErr;
+  const hasHeadshot   = !!prospectHeadshotUrl && !headErr;
   const hasSchool     = !!school && school.espnTeamId > 0 && !schoolErr;
   const hasNbaLogo    = !!nbaTeam && !nbaErr;
-  const hasCompHead   = !!nbaCompAthleteId && !compHeadErr;
-  const hasCompTeam   = !!nbaCompTeamId && !compTeamErr;
+  const hasCompHead   = !!nbaCompHeadshotUrl && !compHeadErr;
+  const hasCompTeam   = !!nbaCompTeam && !compTeamErr;
 
   const primaryColor   = school?.primary   ?? '1a7a3f';
   const secondaryColor = school?.secondary ?? '145f30';
@@ -387,34 +400,17 @@ export default function ProspectProfilePage() {
         {/* ── Hero card ─────────────────────────────────────────────────────── */}
         <div className="bg-[#111827] rounded-xl border border-[#1f2937] overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.4)]">
 
-          {/* Gradient banner */}
+          {/* Gradient banner — school logo only, no badges (avoids headshot overlap) */}
           <div
             className="h-20 relative"
             style={{ background: `linear-gradient(135deg, #${primaryColor}, #${secondaryColor})` }}
           >
             <div className="absolute inset-0 bg-black/20" />
-
-            {/* Rank + position badges */}
-            <div className="absolute bottom-3 left-6 flex items-center gap-2 z-10">
-              <span className="px-3 py-1 bg-[#1a7a3f] text-white text-xs font-black rounded-full shadow border border-[#4ade80]/20">
-                #{player.rank} Overall
-              </span>
-              <span className="px-3 py-1 bg-black/40 backdrop-blur-sm text-white text-xs font-bold rounded-full border border-white/10">
-                {player.position}
-              </span>
-            </div>
-
-            {/* School logo */}
             <div className="absolute top-3 right-6 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center overflow-hidden z-10">
               {hasSchool ? (
-                <Image
-                  src={schoolLogoUrl(school!.espnTeamId)}
-                  alt={player.school}
-                  width={40} height={40}
-                  className="object-contain p-1"
-                  onError={() => setSchoolErr(true)}
-                  unoptimized
-                />
+                <Image src={schoolLogoUrl(school!.espnTeamId)} alt={player.school}
+                  width={40} height={40} className="object-contain p-1"
+                  onError={() => setSchoolErr(true)} unoptimized />
               ) : (
                 <span className="text-xs font-black text-gray-700">
                   {school?.abbreviation ?? player.school.slice(0, 3).toUpperCase()}
@@ -427,22 +423,16 @@ export default function ProspectProfilePage() {
           <div className="px-6 pb-6 pt-4">
             <div className="flex items-start gap-5 flex-wrap">
 
-              {/* Headshot (auto-resolved via ESPN lookup) */}
+              {/* Headshot */}
               <div className="relative z-10 -mt-12 flex-shrink-0">
                 {hasHeadshot ? (
-                  <Image
-                    src={collegeHeadshotUrl(prospectAthleteId!)}
-                    alt={player.name}
+                  <Image src={prospectHeadshotUrl!} alt={player.name}
                     width={96} height={96}
                     className="w-24 h-24 rounded-full object-cover border-4 border-[#111827] shadow-xl"
-                    onError={() => setHeadErr(true)}
-                    unoptimized
-                  />
+                    onError={() => setHeadErr(true)} unoptimized />
                 ) : (
-                  <div
-                    className="w-24 h-24 rounded-full border-4 border-[#111827] shadow-xl flex items-center justify-center"
-                    style={{ background: `#${primaryColor}` }}
-                  >
+                  <div className="w-24 h-24 rounded-full border-4 border-[#111827] shadow-xl flex items-center justify-center"
+                    style={{ background: `#${primaryColor}` }}>
                     <span className="text-3xl font-black text-white/80">
                       {player.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                     </span>
@@ -450,8 +440,16 @@ export default function ProspectProfilePage() {
                 )}
               </div>
 
-              {/* Name + school */}
+              {/* Name + school + rank/position badges */}
               <div className="flex-1 min-w-0 pt-1">
+                <div className="flex items-center gap-2 flex-wrap mb-1">
+                  <span className="px-3 py-1 bg-[#1a7a3f] text-white text-xs font-black rounded-full border border-[#4ade80]/20">
+                    #{player.rank} Overall
+                  </span>
+                  <span className="px-2.5 py-1 bg-[#1a2332] text-[#9ca3af] text-xs font-bold rounded-full border border-[#374151]">
+                    {player.position}
+                  </span>
+                </div>
                 <h1 className="text-2xl sm:text-3xl font-black text-[#f9fafb] leading-tight">
                   {player.name}
                 </h1>
@@ -497,14 +495,10 @@ export default function ProspectProfilePage() {
                 <div className="mt-2 flex items-center gap-3 px-3 py-2 bg-[#1a2332] rounded-lg border border-[#374151]">
                   {/* NBA comp player headshot */}
                   {hasCompHead ? (
-                    <Image
-                      src={`https://a.espncdn.com/i/headshots/nba/players/full/${nbaCompAthleteId}.png`}
-                      alt={player.nbaComparison}
+                    <Image src={nbaCompHeadshotUrl!} alt={player.nbaComparison}
                       width={40} height={40}
                       className="w-10 h-10 rounded-full object-cover border border-white/10 flex-shrink-0"
-                      onError={() => setCompHeadErr(true)}
-                      unoptimized
-                    />
+                      onError={() => setCompHeadErr(true)} unoptimized />
                   ) : (
                     <div className="w-10 h-10 rounded-full bg-[#0d1117] border border-white/10 flex items-center justify-center flex-shrink-0">
                       <span className="text-xs font-bold text-[#6b7280]">
@@ -518,14 +512,10 @@ export default function ProspectProfilePage() {
                     </span>
                     {/* NBA comp player's current team logo */}
                     {hasCompTeam && (
-                      <Image
-                        src={`https://a.espncdn.com/i/teamlogos/nba/500/${nbaCompTeamId}.png`}
-                        alt="NBA team"
+                      <Image src={nbaLogoUrl(nbaCompTeam!.espnId)} alt={nbaCompTeam!.name}
                         width={20} height={20}
                         className="object-contain flex-shrink-0"
-                        onError={() => setCompTeamErr(true)}
-                        unoptimized
-                      />
+                        onError={() => setCompTeamErr(true)} unoptimized />
                     )}
                   </div>
                 </div>

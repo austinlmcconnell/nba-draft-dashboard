@@ -1,9 +1,11 @@
 /**
  * Player stats proxy route.
- * GET /api/player-stats?athleteId=5105253
+ * GET /api/player-stats?athleteId=5142620
  *
- * Fetches per-game season stats from ESPN's unofficial athlete API.
- * Cached in-memory for 1 hour so it stays fresh during the season.
+ * Fetches per-game season averages from ESPN's public athlete stats API:
+ * site.web.api.espn.com/apis/common/v3/sports/basketball/mens-college-basketball/athletes/{id}/stats
+ *
+ * Cached 1 hour so stats stay fresh during the season.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -17,8 +19,8 @@ const HEADERS = {
 };
 
 export interface StatItem {
-  label: string;  // e.g. "PPG"
-  value: string;  // e.g. "19.2"
+  label: string; // e.g. "PPG"
+  value: string; // e.g. "23.5"
 }
 
 export interface PlayerStatsResult {
@@ -26,110 +28,49 @@ export interface PlayerStatsResult {
   error?: string;
 }
 
+// Stats to show and their display order
+const SHOW_LABELS = ['GP', 'MIN', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'FG%', '3P%', 'FT%'];
+
 // ─── In-memory cache (1-hour TTL) ─────────────────────────────────────────────
 const cache = new Map<number, PlayerStatsResult & { cachedAt: number }>();
 const TTL   = 60 * 60 * 1000;
 
-// ─── Stat keys we care about (in display order) ───────────────────────────────
-const WANTED: Record<string, string> = {
-  gamesPlayed:          'GP',
-  avgMinutes:           'MPG',
-  avgPoints:            'PPG',
-  avgRebounds:          'RPG',
-  avgAssists:           'APG',
-  avgSteals:            'SPG',
-  avgBlocks:            'BPG',
-  fieldGoalPct:         'FG%',
-  threePointFieldGoalPct: '3P%',
-  freeThrowPct:         'FT%',
-  // fallback name variants ESPN sometimes uses
-  points:               'PPG',
-  rebounds:             'RPG',
-  assists:              'APG',
-  steals:               'SPG',
-  blocks:               'BPG',
-  fieldGoalsMadePct:    'FG%',
-  threePointPct:        '3P%',
-  freeThrowsMadePct:    'FT%',
-  minutesPerGame:       'MPG',
-};
-
-// Format a raw stat value nicely
-function fmt(name: string, raw: string): string {
-  const num = parseFloat(raw);
-  if (isNaN(num)) return raw;
-  if (name.endsWith('Pct') || name.endsWith('pct') || name.includes('Percent')) {
-    return `${(num * (num <= 1 ? 100 : 1)).toFixed(1)}%`;
-  }
-  if (name === 'gamesPlayed') return String(Math.round(num));
-  return num % 1 === 0 ? String(num) : num.toFixed(1);
-}
-
-// Extract wanted stats from a flat array of ESPN stat objects
-function extractStats(statArr: any[]): StatItem[] {
-  const seen  = new Set<string>();
-  const items: StatItem[] = [];
-
-  // Preserve display order from WANTED keys
-  const orderedKeys = Array.from(new Set(Object.keys(WANTED)));
-
-  for (const key of orderedKeys) {
-    const label = WANTED[key];
-    if (seen.has(label)) continue;
-
-    const found = statArr.find(
-      (s: any) => s.name === key || s.abbreviation?.toUpperCase() === label
-    );
-    if (found) {
-      const raw = found.displayValue ?? found.value ?? '';
-      if (raw === '' || raw === '0' || raw === '0.0' || raw === '0.0%') continue;
-      items.push({ label, value: fmt(key, raw) });
-      seen.add(label);
-    }
-  }
-
-  return items;
-}
-
 async function fetchStats(athleteId: number): Promise<PlayerStatsResult> {
-  const url = `https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/athletes/${athleteId}/statistics`;
-
+  const url = `https://site.web.api.espn.com/apis/common/v3/sports/basketball/mens-college-basketball/athletes/${athleteId}/stats`;
   const res = await fetch(url, { headers: HEADERS });
+
   if (!res.ok) {
     return { stats: [], error: `ESPN returned ${res.status}` };
   }
 
   const data = await res.json();
 
-  // ESPN returns stats in several possible shapes — handle all of them
-  let statArr: any[] = [];
+  // Find the averages category — it has labels like ["GP","GS","MIN",...]
+  const averages = (data.categories ?? []).find(
+    (c: any) => c.name === 'averages' || c.sortKey === 'averages'
+  );
 
-  // Shape 1: data.statistics[].stats[]  (most common)
-  if (Array.isArray(data.statistics)) {
-    for (const group of data.statistics) {
-      if (Array.isArray(group.stats)) statArr.push(...group.stats);
-    }
+  if (!averages) {
+    console.log(`[player-stats] no averages category for ${athleteId}, keys:`, Object.keys(data));
+    return { stats: [], error: 'No averages data' };
   }
 
-  // Shape 2: data.splits.categories[].stats[]
-  if (!statArr.length && data.splits?.categories) {
-    for (const cat of data.splits.categories) {
-      if (Array.isArray(cat.stats)) statArr.push(...cat.stats);
-    }
-  }
+  const labels: string[]  = averages.labels ?? [];
+  // Use the most recent season's stats (first entry), fall back to totals
+  const statsRow: string[] = averages.statistics?.[0]?.stats ?? averages.totals ?? [];
 
-  // Shape 3: data.stats[] (flat)
-  if (!statArr.length && Array.isArray(data.stats)) {
-    statArr = data.stats;
-  }
+  // Zip labels with values, filter to what we want, preserve order
+  const mapped = new Map<string, string>();
+  labels.forEach((lbl: string, i: number) => {
+    if (SHOW_LABELS.includes(lbl)) mapped.set(lbl, statsRow[i] ?? '—');
+  });
 
-  if (!statArr.length) {
-    console.log(`[player-stats] No stats found for athleteId=${athleteId}. Keys:`, Object.keys(data));
-    return { stats: [], error: 'No stats data found' };
-  }
+  const stats: StatItem[] = SHOW_LABELS
+    .filter(lbl => mapped.has(lbl))
+    .map(lbl => ({ label: lbl, value: mapped.get(lbl)! }))
+    .filter(({ value }) => value !== '—' && value !== '0' && value !== '0.0');
 
-  const stats = extractStats(statArr);
-  console.log(`[player-stats] athleteId=${athleteId} → ${stats.length} stats`);
+  console.log(`[player-stats] athleteId=${athleteId} → ${stats.map(s => `${s.label}:${s.value}`).join(' ')}`);
   return { stats };
 }
 
