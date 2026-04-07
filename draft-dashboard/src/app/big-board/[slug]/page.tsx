@@ -63,7 +63,7 @@ function useESPNLookup(
     if (manualAthleteId) { setAthleteId(manualAthleteId); return; }
 
     let cancelled = false;
-    const key = `espn::${sport}::${name.toLowerCase()}::${school.toLowerCase()}`;
+    const key = `espnv3::${sport}::${name.toLowerCase()}::${school.toLowerCase()}`;
 
     try {
       const stored = sessionStorage.getItem(key);
