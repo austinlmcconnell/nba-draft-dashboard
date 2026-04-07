@@ -13,6 +13,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import type { BigBoardPlayer, BigBoardConfig, BigBoardApiResponse } from '@/types/bigboard';
+import type { StatItem } from '@/app/api/player-stats/route';
 import { findSchool, schoolLogoUrl, collegeHeadshotUrl } from '@/lib/data/school-logos';
 import { findNBATeam, nbaLogoUrl } from '@/lib/data/nba-teams';
 
@@ -84,13 +85,33 @@ function useESPNLookup(
   return { athleteId, teamId };
 }
 
+// ─── Season stats bar ─────────────────────────────────────────────────────────
+function SeasonStats({ stats }: { stats: StatItem[] }) {
+  if (!stats.length) return null;
+  return (
+    <div className="bg-[#111827] rounded-xl border border-[#1f2937] p-6">
+      <h2 className="text-sm font-black uppercase tracking-widest text-[#4ade80] mb-4">
+        2025–26 Stats
+      </h2>
+      <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-10 gap-3">
+        {stats.map(({ label, value }) => (
+          <div key={label} className="flex flex-col items-center p-3 bg-[#1a2332] rounded-lg">
+            <span className="text-base font-black text-[#f9fafb]">{value}</span>
+            <span className="text-xs text-[#6b7280] uppercase tracking-wide mt-0.5">{label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ─── YouTube embed ─────────────────────────────────────────────────────────────
 function HighlightsEmbed({ videoId, onRefresh }: { videoId: string; onRefresh: () => void }) {
   return (
     <div className="space-y-3">
       <div className="aspect-video w-full rounded-xl overflow-hidden border border-[#1f2937] shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
         <iframe
-          src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&autoplay=1`}
+          src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&autoplay=1&mute=1`}
           title="Highlights"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
@@ -222,6 +243,9 @@ export default function ProspectProfilePage() {
   const [videoLoading,  setVideoLoading]  = useState(false);
   const [videoSearched, setVideoSearched] = useState(false);
 
+  // Season stats
+  const [seasonStats,   setSeasonStats]   = useState<StatItem[]>([]);
+
   // Image error states
   const [headErr,       setHeadErr]       = useState(false);
   const [schoolErr,     setSchoolErr]     = useState(false);
@@ -279,6 +303,15 @@ export default function ProspectProfilePage() {
 
   // Reset headshot error if a new athleteId arrives
   useEffect(() => { setHeadErr(false); }, [prospectAthleteId]);
+
+  // Fetch season stats once we have the ESPN athlete ID
+  useEffect(() => {
+    if (!prospectAthleteId) return;
+    fetch(`/api/player-stats?athleteId=${prospectAthleteId}`)
+      .then(r => r.json())
+      .then(data => { if (data.stats?.length) setSeasonStats(data.stats); })
+      .catch(() => {});
+  }, [prospectAthleteId]);
 
   // ── ESPN auto-lookup for the NBA comparison player ─────────────────────────
   const { athleteId: nbaCompAthleteId, teamId: nbaCompTeamId } = useESPNLookup(
@@ -395,7 +428,7 @@ export default function ProspectProfilePage() {
             <div className="flex items-start gap-5 flex-wrap">
 
               {/* Headshot (auto-resolved via ESPN lookup) */}
-              <div className="-mt-12 flex-shrink-0">
+              <div className="relative z-10 -mt-12 flex-shrink-0">
                 {hasHeadshot ? (
                   <Image
                     src={collegeHeadshotUrl(prospectAthleteId!)}
@@ -435,6 +468,9 @@ export default function ProspectProfilePage() {
             </div>
           </div>
         </div>
+
+        {/* ── Season stats ──────────────────────────────────────────────────── */}
+        <SeasonStats stats={seasonStats} />
 
         {/* ── Two-column layout ──────────────────────────────────────────────── */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
