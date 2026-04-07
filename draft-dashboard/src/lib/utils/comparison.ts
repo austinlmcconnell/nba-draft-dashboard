@@ -139,8 +139,19 @@ function physDistance(a: PhysicalAttributes, b: PhysicalAttributes, n: DatasetNo
 // ---------------------------------------------------------------------------
 // Distance → 0-100 similarity score
 // similarity = 100 × e^(−dist / k)
+//
+// k constants — larger k = gentler decay = higher scores for close matches:
+//   K_STAT  = 5.0  statistical facets (broad tolerance; was 3.0)
+//   K_VOL   = 3.0  scoring volume sub-component (was 2.0)
+//   K_PHYS  = 2.0  physical distance (was 1.5)
+//   K_AGE   = 1.5  age distance (unchanged)
 // ---------------------------------------------------------------------------
-function sim(dist: number, k = 3): number {
+const K_STAT = 5.0;
+const K_VOL  = 3.0;
+const K_PHYS = 2.0;
+const K_AGE  = 1.5;
+
+function sim(dist: number, k = K_STAT): number {
   return Math.max(0, Math.min(100, 100 * Math.exp(-dist / k)));
 }
 
@@ -214,11 +225,11 @@ export function getProspectComparisons(
       comparison_type: type,
       similarity_score: Math.round(score * 10) / 10,
       breakdown: {
-        scoring_efficiency: Math.round(sim(sEff)),
-        scoring_volume:     Math.round(sim(sVol, 2)),
-        playmaking:         Math.round(sim(sPlay)),
-        rebounding:         Math.round(sim(sReb)),
-        defense:            Math.round(sim(sDef)),
+        scoring_efficiency: Math.round(sim(sEff,  K_STAT)),
+        scoring_volume:     Math.round(sim(sVol,  K_VOL)),
+        playmaking:         Math.round(sim(sPlay, K_STAT)),
+        rebounding:         Math.round(sim(sReb,  K_STAT)),
+        defense:            Math.round(sim(sDef,  K_STAT)),
         physical:           pDist != null ? Math.round(pSim) : 0,
       },
     };
@@ -226,32 +237,30 @@ export function getProspectComparisons(
 
   // Compute statistical distances for all players in the pool.
   // Sort key: blend of weighted-average facet similarity and minimum facet
-  // similarity (50/50). This penalises lopsided comps — a player with a 55%
-  // rebounding outlier can no longer beat a balanced comp whose weakest facet
-  // is 78%, even if the outlier's other four dimensions are excellent.
-  //   blended_sim = 0.5 × weighted_avg + 0.5 × min_facet
-  // Perfectly balanced comps are unaffected; every point the weakest facet
-  // falls below the average costs the same amount in the final score.
+  // similarity (70/30). This penalises lopsided comps while keeping the
+  // weighted average dominant — a player who is wildly dissimilar in one
+  // facet is still penalised, but not as harshly as in the old 50/50 split.
+  //   blended_sim = 0.7 × weighted_avg + 0.3 × min_facet
   const statRows = effectivePool
     .map(hist => {
       const hVec = toStatVec(hist.college_stats, norms);
       const s = statDistance(pVec, hVec);
 
-      const sEff  = sim(s.eff);
-      const sVol  = sim(s.vol, 2);
-      const sPlay = sim(s.play);
-      const sReb  = sim(s.reb);
-      const sDef  = sim(s.def);
+      const sEff  = sim(s.eff,  K_STAT);
+      const sVol  = sim(s.vol,  K_VOL);
+      const sPlay = sim(s.play, K_STAT);
+      const sReb  = sim(s.reb,  K_STAT);
+      const sDef  = sim(s.def,  K_STAT);
 
       const weightedAvg = sEff * 0.25 + sVol * 0.16 + sPlay * 0.20 + sReb * 0.19 + sDef * 0.20;
       const minFacet    = Math.min(sEff, sVol, sPlay, sReb, sDef);
-      const blendedSim  = 0.5 * weightedAvg + 0.5 * minFacet;
+      const blendedSim  = 0.7 * weightedAvg + 0.3 * minFacet;
 
       let pDist: number | null = null;
       let pSimVal = 0;
       if (hasPhys(prospectPhysical) && hasPhys(hist.physical)) {
         pDist = physDistance(prospectPhysical, hist.physical, norms);
-        pSimVal = sim(pDist, 1.5);
+        pSimVal = sim(pDist, K_PHYS);
       }
 
       return { hist, s, sEff, sVol, sPlay, sReb, sDef, blendedSim, pDist, pSimVal };
@@ -271,7 +280,7 @@ export function getProspectComparisons(
         const hVec = toStatVec(hist.college_stats, norms);
         const s = statDistance(pVec, hVec);
         const pDist = physDistance(prospectPhysical, hist.physical, norms);
-        const pSimVal = sim(pDist, 1.5);
+        const pSimVal = sim(pDist, K_PHYS);
         return { hist, s, pDist, pSimVal };
       })
       .sort((a, b) => a.pDist - b.pDist);

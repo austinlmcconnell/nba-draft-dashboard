@@ -17,7 +17,7 @@ function LogoMark({ size = 36 }: { size?: number }) {
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
-      {/* Outer semicircle arc */}
+      {/* Outer arc — outer boundary of the basketball top half */}
       <path
         d="M 12 64 A 38 38 0 0 0 88 64"
         stroke="#1a7a3f"
@@ -25,17 +25,17 @@ function LogoMark({ size = 36 }: { size?: number }) {
         strokeLinecap="round"
         fill="none"
       />
-      {/* Left inner curve — same weight as outer arc, forms left lens shape */}
+      {/* Top seam 1 — steep arch connecting both dots (inner basketball seam) */}
       <path
-        d="M 12 64 Q 44 54 50 26"
+        d="M 12 64 Q 50 14 88 64"
         stroke="#1a7a3f"
         strokeWidth="5.5"
         strokeLinecap="round"
         fill="none"
       />
-      {/* Right inner curve — mirrors left, forms right lens shape */}
+      {/* Top seam 2 — shallower arch connecting both dots (outer basketball seam) */}
       <path
-        d="M 88 64 Q 56 54 50 26"
+        d="M 12 64 Q 50 44 88 64"
         stroke="#1a7a3f"
         strokeWidth="5.5"
         strokeLinecap="round"

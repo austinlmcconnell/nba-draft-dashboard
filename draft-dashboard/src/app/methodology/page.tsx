@@ -315,9 +315,9 @@ def_dist  = √( Δstl36² + Δblk36² )`}</Formula>
           </p>
           <Formula>{`overall_sim = 0.70 × stat_sim + 0.25 × phys_sim + 0.05 × age_sim
 
-stat_sim = 100 × e^(−stat_dist / 3.0)      (statistical similarity)
-phys_sim = 100 × e^(−phys_dist / 1.5)      (physical similarity)
-age_sim  = 100 × e^(−age_dist  / 1.5)      (age similarity)
+stat_sim = 100 × e^(−stat_dist / K_STAT)   K_STAT = 5.0
+phys_sim = 100 × e^(−phys_dist / K_PHYS)   K_PHYS = 2.0
+age_sim  = 100 × e^(−age_dist  / K_AGE)    K_AGE  = 1.5
 
 age_dist = |z_age_prospect − z_age_historical|   (absolute z-score gap)
          = 0 / neutral when either player is missing age data`}</Formula>
@@ -345,6 +345,27 @@ age_dist = |z_age_prospect − z_age_historical|   (absolute z-score gap)
             to 100 (no penalty) and the weights redistribute to 70/30.
           </p>
 
+          <Sub title="Statistical comparison sort key">
+            <p className="text-sm text-[#9ca3af] mb-2">
+              Statistical comparisons are ranked by a <strong>blended similarity</strong> that
+              combines the weighted-average facet score with the worst single facet (70/30).
+              This lightly penalises lopsided comps without letting one weak dimension
+              dominate the ranking the way a 50/50 split would:
+            </p>
+            <Formula>{`blended_sim = 0.70 × weighted_avg + 0.30 × min_facet
+
+weighted_avg = sEff×0.25 + sVol×0.16 + sPlay×0.20 + sReb×0.19 + sDef×0.20
+min_facet    = min(sEff, sVol, sPlay, sReb, sDef)
+
+// The displayed similarity_score for a statistical comp IS blended_sim.`}</Formula>
+            <p className="text-sm text-[#9ca3af]">
+              A perfectly balanced comp is unaffected (min_facet ≈ weighted_avg). A comp
+              that is strong in four facets but weak in one is penalised by roughly
+              30 % of the gap — enough to prefer a more balanced match, but not enough
+              to bury an otherwise excellent comp.
+            </p>
+          </Sub>
+
           <Sub title="Minimum facet floor constraint">
             <p className="text-sm text-[#9ca3af] mb-2">
               Before selecting the overall winner, candidates where <em>any single facet</em>{' '}
@@ -356,11 +377,11 @@ age_dist = |z_age_prospect − z_age_historical|   (absolute z-score gap)
             <Formula>{`FACET_FLOOR = 50   // percent
 
 passesFloor(row) =
-  sim(sEff)    ≥ FACET_FLOOR  AND
-  sim(sVol, 2) ≥ FACET_FLOOR  AND
-  sim(sPlay)   ≥ FACET_FLOOR  AND
-  sim(sReb)    ≥ FACET_FLOOR  AND
-  sim(sDef)    ≥ FACET_FLOOR
+  sim(sEff,  K_STAT) ≥ FACET_FLOOR  AND
+  sim(sVol,  K_VOL)  ≥ FACET_FLOOR  AND
+  sim(sPlay, K_STAT) ≥ FACET_FLOOR  AND
+  sim(sReb,  K_STAT) ≥ FACET_FLOOR  AND
+  sim(sDef,  K_STAT) ≥ FACET_FLOOR
 
 // Fall back to full pool if no candidate passes the floor
 // (rare — prevents "no match found" for unusual stat profiles)`}</Formula>
@@ -381,13 +402,15 @@ passesFloor(row) =
           <Formula>{`similarity = 100 × e^(−dist / k)
 
 k controls how quickly the score decays with distance.
-k = 3.0  →  statistical distance (broad tolerance)
-k = 2.0  →  scoring volume sub-component (tighter, raw PPG matters)
-k = 1.5  →  physical distance (body profiles are tighter / less variable)
-k = 1.5  →  age distance (1 year of age is a meaningful development gap)`}</Formula>
+Larger k = gentler decay = higher scores for the closest matches.
+
+K_STAT = 5.0  →  statistical facets (broad tolerance)
+K_VOL  = 3.0  →  scoring volume sub-component
+K_PHYS = 2.0  →  physical distance (body profiles are less variable)
+K_AGE  = 1.5  →  age distance (1 year of age is a meaningful development gap)`}</Formula>
           <p className="text-sm text-[#9ca3af] mb-2">
             A similarity score of 100 means identical profiles.
-            Scores above 75 indicate a very strong match; below 45 is a loose comp.
+            Scores above 80 indicate a very strong match; below 55 is a loose comp.
           </p>
           <p className="text-sm text-[#9ca3af]">
             The facet breakdown bars (Scoring Eff., Playmaking, etc.) each apply the same
