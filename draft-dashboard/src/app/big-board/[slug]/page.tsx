@@ -96,16 +96,19 @@ function useESPNLookup(
 }
 
 // ─── Season stats bar ─────────────────────────────────────────────────────────
-function SeasonStats({ stats }: { stats: StatItem[] }) {
+function SeasonStats({ stats, primaryColor }: { stats: StatItem[]; primaryColor: string }) {
   if (!stats.length) return null;
   return (
-    <div className="bg-[#111827] rounded-xl border border-[#1f2937] p-6">
-      <h2 className="text-sm font-black uppercase tracking-widest text-[#4ade80] mb-4">
+    <div className="bg-[#111827] rounded-xl border border-[#1f2937] p-6"
+      style={{ borderColor: `#${primaryColor}30` }}>
+      <h2 className="text-sm font-black uppercase tracking-widest mb-4"
+        style={{ color: `#${primaryColor}` }}>
         2025–26 Stats
       </h2>
       <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-10 gap-3">
         {stats.map(({ label, value }) => (
-          <div key={label} className="flex flex-col items-center p-3 bg-[#1a2332] rounded-lg">
+          <div key={label} className="flex flex-col items-center p-3 bg-[#1a2332] rounded-lg"
+            style={{ borderBottom: `2px solid #${primaryColor}40` }}>
             <span className="text-base font-black text-[#f9fafb]">{value}</span>
             <span className="text-xs text-[#6b7280] uppercase tracking-wide mt-0.5">{label}</span>
           </div>
@@ -420,18 +423,19 @@ export default function ProspectProfilePage() {
           </div>
 
           {/* Body */}
-          <div className="px-6 pb-6 pt-4">
+          <div className="px-6 pb-6 pt-5" style={{ borderTop: `3px solid #${primaryColor}` }}>
             <div className="flex items-start gap-5 flex-wrap">
 
               {/* Headshot */}
-              <div className="relative z-10 -mt-12 flex-shrink-0">
+              <div className="flex-shrink-0">
                 {hasHeadshot ? (
                   <Image src={prospectHeadshotUrl!} alt={player.name}
                     width={96} height={96}
-                    className="w-24 h-24 rounded-full object-cover border-4 border-[#111827] shadow-xl"
+                    className="w-24 h-24 rounded-full object-cover border-4 shadow-xl"
+                    style={{ borderColor: `#${primaryColor}` }}
                     onError={() => setHeadErr(true)} unoptimized />
                 ) : (
-                  <div className="w-24 h-24 rounded-full border-4 border-[#111827] shadow-xl flex items-center justify-center"
+                  <div className="w-24 h-24 rounded-full border-4 shadow-xl flex items-center justify-center"
                     style={{ background: `#${primaryColor}` }}>
                     <span className="text-3xl font-black text-white/80">
                       {player.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
@@ -443,7 +447,8 @@ export default function ProspectProfilePage() {
               {/* Name + school + rank/position badges */}
               <div className="flex-1 min-w-0 pt-1">
                 <div className="flex items-center gap-2 flex-wrap mb-1">
-                  <span className="px-3 py-1 bg-[#1a7a3f] text-white text-xs font-black rounded-full border border-[#4ade80]/20">
+                  <span className="px-3 py-1 text-white text-xs font-black rounded-full"
+                    style={{ background: `#${primaryColor}`, border: `1px solid #${primaryColor}80` }}>
                     #{player.rank} Overall
                   </span>
                   <span className="px-2.5 py-1 bg-[#1a2332] text-[#9ca3af] text-xs font-bold rounded-full border border-[#374151]">
@@ -459,7 +464,7 @@ export default function ProspectProfilePage() {
 
             {/* Physical stat pills */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
-              <StatPill label="Age"      value={player.draftAge > 0 ? player.draftAge.toFixed(1) : '—'} />
+              <StatPill label="Draft Age" value={player.draftAge > 0 ? player.draftAge.toFixed(1) : '—'} />
               <StatPill label="Height"   value={player.height   || '—'} />
               <StatPill label="Weight"   value={player.weight > 0 ? `${player.weight} lbs` : '—'} />
               <StatPill label="Wingspan" value={player.wingspan  || '—'} />
@@ -468,25 +473,27 @@ export default function ProspectProfilePage() {
         </div>
 
         {/* ── Season stats ──────────────────────────────────────────────────── */}
-        <SeasonStats stats={seasonStats} />
+        <SeasonStats stats={seasonStats} primaryColor={primaryColor} />
 
         {/* ── Two-column layout ──────────────────────────────────────────────── */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
           {/* Scouting report */}
-          <div className="bg-[#111827] rounded-xl border border-[#1f2937] p-6 space-y-5">
-            <h2 className="text-sm font-black uppercase tracking-widest text-[#4ade80]">
+          <div className="bg-[#111827] rounded-xl border border-[#1f2937] p-6 space-y-5"
+            style={{ borderColor: `#${primaryColor}30` }}>
+            <h2 className="text-sm font-black uppercase tracking-widest"
+              style={{ color: `#${primaryColor}` }}>
               Scouting Report
             </h2>
 
             <div>
               <ScoutLabel label="Biggest Skill" />
-              <ScoutValue value={player.biggestSkill} accent />
+              <ScoutValue value={player.biggestSkill} color="#4ade80" />
             </div>
 
             <div>
               <ScoutLabel label="Biggest Weakness" />
-              <ScoutValue value={player.biggestWeakness} />
+              <ScoutValue value={player.biggestWeakness} color="#ef4444" />
             </div>
 
             <div className="pt-2 border-t border-[#1f2937]">
@@ -526,8 +533,10 @@ export default function ProspectProfilePage() {
           </div>
 
           {/* Mock Draft */}
-          <div className="bg-[#111827] rounded-xl border border-[#1f2937] p-6">
-            <h2 className="text-sm font-black uppercase tracking-widest text-[#4ade80] mb-5">
+          <div className="bg-[#111827] rounded-xl border border-[#1f2937] p-6"
+            style={{ borderColor: `#${primaryColor}30` }}>
+            <h2 className="text-sm font-black uppercase tracking-widest mb-5"
+              style={{ color: `#${primaryColor}` }}>
               My Mock Draft
             </h2>
 
@@ -588,9 +597,11 @@ export default function ProspectProfilePage() {
         </div>
 
         {/* ── Highlights ────────────────────────────────────────────────────── */}
-        <div className="bg-[#111827] rounded-xl border border-[#1f2937] p-6">
-          <h2 className="text-sm font-black uppercase tracking-widest text-[#4ade80] mb-5">
-            2025–26 Highlights
+        <div className="bg-[#111827] rounded-xl border border-[#1f2937] p-6"
+          style={{ borderColor: `#${primaryColor}30` }}>
+          <h2 className="text-sm font-black uppercase tracking-widest mb-5"
+            style={{ color: `#${primaryColor}` }}>
+            Highlights
           </h2>
 
           {videoLoading ? (
