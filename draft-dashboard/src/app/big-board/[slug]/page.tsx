@@ -407,8 +407,8 @@ export default function ProspectProfilePage() {
                 {[
                   { label: 'Height',    value: player.height || '—' },
                   { label: 'Weight',    value: player.weight > 0 ? `${player.weight} lbs` : '—' },
-                  { label: 'Draft Age', value: player.draftAge > 0 ? player.draftAge.toFixed(1) : '—' },
                   { label: 'Wingspan',  value: player.wingspan || '—' },
+                  { label: 'Draft Age', value: player.draftAge > 0 ? player.draftAge.toFixed(1) : '—' },
                 ].map(({ label, value }) => (
                   <div key={label} className="flex flex-col items-center p-3 bg-[#0d1117] rounded-lg border border-[#1f2937]">
                     <span className="text-base font-black text-[#f9fafb]">{value}</span>

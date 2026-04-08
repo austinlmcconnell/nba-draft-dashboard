@@ -28,8 +28,9 @@ export interface PlayerStatsResult {
   error?: string;
 }
 
-// Stats to show and their display order
+// Stats to show and their display order (FG/FT captured for TS% calc but not displayed)
 const SHOW_LABELS = ['GP', 'MIN', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'FG%', '3P%', 'FT%'];
+const CAPTURE_LABELS = [...SHOW_LABELS, 'FG', 'FT'];
 
 // ─── In-memory cache (1-hour TTL) ─────────────────────────────────────────────
 const cache = new Map<number, PlayerStatsResult & { cachedAt: number }>();
@@ -62,13 +63,28 @@ async function fetchStats(athleteId: number): Promise<PlayerStatsResult> {
   // Zip labels with values, filter to what we want, preserve order
   const mapped = new Map<string, string>();
   labels.forEach((lbl: string, i: number) => {
-    if (SHOW_LABELS.includes(lbl)) mapped.set(lbl, statsRow[i] ?? '—');
+    if (CAPTURE_LABELS.includes(lbl)) mapped.set(lbl, statsRow[i] ?? '—');
   });
+
+  // Calculate TS% = PTS / (2 × (FGA + 0.44 × FTA))
+  // FG and FT are "made-attempted" strings like "8.0-16.5"
+  let tsPercent: StatItem | null = null;
+  try {
+    const pts = parseFloat(mapped.get('PTS') ?? '');
+    const fga = parseFloat((mapped.get('FG') ?? '').split('-')[1] ?? '');
+    const fta = parseFloat((mapped.get('FT') ?? '').split('-')[1] ?? '');
+    if (!isNaN(pts) && !isNaN(fga) && !isNaN(fta) && (fga + fta) > 0) {
+      const ts = pts / (2 * (fga + 0.44 * fta));
+      tsPercent = { label: 'TS%', value: (ts * 100).toFixed(1) };
+    }
+  } catch { /* skip */ }
 
   const stats: StatItem[] = SHOW_LABELS
     .filter(lbl => mapped.has(lbl))
     .map(lbl => ({ label: lbl, value: mapped.get(lbl)! }))
     .filter(({ value }) => value !== '—' && value !== '0' && value !== '0.0');
+
+  if (tsPercent) stats.push(tsPercent);
 
   console.log(`[player-stats] athleteId=${athleteId} → ${stats.map(s => `${s.label}:${s.value}`).join(' ')}`);
   return { stats };
