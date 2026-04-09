@@ -57,8 +57,14 @@ async function fetchStats(athleteId: number): Promise<PlayerStatsResult> {
   }
 
   const labels: string[]  = averages.labels ?? [];
-  // Use the most recent season's stats (first entry), fall back to totals
-  const statsRow: string[] = averages.statistics?.[0]?.stats ?? averages.totals ?? [];
+  // ESPN returns statistics in chronological order (oldest season first).
+  // Always pick the row with the highest season.year to get the current season.
+  const statistics: any[] = averages.statistics ?? [];
+  const mostRecent = statistics.reduce((best: any, row: any) => {
+    const year = row?.season?.year ?? 0;
+    return !best || year > (best?.season?.year ?? 0) ? row : best;
+  }, null);
+  const statsRow: string[] = mostRecent?.stats ?? averages.totals ?? [];
 
   // Zip labels with values, filter to what we want, preserve order
   const mapped = new Map<string, string>();
