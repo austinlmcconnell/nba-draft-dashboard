@@ -23,13 +23,10 @@ export default function Footer() {
           <div>
             <div className="flex items-center gap-2 mb-3">
               <svg width="28" height="28" viewBox="0 0 100 100" fill="none" aria-hidden="true">
-                <circle cx="50" cy="50" r="44" fill="#081510" stroke="#22a052" strokeWidth="5.5" />
-                <path d="M 6 50 C 28 38, 72 38, 94 50" stroke="#1a5c2e" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-                <path d="M 6 50 C 28 62, 72 62, 94 50" stroke="#1a5c2e" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-                <line x1="50" y1="6" x2="50" y2="94" stroke="#1a5c2e" strokeWidth="2.5" strokeLinecap="round" />
-                <line x1="22" y1="22" x2="54" y2="80" stroke="#4ade80" strokeWidth="7" strokeLinecap="round" />
-                <line x1="40" y1="16" x2="68" y2="76" stroke="#4ade80" strokeWidth="7" strokeLinecap="round" />
-                <line x1="56" y1="18" x2="82" y2="72" stroke="#4ade80" strokeWidth="7" strokeLinecap="round" />
+                <circle cx="50" cy="50" r="43" fill="#0c1a10" stroke="#22a052" strokeWidth="6" />
+                <line x1="7" y1="50" x2="93" y2="50" stroke="#4ade80" strokeWidth="4" strokeLinecap="round" />
+                <path d="M 50 7 C 18 27, 18 73, 50 93" stroke="#4ade80" strokeWidth="4" fill="none" strokeLinecap="round" />
+                <path d="M 50 7 C 82 27, 82 73, 50 93" stroke="#4ade80" strokeWidth="4" fill="none" strokeLinecap="round" />
               </svg>
               <span className="font-bold text-base tracking-wide uppercase">
                 <span className="text-[#f9fafb]">COMP </span>
