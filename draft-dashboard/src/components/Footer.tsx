@@ -22,11 +22,12 @@ export default function Footer() {
           {/* Brand column */}
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <svg width="28" height="28" viewBox="0 0 100 100" fill="none" aria-hidden="true">
-                <circle cx="50" cy="50" r="43" fill="#0c1a10" stroke="#22a052" strokeWidth="6" />
-                <line x1="7" y1="50" x2="93" y2="50" stroke="#4ade80" strokeWidth="4" strokeLinecap="round" />
-                <path d="M 50 7 C 18 27, 18 73, 50 93" stroke="#4ade80" strokeWidth="4" fill="none" strokeLinecap="round" />
-                <path d="M 50 7 C 82 27, 82 73, 50 93" stroke="#4ade80" strokeWidth="4" fill="none" strokeLinecap="round" />
+              <svg width="28" height="21" viewBox="0 0 100 76" fill="none" aria-hidden="true">
+                <path d="M 12 64 A 38 38 0 0 0 88 64" stroke="#22a052" strokeWidth="6" strokeLinecap="round" fill="none" />
+                <path d="M 12 64 Q 50 14 88 64" stroke="#4ade80" strokeWidth="4" strokeLinecap="round" fill="none" />
+                <path d="M 12 64 Q 50 44 88 64" stroke="#4ade80" strokeWidth="4" strokeLinecap="round" fill="none" />
+                <circle cx="12" cy="64" r="5" fill="#22a052" />
+                <circle cx="88" cy="64" r="5" fill="#22a052" />
               </svg>
               <span className="font-bold text-base tracking-wide uppercase">
                 <span className="text-[#f9fafb]">COMP </span>

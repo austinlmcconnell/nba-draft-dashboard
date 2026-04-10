@@ -4,25 +4,26 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-// CompBeasts logo mark — basketball rendered in the site's exact brand palette
+// CompBeasts logo mark — three-arc basketball silhouette, brand palette
 function LogoMark({ size = 36 }: { size?: number }) {
   return (
     <svg
       width={size}
-      height={size}
-      viewBox="0 0 100 100"
+      height={Math.round(size * 0.76)}
+      viewBox="0 0 100 76"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
-      {/* Ball */}
-      <circle cx="50" cy="50" r="43" fill="#0c1a10" stroke="#22a052" strokeWidth="6" />
-      {/* Horizontal seam */}
-      <line x1="7" y1="50" x2="93" y2="50" stroke="#4ade80" strokeWidth="4" strokeLinecap="round" />
-      {/* Left seam — C-curve */}
-      <path d="M 50 7 C 18 27, 18 73, 50 93" stroke="#4ade80" strokeWidth="4" fill="none" strokeLinecap="round" />
-      {/* Right seam — mirrored */}
-      <path d="M 50 7 C 82 27, 82 73, 50 93" stroke="#4ade80" strokeWidth="4" fill="none" strokeLinecap="round" />
+      {/* Outer arc — the ball's upper edge */}
+      <path d="M 12 64 A 38 38 0 0 0 88 64" stroke="#22a052" strokeWidth="6" strokeLinecap="round" fill="none" />
+      {/* Upper seam — steep inner curve */}
+      <path d="M 12 64 Q 50 14 88 64" stroke="#4ade80" strokeWidth="4" strokeLinecap="round" fill="none" />
+      {/* Lower seam — gentle inner curve */}
+      <path d="M 12 64 Q 50 44 88 64" stroke="#4ade80" strokeWidth="4" strokeLinecap="round" fill="none" />
+      {/* Anchor nodes — small, brand-colored */}
+      <circle cx="12" cy="64" r="5" fill="#22a052" />
+      <circle cx="88" cy="64" r="5" fill="#22a052" />
     </svg>
   );
 }
