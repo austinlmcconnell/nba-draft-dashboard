@@ -22,12 +22,14 @@ export default function Footer() {
           {/* Brand column */}
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <svg width="28" height="21" viewBox="0 0 100 76" fill="none" aria-hidden="true">
-                <path d="M 12 64 A 38 38 0 0 0 88 64" stroke="#1a7a3f" strokeWidth="5.5" fill="none" strokeLinecap="round" />
-                <path d="M 12 64 Q 44 54 50 26" stroke="#1a7a3f" strokeWidth="4.5" fill="none" strokeLinecap="round" />
-                <path d="M 88 64 Q 56 54 50 26" stroke="#1a7a3f" strokeWidth="4.5" fill="none" strokeLinecap="round" />
-                <circle cx="12" cy="64" r="9" fill="#1e293b" />
-                <circle cx="88" cy="64" r="9" fill="#1e293b" />
+              <svg width="28" height="28" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+                <circle cx="50" cy="50" r="44" fill="#081510" stroke="#22a052" strokeWidth="5.5" />
+                <path d="M 6 50 C 28 38, 72 38, 94 50" stroke="#1a5c2e" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+                <path d="M 6 50 C 28 62, 72 62, 94 50" stroke="#1a5c2e" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+                <line x1="50" y1="6" x2="50" y2="94" stroke="#1a5c2e" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="22" y1="22" x2="54" y2="80" stroke="#4ade80" strokeWidth="7" strokeLinecap="round" />
+                <line x1="40" y1="16" x2="68" y2="76" stroke="#4ade80" strokeWidth="7" strokeLinecap="round" />
+                <line x1="56" y1="18" x2="82" y2="72" stroke="#4ade80" strokeWidth="7" strokeLinecap="round" />
               </svg>
               <span className="font-bold text-base tracking-wide uppercase">
                 <span className="text-[#f9fafb]">COMP </span>
