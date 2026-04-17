@@ -5,6 +5,10 @@
 import { NextResponse } from 'next/server';
 import type { BigBoardPlayer, BigBoardApiResponse } from '@/types/bigboard';
 
+// Force dynamic so Next.js never pre-renders or ISR-caches this route.
+// The client already polls every 60 s; server-side caching just adds lag.
+export const dynamic = 'force-dynamic';
+
 const SHEET_ID = process.env.BIG_BOARD_SHEET_ID ?? '1X0l92tV3ZPAiWsJ_-NEINBtVv50kYix7s4EbKHK-XxM';
 const RANGE    = 'Sheet1!A2:M200'; // skip header row; allow up to 200 prospects
 const API_KEY  = process.env.GOOGLE_SHEETS_API_KEY;
@@ -50,10 +54,7 @@ export async function GET() {
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(RANGE)}?key=${API_KEY}`;
 
   try {
-    const res = await fetch(url, {
-      // Revalidate every 60 s so edits in the sheet surface quickly
-      next: { revalidate: 60 },
-    });
+    const res = await fetch(url, { cache: 'no-store' });
 
     if (!res.ok) {
       const body = await res.text();
@@ -72,7 +73,7 @@ export async function GET() {
       { players, updatedAt: new Date().toISOString() },
       {
         headers: {
-          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+          'Cache-Control': 'no-store',
         },
       }
     );

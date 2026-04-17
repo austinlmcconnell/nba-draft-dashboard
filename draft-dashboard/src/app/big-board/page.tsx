@@ -174,29 +174,6 @@ export default function BigBoardPage() {
             </a>
           </div>
 
-          {/* Summary stats */}
-          {players.length > 0 && (
-            <div className="mt-6 flex gap-6 flex-wrap">
-              <div>
-                <span className="text-2xl font-black text-[#f9fafb]">{players.length}</span>
-                <span className="text-xs text-[#6b7280] ml-1.5">Prospects ranked</span>
-              </div>
-              {hasMockData && (
-                <div>
-                  <span className="text-2xl font-black text-[#4ade80]">
-                    {players.filter(p => p.mockPickNo !== null).length}
-                  </span>
-                  <span className="text-xs text-[#6b7280] ml-1.5">Mock picks assigned</span>
-                </div>
-              )}
-              <div>
-                <span className="text-2xl font-black text-[#f9fafb]">
-                  {[...new Set(players.map(p => p.position))].length}
-                </span>
-                <span className="text-xs text-[#6b7280] ml-1.5">Positions</span>
-              </div>
-            </div>
-          )}
         </div>
       </div>
 

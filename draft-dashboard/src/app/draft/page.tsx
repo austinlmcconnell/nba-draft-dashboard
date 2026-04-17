@@ -197,12 +197,6 @@ export default function DraftBoardPage() {
               </p>
             </div>
             <div className="flex items-center gap-4">
-              {!isLoading && (
-                <div className="text-right">
-                  <div className="text-2xl font-black text-[#4ade80]">{prospects.length}</div>
-                  <div className="text-xs text-[#9ca3af]">Prospects in database</div>
-                </div>
-              )}
               <Link href="/methodology" className="btn-secondary text-sm py-2 px-4 whitespace-nowrap">
                 How comps work →
               </Link>
@@ -259,13 +253,6 @@ export default function DraftBoardPage() {
                 Clear filters
               </button>
             )}
-
-            <span className={`${isSearching ? '' : 'ml-auto'} text-sm text-[#6b7280]`}>
-              {isSearching
-                ? <><span className="font-bold text-[#d1d5db]">{displayList.length}</span> results</>
-                : <><span className="font-bold text-[#d1d5db]">{ranked.length}</span> ranked prospects</>
-              }
-            </span>
           </div>
         </div>
 

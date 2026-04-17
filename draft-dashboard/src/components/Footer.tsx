@@ -23,11 +23,11 @@ export default function Footer() {
           <div>
             <div className="flex items-center gap-2 mb-3">
               <svg width="28" height="21" viewBox="0 0 100 76" fill="none" aria-hidden="true">
-                <path d="M 12 64 A 38 38 0 0 0 88 64" stroke="#1a7a3f" strokeWidth="5.5" fill="none" strokeLinecap="round" />
-                <path d="M 12 64 Q 44 54 50 26" stroke="#1a7a3f" strokeWidth="4.5" fill="none" strokeLinecap="round" />
-                <path d="M 88 64 Q 56 54 50 26" stroke="#1a7a3f" strokeWidth="4.5" fill="none" strokeLinecap="round" />
-                <circle cx="12" cy="64" r="9" fill="#1e293b" />
-                <circle cx="88" cy="64" r="9" fill="#1e293b" />
+                <path d="M 12 64 A 38 38 0 0 0 88 64" stroke="#22a052" strokeWidth="6" strokeLinecap="round" fill="none" />
+                <path d="M 12 64 Q 50 14 88 64" stroke="#4ade80" strokeWidth="4" strokeLinecap="round" fill="none" />
+                <path d="M 12 64 Q 50 44 88 64" stroke="#4ade80" strokeWidth="4" strokeLinecap="round" fill="none" />
+                <circle cx="12" cy="64" r="5" fill="#22a052" />
+                <circle cx="88" cy="64" r="5" fill="#22a052" />
               </svg>
               <span className="font-bold text-base tracking-wide uppercase">
                 <span className="text-[#f9fafb]">COMP </span>

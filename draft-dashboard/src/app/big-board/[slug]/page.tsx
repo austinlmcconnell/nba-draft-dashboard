@@ -383,7 +383,7 @@ export default function ProspectProfilePage() {
           {/* ── Dark body — COMPBEASTS BRANDING ─────────────────────────────── */}
           <div className="bg-[#111827] relative">
 
-            {/* Headshot — straddles banner/body divide, white border ring = clean separation */}
+            {/* Headshot — straddles banner/body divide */}
             <div className="absolute -top-14 right-8 z-10">
               {hasHeadshot ? (
                 <Image src={prospectHeadshotUrl!} alt={player.name}
@@ -433,19 +433,16 @@ export default function ProspectProfilePage() {
             </div>
             <div className="px-6 py-5 space-y-5">
 
-              {/* Skill */}
               <div>
                 <ScoutLabel label="Biggest Skill" />
                 <ScoutValue value={player.biggestSkill} color="#4ade80" />
               </div>
 
-              {/* Weakness */}
               <div>
                 <ScoutLabel label="Biggest Weakness" />
                 <ScoutValue value={player.biggestWeakness} color="#ef4444" />
               </div>
 
-              {/* NBA comp */}
               <div className="pt-4 border-t border-[#1f2937]">
                 <ScoutLabel label="NBA Comparison" />
                 {player.nbaComparison ? (
@@ -484,7 +481,6 @@ export default function ProspectProfilePage() {
             <div className="px-6 py-5">
               {player.mockPickNo && player.mockTeam ? (
                 <div className="flex flex-col items-center text-center gap-3">
-                  {/* Team logo */}
                   <div className="w-20 h-20 bg-[#0d1117] rounded-2xl border border-[#1f2937] flex items-center justify-center overflow-hidden">
                     {hasNbaLogo ? (
                       <Image src={nbaLogoUrl(nbaTeam!.espnId)} alt={player.mockTeam}
@@ -497,7 +493,6 @@ export default function ProspectProfilePage() {
                     )}
                   </div>
 
-                  {/* Giant pick number */}
                   <div>
                     <div className="text-7xl font-black text-[#f9fafb] leading-none">
                       #{player.mockPickNo}
@@ -516,7 +511,6 @@ export default function ProspectProfilePage() {
                     </div>
                   </div>
 
-                  {/* Team name */}
                   <div>
                     <p className="text-[#f9fafb] font-bold text-lg leading-tight">{player.mockTeam}</p>
                     {nbaTeam && (

@@ -4,55 +4,35 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-// CompBeasts logo mark — matches the exact brand logo (green arcs + dark nodes)
-// On the dark background the nodes are rendered white so they contrast the same
-// way the original black nodes contrast on a white background.
+// CompBeasts logo mark — three-arc basketball silhouette, brand palette
 function LogoMark({ size = 36 }: { size?: number }) {
   return (
     <svg
       width={size}
-      height={size * 0.76}
+      height={Math.round(size * 0.76)}
       viewBox="0 0 100 76"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
-      {/* Outer arc — outer boundary of the basketball top half */}
-      <path
-        d="M 12 64 A 38 38 0 0 0 88 64"
-        stroke="#1a7a3f"
-        strokeWidth="5.5"
-        strokeLinecap="round"
-        fill="none"
-      />
-      {/* Top seam 1 — steep arch connecting both dots (inner basketball seam) */}
-      <path
-        d="M 12 64 Q 50 14 88 64"
-        stroke="#1a7a3f"
-        strokeWidth="5.5"
-        strokeLinecap="round"
-        fill="none"
-      />
-      {/* Top seam 2 — shallower arch connecting both dots (outer basketball seam) */}
-      <path
-        d="M 12 64 Q 50 44 88 64"
-        stroke="#1a7a3f"
-        strokeWidth="5.5"
-        strokeLinecap="round"
-        fill="none"
-      />
-      {/* Endpoint nodes — white on dark bg = same contrast as black on white in source logo */}
-      <circle cx="12" cy="64" r="9" fill="#f0f4f8" />
-      <circle cx="88" cy="64" r="9" fill="#f0f4f8" />
+      {/* Outer arc — the ball's upper edge */}
+      <path d="M 12 64 A 38 38 0 0 0 88 64" stroke="#22a052" strokeWidth="6" strokeLinecap="round" fill="none" />
+      {/* Upper seam — steep inner curve */}
+      <path d="M 12 64 Q 50 14 88 64" stroke="#4ade80" strokeWidth="4" strokeLinecap="round" fill="none" />
+      {/* Lower seam — gentle inner curve */}
+      <path d="M 12 64 Q 50 44 88 64" stroke="#4ade80" strokeWidth="4" strokeLinecap="round" fill="none" />
+      {/* Anchor nodes — small, brand-colored */}
+      <circle cx="12" cy="64" r="5" fill="#22a052" />
+      <circle cx="88" cy="64" r="5" fill="#22a052" />
     </svg>
   );
 }
 
 const NAV_LINKS = [
-  { href: '/big-board',   label: 'Big Board'    },
-  { href: '/draft',       label: 'Draft Board'  },
-  { href: '/methodology', label: 'Methodology'  },
-  { href: '/about',       label: 'About'        },
+  { href: '/big-board',   label: 'My Big Board'     },
+  { href: '/draft',       label: 'Tankathon Board'  },
+  { href: '/methodology', label: 'Methodology'      },
+  { href: '/about',       label: 'About'            },
 ];
 
 export default function Navbar() {
