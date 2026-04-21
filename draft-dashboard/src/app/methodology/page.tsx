@@ -66,8 +66,8 @@ export default function MethodologyPage() {
           <p className="text-xs font-bold uppercase tracking-widest text-[#4ade80] mb-3">Contents</p>
           <ol className="list-decimal list-inside space-y-1.5 text-sm text-[#9ca3af]">
             {[
-              ['#draftboard',  'Draft Board ranking — RAPTOR-weighted comps'],
-              ['#raptor',      'RAPTOR explained'],
+              ['#draftboard',  'Draft Board ranking — BPM-weighted comps'],
+              ['#bpm',         'BPM explained'],
               ['#pool',        'Comparison pool (drafted players only)'],
               ['#normalise',   'Z-score normalisation'],
               ['#stats',       'Statistical distance — five facets'],
@@ -82,10 +82,10 @@ export default function MethodologyPage() {
         </nav>
 
         {/* ---------------------------------------------------------------- */}
-        <Section id="draftboard" title="Draft Board ranking — RAPTOR-weighted comps">
+        <Section id="draftboard" title="Draft Board ranking — BPM-weighted comps">
           <p className="text-[#d1d5db] mb-4">
             The Draft Board ranks every prospect on the Big Board by the{' '}
-            <strong>average career RAPTOR</strong> of their 10 closest historical college
+            <strong>average career BPM</strong> of their 10 closest historical college
             statistical comparisons. The intuition: if a prospect&apos;s college production
             most resembles 10 historical players who became high-impact NBA pros,
             that&apos;s a much stronger signal than if they resemble 10 journeymen.
@@ -93,39 +93,39 @@ export default function MethodologyPage() {
 
           <Formula>{`For each Big Board prospect:
   1. Find 10 closest college statistical comps
-     (restricted to drafted players who have RAPTOR data)
-  2. Look up each comp's career RAPTOR (FiveThirtyEight dataset)
-  3. avg_raptor = mean(comp.career_raptor for comp in 10)
-  4. Rank the board by avg_raptor descending`}</Formula>
+     (restricted to drafted players who have BPM data)
+  2. Look up each comp's career BPM (Basketball Reference dataset)
+  3. avg_bpm = mean(comp.career_bpm for comp in 10)
+  4. Rank the board by avg_bpm descending`}</Formula>
 
           <p className="text-[#d1d5db] mt-4">
-            Higher avg RAPTOR = prospect resembles historical players who had more
+            Higher avg BPM = prospect resembles historical players who had more
             NBA impact per 100 possessions. A +4 avg means their 10 comps averaged
             All-Star-level impact; a −1 avg means they averaged below replacement level.
           </p>
         </Section>
 
         {/* ---------------------------------------------------------------- */}
-        <Section id="raptor" title="RAPTOR explained">
+        <Section id="bpm" title="BPM explained">
           <p className="text-[#d1d5db] mb-4">
-            RAPTOR (Robust Algorithm using Player Tracking and On/Off Ratings) is
-            FiveThirtyEight&apos;s impact metric, expressed as points above
-            average per 100 possessions. It combines:
+            BPM (Box Plus-Minus) is Basketball Reference&apos;s impact metric, expressed
+            as points above average per 100 possessions. It estimates a player&apos;s
+            contribution using box-score statistics and team performance context,
+            without requiring play-by-play or tracking data.
           </p>
-          <ul className="list-disc list-inside text-sm text-[#9ca3af] space-y-1 ml-2 mb-4">
-            <li><strong>On/off regularized plus-minus (RAPM)</strong> — how the team performs with the player on vs. off the court, regularized to reduce noise</li>
-            <li><strong>Player-tracking inputs</strong> (2014+ only) — spatial and movement data that capture off-ball defense and positioning</li>
-          </ul>
 
-          <Sub title="Career RAPTOR used here">
-            <Formula>{`career_raptor = Σ(season_raptor × minutes_played)
-                / Σ(minutes_played)
+          <Sub title="Career BPM used here">
+            <Formula>{`career_bpm = Σ(season_bpm × minutes_played)
+              / Σ(minutes_played)
 
-Regular-season games only. Playoffs excluded.`}</Formula>
+Regular-season games only. Playoffs excluded.
+Source: Basketball Reference per-season advanced stats (2005–06 through present).
+Built by scripts/build_bpm_lookup.py — runs against all 20 seasons and recomputes
+whenever re-run.`}</Formula>
             <p className="text-sm text-[#9ca3af]">
-              Weighting by minutes played ensures a single monster season doesn&apos;t
-              dominate a long career, and a short stint doesn&apos;t weight as heavily
-              as a 20-year career.
+              Weighting by minutes played ensures a single breakout season doesn&apos;t
+              distort a long career, and brief stints don&apos;t weigh as heavily as
+              full seasons of regular starter minutes.
             </p>
           </Sub>
 
@@ -145,19 +145,6 @@ Regular-season games only. Playoffs excluded.`}</Formula>
               ))}
             </div>
           </Sub>
-
-          <Sub title="Source">
-            <p className="text-sm text-[#9ca3af]">
-              RAPTOR data comes from FiveThirtyEight&apos;s open-source
-              <a href="https://github.com/fivethirtyeight/nba-player-advanced-metrics"
-                target="_blank" rel="noopener noreferrer"
-                className="text-[#4ade80] hover:underline mx-1">nba-player-advanced-metrics</a>
-              repository, processed into a lookup table at{' '}
-              <code>public/data/raptor_lookup.json</code> via{' '}
-              <code>scripts/build_raptor_lookup.py</code>. The script computes minute-weighted
-              career averages for every NBA player with at least 100 career minutes.
-            </p>
-          </Sub>
         </Section>
 
         {/* ---------------------------------------------------------------- */}
@@ -170,7 +157,7 @@ Regular-season games only. Playoffs excluded.`}</Formula>
           </p>
           <Formula>{`pool = historical_players WHERE
          draft_pick IS NOT NULL
-         AND normalized_name IN raptor_lookup
+         AND normalized_name IN bpm_lookup
          AND college_season < 2026`}</Formula>
           <p className="text-sm text-[#9ca3af]">
             Position groups (G / F / C, plus hybrid G-F and F-C) further restrict the pool

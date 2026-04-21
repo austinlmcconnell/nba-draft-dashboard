@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import type { DraftBoardEntry, DraftComp, DraftBoardApiResponse } from '@/types/player';
 
-// ─── RAPTOR color helpers ─────────────────────────────────────────────────────
-function raptorTextColor(r: number | null): string {
+// ─── BPM color helpers ─────────────────────────────────────────────────────
+function bpmTextColor(r: number | null): string {
   if (r === null) return 'text-[#6b7280]';
   if (r >= 4)   return 'text-emerald-400';
   if (r >= 1.5) return 'text-[#4ade80]';
@@ -15,7 +15,7 @@ function raptorTextColor(r: number | null): string {
   return 'text-red-400';
 }
 
-function raptorBarColor(r: number | null): string {
+function bpmBarColor(r: number | null): string {
   if (r === null) return 'bg-[#1f2937]';
   if (r >= 4)   return 'bg-emerald-500';
   if (r >= 1.5) return 'bg-[#22a052]';
@@ -24,8 +24,8 @@ function raptorBarColor(r: number | null): string {
   return 'bg-red-500';
 }
 
-// RAPTOR typically ranges roughly −8 to +10; normalize to a 0-100% bar width
-function raptorBarWidth(r: number | null): string {
+// BPM typically ranges roughly −8 to +10; normalize to a 0-100% bar width
+function bpmBarWidth(r: number | null): string {
   if (r === null) return '0%';
   const pct = Math.max(0, Math.min(100, ((r + 8) / 18) * 100));
   return `${pct.toFixed(1)}%`;
@@ -52,17 +52,17 @@ function CompRow({ comp, index }: { comp: DraftComp; index: number }) {
         <span className="text-xs text-[#4b5563]">{comp.similarity.toFixed(0)}% sim</span>
       </div>
 
-      {/* RAPTOR bar + value */}
+      {/* BPM bar + value */}
       <div className="w-40 flex items-center gap-2">
         <div className="flex-1 h-1.5 bg-[#1f2937] rounded-full overflow-hidden">
           <div
-            className={`h-full rounded-full transition-all ${raptorBarColor(comp.raptor)}`}
-            style={{ width: raptorBarWidth(comp.raptor) }}
+            className={`h-full rounded-full transition-all ${bpmBarColor(comp.bpm)}`}
+            style={{ width: bpmBarWidth(comp.bpm) }}
           />
         </div>
-        <span className={`text-sm font-black w-14 text-right tabular-nums ${raptorTextColor(comp.raptor)}`}>
-          {comp.raptor !== null
-            ? `${comp.raptor >= 0 ? '+' : ''}${comp.raptor.toFixed(2)}`
+        <span className={`text-sm font-black w-14 text-right tabular-nums ${bpmTextColor(comp.bpm)}`}>
+          {comp.bpm !== null
+            ? `${comp.bpm >= 0 ? '+' : ''}${comp.bpm.toFixed(2)}`
             : '—'}
         </span>
       </div>
@@ -118,7 +118,7 @@ export default function DraftProfilePage() {
   if (isLoading) return <LoadingSkeleton />;
   if (notFound || !entry) return <NotFound />;
 
-  const raptorComps = entry.comps.filter(c => c.raptor !== null);
+  const bpmComps = entry.comps.filter(c => c.bpm !== null);
 
   return (
     <div className="min-h-screen bg-[#0d1117]">
@@ -153,23 +153,23 @@ export default function DraftProfilePage() {
               <p className="text-[#6b7280] text-sm mt-0.5">{entry.school}</p>
             </div>
 
-            {/* Avg RAPTOR display */}
-            {entry.avgRaptor !== null && (
+            {/* Avg BPM display */}
+            {entry.avgBpm !== null && (
               <div className="flex flex-col items-center text-center px-5 py-3 bg-[#0d1117] rounded-xl border border-[#1f2937]">
-                <span className={`text-4xl font-black tabular-nums ${raptorTextColor(entry.avgRaptor)}`}>
-                  {entry.avgRaptor >= 0 ? '+' : ''}{entry.avgRaptor.toFixed(2)}
+                <span className={`text-4xl font-black tabular-nums ${bpmTextColor(entry.avgBpm)}`}>
+                  {entry.avgBpm >= 0 ? '+' : ''}{entry.avgBpm.toFixed(2)}
                 </span>
                 <span className="text-[10px] font-black uppercase tracking-widest text-[#4b5563] mt-1">
-                  Avg Comp RAPTOR
+                  Avg Comp BPM
                 </span>
                 <span className="text-[10px] text-[#374151] mt-0.5">
-                  {entry.raptorCoverage} of {entry.comps.length} comps
+                  {entry.bpmCoverage} of {entry.comps.length} comps
                 </span>
               </div>
             )}
           </div>
 
-          {entry.avgRaptor === null && entry.comps.length === 0 && (
+          {entry.avgBpm === null && entry.comps.length === 0 && (
             <div className="px-6 pb-5">
               <p className="text-sm text-[#6b7280]">
                 No college stats found for this player — they may not be in the 2025–26 database yet.
@@ -190,7 +190,7 @@ export default function DraftProfilePage() {
                   10 closest college statistical comps who were drafted · sorted by similarity
                 </p>
               </div>
-              <span className="text-[10px] text-[#374151] uppercase tracking-wide">Career RAPTOR</span>
+              <span className="text-[10px] text-[#374151] uppercase tracking-wide">Career BPM</span>
             </div>
 
             <div>
@@ -199,22 +199,22 @@ export default function DraftProfilePage() {
               ))}
             </div>
 
-            {/* RAPTOR summary */}
-            {raptorComps.length > 0 && (
+            {/* BPM summary */}
+            {bpmComps.length > 0 && (
               <div className="px-6 py-4 border-t border-[#1f2937] bg-[#0d1117]/50 flex items-center justify-between flex-wrap gap-3">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-xs text-[#6b7280]">
-                    {entry.raptorCoverage} comps with RAPTOR data
-                    {entry.raptorCoverage < 10 && (
-                      <span className="text-[#374151]"> · {10 - entry.raptorCoverage} comps pre-2014 era</span>
+                    {entry.bpmCoverage} comps with BPM data
+                    {entry.bpmCoverage < 10 && (
+                      <span className="text-[#374151]"> · {10 - entry.bpmCoverage} comps pre-2014 era</span>
                     )}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-xs text-[#6b7280]">Group avg:</span>
-                  <span className={`text-base font-black tabular-nums ${raptorTextColor(entry.avgRaptor)}`}>
-                    {entry.avgRaptor !== null
-                      ? `${entry.avgRaptor >= 0 ? '+' : ''}${entry.avgRaptor.toFixed(2)}`
+                  <span className={`text-base font-black tabular-nums ${bpmTextColor(entry.avgBpm)}`}>
+                    {entry.avgBpm !== null
+                      ? `${entry.avgBpm >= 0 ? '+' : ''}${entry.avgBpm.toFixed(2)}`
                       : '—'}
                   </span>
                 </div>
@@ -223,9 +223,9 @@ export default function DraftProfilePage() {
           </div>
         )}
 
-        {/* What RAPTOR means */}
+        {/* What BPM means */}
         <div className="bg-[#0d1117] rounded-xl border border-[#1f2937] px-5 py-4">
-          <p className="text-xs font-black uppercase tracking-widest text-[#4b5563] mb-3">RAPTOR Scale</p>
+          <p className="text-xs font-black uppercase tracking-widest text-[#4b5563] mb-3">BPM Scale</p>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
             {[
               { range: '≥ +4.0', label: 'Elite / All-Star',    cls: 'text-emerald-400' },
@@ -241,7 +241,7 @@ export default function DraftProfilePage() {
             ))}
           </div>
           <p className="text-xs text-[#374151] mt-4">
-            RAPTOR (FiveThirtyEight) measures points above average per 100 possessions.
+            BPM (Basketball Reference) measures points above average per 100 possessions.
             Career average is weighted by minutes played.
           </p>
         </div>
