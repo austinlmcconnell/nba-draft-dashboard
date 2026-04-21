@@ -1,311 +1,229 @@
 'use client';
 
-/**
- * /draft — 2026 NBA Draft Board
- * Full prospect search, filter, and ranked grid.
- */
-
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
-import { PlayerCard, PlayerCardSkeleton } from '@/components/PlayerCard';
-import type { CollegePlayer, DraftRanking } from '@/types/player';
-import { loadProspects, loadDraftRankings } from '@/lib/utils/dataLoader';
+import type { DraftBoardEntry, DraftBoardApiResponse } from '@/types/player';
 
-// ─── Name-matching helpers ────────────────────────────────────────────────────
-const ACCENT_MAP: Record<string, string> = {
-  à:'a',á:'a',â:'a',ã:'a',ä:'a',å:'a',
-  è:'e',é:'e',ê:'e',ë:'e',
-  ì:'i',í:'i',î:'i',ï:'i',
-  ò:'o',ó:'o',ô:'o',õ:'o',ö:'o',ø:'o',
-  ù:'u',ú:'u',û:'u',ü:'u',
-  ñ:'n',ç:'c',ý:'y',
-};
-const SUFFIX_RE = /\s+\b(jr|sr|ii|iii|iv|v)\b\.?\s*$/i;
-
-function normalizeName(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/[àáâãäåèéêëìíîïòóôõöøùúûüñçý]/g, c => ACCENT_MAP[c] ?? c)
-    .replace(SUFFIX_RE, '')
-    .replace(/[^a-z\s]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
+// ─── RAPTOR color helper ──────────────────────────────────────────────────────
+function raptorColor(r: number | null): string {
+  if (r === null) return 'text-[#6b7280]';
+  if (r >= 4)   return 'text-emerald-400';
+  if (r >= 1.5) return 'text-[#4ade80]';
+  if (r >= 0)   return 'text-[#9ca3af]';
+  if (r >= -2)  return 'text-amber-400';
+  return 'text-red-400';
 }
 
-function nameSimilar(a: string, b: string): boolean {
-  const na = normalizeName(a);
-  const nb = normalizeName(b);
-  if (na === nb) return true;
-  const partsA = na.split(' ');
-  const partsB = nb.split(' ');
-  if (partsA.length >= 2 && partsB.length >= 2) {
-    if (partsA.at(-1) === partsB.at(-1) && partsA[0].slice(0, 3) === partsB[0].slice(0, 3)) return true;
-  }
-  return false;
+function raptorBadge(r: number | null): string {
+  if (r === null) return 'bg-[#1a2332] border-[#1f2937] text-[#6b7280]';
+  if (r >= 4)   return 'bg-emerald-900/30 border-emerald-700/40 text-emerald-300';
+  if (r >= 1.5) return 'bg-[#1a7a3f]/20 border-[#1a7a3f]/40 text-[#4ade80]';
+  if (r >= 0)   return 'bg-[#1a2332] border-[#1f2937] text-[#9ca3af]';
+  if (r >= -2)  return 'bg-amber-900/20 border-amber-700/30 text-amber-400';
+  return 'bg-red-900/20 border-red-700/30 text-red-400';
 }
 
-// ─── Merge rankings ───────────────────────────────────────────────────────────
-interface RankedPlayer { player: CollegePlayer; rank: number | undefined; }
-
-function mergeRankings(
-  prospects: CollegePlayer[],
-  rankings: DraftRanking[],
-): { ranked: RankedPlayer[]; all: RankedPlayer[] } {
-  const bySchool = new Map<string, CollegePlayer[]>();
-  for (const p of prospects) {
-    const key = normalizeName(p.team);
-    if (!bySchool.has(key)) bySchool.set(key, []);
-    bySchool.get(key)!.push(p);
-  }
-
-  const ranked: RankedPlayer[] = [];
-  const matchedIds = new Set<string>();
-
-  for (const r of rankings) {
-    let match = prospects.find(p => nameSimilar(p.name, r.name));
-    if (!match) {
-      const schoolKey = normalizeName(r.school);
-      const schoolProspects = bySchool.get(schoolKey) ?? [];
-      const rankLastName = normalizeName(r.name).split(' ').pop() ?? '';
-      match = schoolProspects.find(p =>
-        normalizeName(p.name).split(' ').pop() === rankLastName,
-      );
-    }
-    if (match && !matchedIds.has(match.id)) {
-      matchedIds.add(match.id);
-      ranked.push({ player: match, rank: r.rank });
-    }
-  }
-
-  const unranked: RankedPlayer[] = prospects
-    .filter(p => !matchedIds.has(p.id))
-    .map(p => ({ player: p, rank: undefined }));
-
-  const all: RankedPlayer[] = [
-    ...ranked,
-    ...unranked.sort((a, b) => a.player.name.localeCompare(b.player.name)),
-  ];
-
-  return { ranked, all };
-}
-
-// ─── Filter select ────────────────────────────────────────────────────────────
-function FilterSelect({
-  label, value, options, onChange,
-}: {
-  label: string;
-  value: string;
-  options: string[];
-  onChange: (v: string) => void;
-}) {
+// ─── Row ──────────────────────────────────────────────────────────────────────
+function BoardRow({ entry, raptorRank }: { entry: DraftBoardEntry; raptorRank: number }) {
   return (
-    <div className="flex items-center gap-2">
-      <label className="text-sm font-medium text-[#9ca3af] whitespace-nowrap">{label}</label>
-      <select
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        className="px-3 py-1.5 text-sm bg-[#1a2332] border border-[#1f2937] text-[#d1d5db] rounded-lg
-                   focus:ring-2 focus:ring-[#1a7a3f] focus:border-[#1a7a3f] outline-none cursor-pointer"
-      >
-        {options.map(o => (
-          <option key={o} value={o}>{o === 'all' ? 'All' : o}</option>
-        ))}
-      </select>
+    <Link
+      href={`/draft/${entry.slug}`}
+      className="flex items-center gap-4 px-5 py-3.5 border-b border-[#1f2937] hover:bg-white/[0.02] transition-colors group"
+    >
+      {/* RAPTOR rank */}
+      <div className="w-8 text-center text-sm font-black text-[#4b5563] group-hover:text-[#6b7280] transition-colors">
+        {raptorRank}
+      </div>
+
+      {/* Player info */}
+      <div className="flex-1 min-w-0">
+        <p className="font-bold text-[#f9fafb] text-sm truncate group-hover:text-[#4ade80] transition-colors">
+          {entry.name}
+        </p>
+        <p className="text-xs text-[#6b7280] truncate">
+          {entry.school} · {entry.position}
+        </p>
+      </div>
+
+      {/* Big board rank */}
+      <div className="hidden sm:block w-20 text-right">
+        <span className="text-xs text-[#6b7280]">#{entry.bigBoardRank}</span>
+      </div>
+
+      {/* Avg RAPTOR */}
+      <div className="w-28 text-right">
+        {entry.avgRaptor !== null ? (
+          <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-black border ${raptorBadge(entry.avgRaptor)}`}>
+            {entry.avgRaptor >= 0 ? '+' : ''}{entry.avgRaptor.toFixed(2)}
+          </span>
+        ) : (
+          <span className="text-xs text-[#374151]">—</span>
+        )}
+      </div>
+
+      {/* Comps coverage */}
+      <div className="hidden lg:block w-20 text-right">
+        <span className="text-xs text-[#374151]">{entry.raptorCoverage}/10 comps</span>
+      </div>
+
+      {/* Chevron */}
+      <svg className="w-4 h-4 text-[#374151] group-hover:text-[#4ade80] flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+      </svg>
+    </Link>
+  );
+}
+
+// ─── Skeleton ─────────────────────────────────────────────────────────────────
+function RowSkeleton() {
+  return (
+    <div className="flex items-center gap-4 px-5 py-3.5 border-b border-[#1f2937]">
+      <div className="w-8 h-4 animate-shimmer rounded" />
+      <div className="flex-1 space-y-1.5">
+        <div className="h-3.5 w-36 animate-shimmer rounded" />
+        <div className="h-3 w-24 animate-shimmer rounded" />
+      </div>
+      <div className="w-20 h-5 animate-shimmer rounded-full" />
     </div>
   );
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function DraftBoardPage() {
-  const [prospects, setProspects]   = useState<CollegePlayer[]>([]);
-  const [rankings, setRankings]     = useState<DraftRanking[]>([]);
-  const [isLoading, setIsLoading]   = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [positionFilter, setPositionFilter]   = useState('all');
-  const [conferenceFilter, setConferenceFilter] = useState('all');
-  const [schoolFilter, setSchoolFilter]       = useState('all');
-  const searchRef = useRef<HTMLInputElement>(null);
+  const [entries,      setEntries]      = useState<DraftBoardEntry[]>([]);
+  const [updatedAt,    setUpdatedAt]    = useState<string | null>(null);
+  const [isLoading,    setIsLoading]    = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [error,        setError]        = useState<string | null>(null);
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const school = params.get('school');
-    if (school) setSchoolFilter(school);
-
-    Promise.all([loadProspects(2026), loadDraftRankings()]).then(([data, ranks]) => {
-      setProspects(data);
-      setRankings(ranks);
+  const load = useCallback(async (silent = false) => {
+    if (!silent) setIsLoading(true);
+    else setIsRefreshing(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/draft-board', { cache: 'no-store' });
+      const data: DraftBoardApiResponse = await res.json();
+      if (data.error && entries.length === 0) throw new Error(data.error);
+      setEntries(data.entries);
+      setUpdatedAt(data.updatedAt);
+    } catch (e) {
+      if (!silent) setError(e instanceof Error ? e.message : String(e));
+    } finally {
       setIsLoading(false);
-    });
-  }, []);
+      setIsRefreshing(false);
+    }
+  }, [entries.length]);
 
-  const { ranked, all } = useMemo(() => mergeRankings(prospects, rankings), [prospects, rankings]);
-
-  const isSearching = searchTerm.trim().length > 0
-    || positionFilter   !== 'all'
-    || conferenceFilter !== 'all'
-    || schoolFilter     !== 'all';
-
-  const displayList = useMemo(() => {
-    const pool = isSearching ? all : ranked;
-    const q = searchTerm.toLowerCase().trim();
-    return pool.filter(({ player: p }) => {
-      const matchesSearch =
-        !q ||
-        p.name.toLowerCase().includes(q)       ||
-        p.team.toLowerCase().includes(q)       ||
-        p.conference.toLowerCase().includes(q) ||
-        p.position.toLowerCase().includes(q);
-      return (
-        matchesSearch &&
-        (positionFilter   === 'all' || p.position   === positionFilter) &&
-        (conferenceFilter === 'all' || p.conference === conferenceFilter) &&
-        (schoolFilter     === 'all' || p.team       === schoolFilter)
-      );
-    });
-  }, [isSearching, all, ranked, searchTerm, positionFilter, conferenceFilter, schoolFilter]);
-
-  const positions   = useMemo(() => ['all', ...Array.from(new Set(prospects.map(p => p.position))).sort()], [prospects]);
-  const conferences = useMemo(() => ['all', ...Array.from(new Set(prospects.map(p => p.conference))).sort()], [prospects]);
-  const schools     = useMemo(() => ['all', ...Array.from(new Set(prospects.map(p => p.team))).sort()], [prospects]);
-
-  const clearFilters = () => {
-    setSearchTerm('');
-    setPositionFilter('all');
-    setConferenceFilter('all');
-    setSchoolFilter('all');
-  };
+  useEffect(() => { load(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const iv = setInterval(() => load(true), 60_000);
+    const focus = () => load(true);
+    window.addEventListener('focus', focus);
+    return () => { clearInterval(iv); window.removeEventListener('focus', focus); };
+  }, [load]);
 
   return (
     <div className="min-h-screen bg-[#0d1117]">
 
-      {/* Page hero */}
-      <div className="relative bg-[#111827] border-b border-[#1f2937] overflow-hidden">
-        <div
-          className="absolute inset-0 pointer-events-none"
-          aria-hidden="true"
-          style={{ background: 'radial-gradient(ellipse 60% 80% at 0% 50%, rgba(26,122,63,0.12) 0%, transparent 70%)' }}
-        />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+      {/* Header */}
+      <div className="border-b border-[#1f2937] bg-[#111827]">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex items-start justify-between gap-4 flex-wrap">
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-[#4ade80] mb-2">
-                2026 NBA Draft
-              </p>
-              <h1 className="text-3xl sm:text-4xl font-black text-[#f9fafb]">Draft Board</h1>
-              <p className="text-[#9ca3af] mt-1.5 text-sm">
-                Powered by Tankathon Big Board · click any card for full comparisons
+              <div className="flex items-center gap-2 mb-2">
+                <span className="px-2.5 py-0.5 bg-[#1a7a3f]/20 border border-[#1a7a3f]/40 rounded-full text-xs font-semibold text-[#4ade80]">
+                  RAPTOR Rankings
+                </span>
+                {updatedAt && (
+                  <span className="flex items-center gap-1.5 text-xs text-[#6b7280]">
+                    <span className={`w-1.5 h-1.5 rounded-full ${isRefreshing ? 'bg-amber-400 animate-pulse' : 'bg-[#1a7a3f]'}`} />
+                    {isRefreshing ? 'Refreshing…' : `Updated ${new Date(updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
+                  </span>
+                )}
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-black text-[#f9fafb]">
+                2026 Draft <span className="gradient-text">Board</span>
+              </h1>
+              <p className="mt-2 text-[#6b7280] text-sm max-w-lg">
+                Big Board prospects ranked by the average career RAPTOR of their 10 closest
+                historical college statistical comparisons.
               </p>
             </div>
-            <div className="flex items-center gap-4">
-              <Link href="/methodology" className="btn-secondary text-sm py-2 px-4 whitespace-nowrap">
-                How comps work →
-              </Link>
-            </div>
+            <Link href="/methodology" className="btn-secondary text-sm self-start">
+              How it works →
+            </Link>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Search + filters */}
-        <div className="cb-panel p-5 mb-8">
-          {/* Search bar */}
-          <div className="relative mb-4">
-            <svg
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#6b7280] pointer-events-none"
-              fill="none" stroke="currentColor" viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <input
-              ref={searchRef}
-              type="text"
-              placeholder="Search by name, school, conference, or position…"
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-10 py-3 text-base bg-[#1a2332] border border-[#1f2937] text-[#f9fafb]
-                         placeholder:text-[#6b7280] rounded-xl focus:ring-2 focus:ring-[#1a7a3f]
-                         focus:border-[#1a7a3f] outline-none"
-            />
-            {searchTerm && (
-              <button
-                onClick={() => { setSearchTerm(''); searchRef.current?.focus(); }}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#6b7280] hover:text-[#f9fafb]"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            )}
-          </div>
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="bg-[#111827] rounded-xl border border-[#1f2937] overflow-hidden">
 
-          {/* Filters row */}
-          <div className="flex flex-wrap gap-3 items-center">
-            <FilterSelect label="Position"   value={positionFilter}   options={positions}   onChange={setPositionFilter} />
-            <FilterSelect label="Conference" value={conferenceFilter} options={conferences} onChange={setConferenceFilter} />
-            <FilterSelect label="School"     value={schoolFilter}     options={schools}     onChange={setSchoolFilter} />
+          {/* Column headers */}
+          {(entries.length > 0 || isLoading) && (
+            <div className="flex items-center gap-4 px-5 py-3 border-b border-[#1f2937] bg-[#0d1117]">
+              <div className="w-8 text-center text-xs font-semibold uppercase tracking-wider text-[#6b7280]">#</div>
+              <div className="flex-1 text-xs font-semibold uppercase tracking-wider text-[#6b7280]">Prospect</div>
+              <div className="hidden sm:block w-20 text-right text-xs font-semibold uppercase tracking-wider text-[#6b7280]">My Rank</div>
+              <div className="w-28 text-right text-xs font-semibold uppercase tracking-wider text-[#6b7280]">Avg RAPTOR</div>
+              <div className="hidden lg:block w-20 text-right text-xs font-semibold uppercase tracking-wider text-[#6b7280]">Coverage</div>
+              <div className="w-4" />
+            </div>
+          )}
 
-            {isSearching && (
-              <button
-                onClick={clearFilters}
-                className="ml-auto text-sm text-[#1a7a3f] hover:text-[#4ade80] font-semibold transition-colors"
-              >
-                Clear filters
-              </button>
-            )}
-          </div>
+          {/* Content */}
+          {isLoading ? (
+            <div>{Array.from({ length: 8 }).map((_, i) => <RowSkeleton key={i} />)}</div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center py-20 text-center px-4">
+              <p className="text-red-400 text-sm mb-4">{error}</p>
+              <button onClick={() => load()} className="btn-primary text-sm">Try Again</button>
+            </div>
+          ) : entries.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 text-center px-4">
+              <p className="text-[#6b7280] text-sm">No prospects on the Big Board yet.</p>
+              <p className="text-xs text-[#374151] mt-1">Add players to your Google Sheet and they&apos;ll appear here.</p>
+            </div>
+          ) : (
+            <div>
+              {entries.map((entry, i) => (
+                <BoardRow key={entry.slug} entry={entry} raptorRank={i + 1} />
+              ))}
+              <div className="px-5 py-4 border-t border-[#1f2937] flex items-center justify-between flex-wrap gap-2">
+                <p className="text-xs text-[#374151]">
+                  Ranked by avg career RAPTOR of 10 historical college comps · click any prospect for full breakdown
+                </p>
+                <button
+                  onClick={() => load(true)}
+                  className="text-xs text-[#6b7280] hover:text-[#4ade80] transition-colors flex items-center gap-1"
+                >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  Refresh
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Section header */}
-        {!isSearching && !isLoading && (
-          <div className="flex items-center gap-3 mb-6">
-            <div>
-              <h2 className="text-xl font-bold text-[#f9fafb]">
-                Tankathon Big Board — 2026 NBA Draft
-              </h2>
-              <p className="text-sm text-[#6b7280] mt-0.5">
-                Rankings from <span className="font-medium text-[#9ca3af]">tankathon.com</span>
-              </p>
-            </div>
-          </div>
-        )}
-
-        {isSearching && !isLoading && (
-          <div className="flex items-center gap-2 mb-6">
-            <h2 className="text-xl font-bold text-[#f9fafb]">Search Results</h2>
-            <span className="text-sm text-[#6b7280]">
-              — searching full database of {prospects.length} prospects
-            </span>
-          </div>
-        )}
-
-        {/* Grid */}
-        {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => <PlayerCardSkeleton key={i} />)}
-          </div>
-        ) : displayList.length === 0 ? (
-          <div className="text-center py-20">
-            <svg className="w-12 h-12 text-[#374151] mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <p className="text-[#6b7280] text-lg">No prospects found.</p>
-            <button
-              onClick={clearFilters}
-              className="mt-3 text-sm text-[#1a7a3f] hover:text-[#4ade80] underline transition-colors"
-            >
-              Clear filters
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {displayList.map(({ player, rank }) => (
-              <PlayerCard key={player.id} player={player} rank={rank} />
+        {/* Legend */}
+        {entries.length > 0 && (
+          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 px-1">
+            <p className="text-xs text-[#374151] font-semibold uppercase tracking-wider">RAPTOR scale:</p>
+            {[
+              { label: '≥ +4.0 Elite',       cls: 'text-emerald-400' },
+              { label: '+1.5 Starter',        cls: 'text-[#4ade80]' },
+              { label: '0 Average',           cls: 'text-[#9ca3af]' },
+              { label: '−2 Below avg',        cls: 'text-amber-400' },
+              { label: '< −2 Replacement',    cls: 'text-red-400' },
+            ].map(({ label, cls }) => (
+              <span key={label} className={`text-xs font-semibold ${cls}`}>{label}</span>
             ))}
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }
