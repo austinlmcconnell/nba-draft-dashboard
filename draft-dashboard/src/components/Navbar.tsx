@@ -30,7 +30,7 @@ function LogoMark({ size = 36 }: { size?: number }) {
 
 const NAV_LINKS = [
   { href: '/big-board',   label: 'My Big Board'     },
-  { href: '/draft',       label: 'Tankathon Board'  },
+  { href: '/draft',       label: 'Draft Board'      },
   { href: '/methodology', label: 'Methodology'      },
   { href: '/about',       label: 'About'            },
 ];

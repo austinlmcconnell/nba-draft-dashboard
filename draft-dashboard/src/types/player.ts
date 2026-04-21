@@ -153,6 +153,49 @@ export interface ProspectComparisons {
 }
 
 // ---------------------------------------------------------------------------
+// RAPTOR-based Draft Board types
+// ---------------------------------------------------------------------------
+
+export interface RaptorEntry {
+  raptor: number;   // career weighted-average RAPTOR+/-
+  mp: number;       // total career minutes in dataset
+  seasons: number;  // number of regular seasons
+  display: string;  // original display name from dataset
+}
+
+export type RaptorLookup = Record<string, RaptorEntry>; // keyed by normalized name
+
+export interface DraftComp {
+  name: string;
+  collegeSeason: number;
+  collegeTeam: string;
+  position: string;
+  similarity: number;   // 0-100 statistical similarity score
+  raptor: number | null;
+  raptorMp: number | null;
+  raptorSeasons: number | null;
+}
+
+export interface DraftBoardEntry {
+  name: string;
+  slug: string;
+  school: string;
+  position: string;
+  bigBoardRank: number;
+  mockPickNo: number | null;
+  mockTeam: string | null;
+  comps: DraftComp[];
+  avgRaptor: number | null;
+  raptorCoverage: number; // how many of the 10 comps have RAPTOR scores
+}
+
+export interface DraftBoardApiResponse {
+  entries: DraftBoardEntry[];
+  updatedAt: string;
+  error?: string;
+}
+
+// ---------------------------------------------------------------------------
 // Draft Rankings (scraped from Tankathon)
 // ---------------------------------------------------------------------------
 export interface DraftRanking {

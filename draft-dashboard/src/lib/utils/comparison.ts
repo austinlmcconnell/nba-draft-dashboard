@@ -196,6 +196,61 @@ function positionCompatible(prospectPos: string | undefined, histPos: string | u
 // Public: compute statistical and physical comparisons for a prospect
 // ---------------------------------------------------------------------------
 
+/**
+ * Return the top N statistical comparisons from a pre-filtered pool.
+ * Used by the Draft Board: pool is already restricted to drafted players
+ * with RAPTOR data, and we want 10 comps instead of 5.
+ */
+export function getTopStatComps(
+  prospectStats: CollegeStats,
+  pool: HistoricalPlayer[],
+  norms: DatasetNorms,
+  prospectPosition?: string,
+  topN = 10,
+): PlayerComparison[] {
+  const MIN_POSITION_POOL = 50;
+  const posFiltered = pool.filter(h => positionCompatible(prospectPosition, h.position));
+  const effectivePool = posFiltered.length >= MIN_POSITION_POOL ? posFiltered : pool;
+  const pVec = toStatVec(prospectStats, norms);
+
+  return effectivePool
+    .map(hist => {
+      const hVec = toStatVec(hist.college_stats, norms);
+      const s = statDistance(pVec, hVec);
+
+      const sEff  = sim(s.eff,  K_STAT);
+      const sVol  = sim(s.vol,  K_VOL);
+      const sPlay = sim(s.play, K_STAT);
+      const sReb  = sim(s.reb,  K_STAT);
+      const sDef  = sim(s.def,  K_STAT);
+
+      const weightedAvg = sEff * 0.25 + sVol * 0.16 + sPlay * 0.20 + sReb * 0.19 + sDef * 0.20;
+      const minFacet    = Math.min(sEff, sVol, sPlay, sReb, sDef);
+      const blendedSim  = 0.7 * weightedAvg + 0.3 * minFacet;
+
+      return {
+        hist, s,
+        sEff, sVol, sPlay, sReb, sDef,
+        blendedSim,
+      };
+    })
+    .sort((a, b) => b.blendedSim - a.blendedSim)
+    .slice(0, topN)
+    .map(r => ({
+      historical_player: r.hist,
+      comparison_type: 'statistical' as const,
+      similarity_score: Math.round(r.blendedSim * 10) / 10,
+      breakdown: {
+        scoring_efficiency: Math.round(sim(r.s.eff,  K_STAT)),
+        scoring_volume:     Math.round(sim(r.s.vol,  K_VOL)),
+        playmaking:         Math.round(sim(r.s.play, K_STAT)),
+        rebounding:         Math.round(sim(r.s.reb,  K_STAT)),
+        defense:            Math.round(sim(r.s.def,  K_STAT)),
+        physical:           0,
+      },
+    }));
+}
+
 export function getProspectComparisons(
   prospectStats: CollegeStats,
   prospectPhysical: PhysicalAttributes | undefined | null,
