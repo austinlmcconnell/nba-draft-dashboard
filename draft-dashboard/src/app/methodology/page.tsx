@@ -73,7 +73,7 @@ export default function MethodologyPage() {
               ['#stats',       'Statistical distance — five facets'],
               ['#sort',        'Ranking the comps'],
               ['#similarity',  'Distance → similarity score'],
-              ['#derived',     'Derived stats (TS%, AST/TOV, 3P%)'],
+              ['#derived',     'Derived stats (AST/TOV, ORB/36, DRB/36)'],
               ['#statboxes',   'Profile stat box shading'],
             ].map(([href, label]) => (
               <li key={href}><a href={href} className="hover:text-[#4ade80] hover:underline transition-colors">{label}</a></li>
@@ -194,8 +194,9 @@ Regular-season games only. Playoffs excluded.`}</Formula>
           </p>
           <ul className="list-disc list-inside text-sm text-[#9ca3af] space-y-1 ml-2">
             <li>pts_per36, reb_per36, ast_per36, stl_per36, blk_per36, tov_per36</li>
-            <li>true_shooting_pct, usage_rate, free_throw_rate, three_point_pct</li>
-            <li>ast_tov_ratio, oreb_pct, win_shares_per40, net_rating</li>
+            <li>orb_per36, drb_per36 (derived from per-game ÷ mpg × 36)</li>
+            <li>field_goal_pct, free_throw_pct, three_point_pct, usage_rate, free_throw_rate</li>
+            <li>ast_tov_ratio (derived: ast_per36 ÷ tov_per36), offensive_rating, defensive_rating</li>
             <li>height_inches, weight_pounds, age_at_season_start</li>
           </ul>
         </Section>
@@ -203,11 +204,10 @@ Regular-season games only. Playoffs excluded.`}</Formula>
         {/* ---------------------------------------------------------------- */}
         <Section id="stats" title="Statistical distance — five facets">
           <p className="text-[#d1d5db] mb-4">
-            Stats are grouped into five <em>basketball-analytics facets</em>. Each facet is a
-            Euclidean distance (or absolute difference) of z-score values, then the five facets
-            are combined with an analytics-informed weighted sum. Defence and rebounding are
-            weighted highly because steal/block rates and reb/36 are the strongest positional
-            discriminators at the college level.
+            Stats are grouped into five <em>basketball-analytics facets</em> covering the full
+            skill set — shooting, scoring, playmaking, rebounding, and defense. Each facet is a
+            Euclidean distance of z-score values (or absolute difference for volume), then the
+            five facets are combined with an analytics-informed weighted sum.
           </p>
 
           <div className="overflow-x-auto mb-5">
@@ -217,36 +217,53 @@ Regular-season games only. Playoffs excluded.`}</Formula>
                   <th className="pb-2 pr-4">Facet</th>
                   <th className="pb-2 pr-6">Weight</th>
                   <th className="pb-2 pr-4">Inputs</th>
-                  <th className="pb-2">Distance formula</th>
+                  <th className="pb-2">Notes</th>
                 </tr>
               </thead>
               <tbody>
-                <WeightRow facet="Scoring Efficiency" weight="25 %" fields={['TS%', 'Usage', 'FT rate', '3P%']} note="√(Δts² + Δusage² + Δftr² + Δ3p%²)" />
-                <WeightRow facet="Scoring Volume"     weight="16 %" fields={['Pts/36']}                         note="|Δpts36|" />
-                <WeightRow facet="Playmaking"         weight="20 %" fields={['Ast/36', 'AST/TOV', 'TOV/36']}    note="√(Δast² + Δast_tov² + Δtov²)" />
-                <WeightRow facet="Rebounding"         weight="19 %" fields={['Reb/36', 'OReb%']}                note="√(Δreb² + Δoreb_pct²)" />
-                <WeightRow facet="Defense"            weight="20 %" fields={['Stl/36', 'Blk/36']}               note="√(Δstl² + Δblk²)" />
+                <WeightRow facet="Scoring &amp; Shooting" weight="26 %" fields={['FG%', 'FT%', 'FT rate', '3P%', 'Usage', 'Off Rtg']}  note="Off Rtg at 0.5× (team-context signal)" />
+                <WeightRow facet="Scoring Volume"         weight="11 %" fields={['Pts/36']}                                             note="|Δpts36|" />
+                <WeightRow facet="Playmaking"             weight="18 %" fields={['Ast/36', 'AST/TOV', 'TOV/36']}                        note="AST/TOV derived live" />
+                <WeightRow facet="Rebounding"             weight="20 %" fields={['Reb/36', 'ORB/36', 'DRB/36']}                         note="ORB and DRB derived from per-game ÷ mpg" />
+                <WeightRow facet="Defense"                weight="25 %" fields={['Stl/36', 'Blk/36', 'Def Rtg']}                        note="Def Rtg at 0.5× (team-context signal)" />
               </tbody>
             </table>
           </div>
 
-          <Formula>{`stat_distance = 0.25 × eff_dist
-             + 0.16 × vol_dist
-             + 0.20 × play_dist
-             + 0.19 × reb_dist
-             + 0.20 × def_dist`}</Formula>
+          <Formula>{`stat_distance = 0.26 × eff_dist
+             + 0.11 × vol_dist
+             + 0.18 × play_dist
+             + 0.20 × reb_dist
+             + 0.25 × def_dist`}</Formula>
 
-          <Sub title="Scoring profile: 3P% vs FT rate">
+          <Sub title="Shooting: percentages and profile">
             <p className="text-sm text-[#9ca3af]">
-              Inside vs outside scoring is captured through two complementary signals:
+              The scoring &amp; shooting facet captures the complete shooting profile through six inputs:
             </p>
             <ul className="list-disc list-inside text-sm text-[#9ca3af] space-y-1 ml-2 mt-2">
-              <li><strong>FT rate</strong> (FTA/FGA) — high FT rate flags an inside scorer who draws contact. Paint-oriented players typically show FT rate 40–60%; perimeter players 20–35%.</li>
-              <li><strong>3P%</strong> — distinguishes a genuine perimeter shooter from a player who rarely attempts threes.</li>
+              <li><strong>FG%</strong> — overall field goal accuracy, the primary efficiency signal</li>
+              <li><strong>FT%</strong> — free throw accuracy; a player who earns foul calls but can&apos;t convert them is distinct from one who can</li>
+              <li><strong>FT rate</strong> (FTA/FGA) — how aggressively a player attacks the basket and draws contact</li>
+              <li><strong>3P%</strong> — three-point shooting accuracy</li>
+              <li><strong>Usage</strong> — what fraction of possessions the player is the primary ball-handler</li>
+              <li><strong>Offensive rating</strong> (half-weighted) — points the team scores per 100 possessions with this player on court; team-context signal weighted at 0.5× to reduce noise</li>
             </ul>
-            <p className="text-sm text-[#9ca3af] mt-2">
-              Together with TS% and usage rate, these four metrics paint a clear
-              inside/outside scoring profile for each player.
+          </Sub>
+
+          <Sub title="Rebounding: splitting ORB and DRB">
+            <p className="text-sm text-[#9ca3af]">
+              Total Reb/36, ORB/36, and DRB/36 are all included in the rebounding facet.
+              Using all three rather than just the total ensures the algorithm distinguishes between
+              a glass-crashing offensive rebounder and a positioning-based defensive rebounder —
+              two meaningfully different archetypes that can share identical total rebound numbers.
+            </p>
+          </Sub>
+
+          <Sub title="Defense: counting stats + team rating">
+            <p className="text-sm text-[#9ca3af]">
+              Stl/36 and Blk/36 are the primary individual defensive signals. Defensive rating
+              (points allowed per 100 possessions) is added at half-weight to provide team-context
+              context for defenders who don&apos;t generate steals/blocks but anchor strong units.
             </p>
           </Sub>
         </Section>
@@ -261,7 +278,7 @@ Regular-season games only. Playoffs excluded.`}</Formula>
           </p>
           <Formula>{`blended_sim = 0.70 × weighted_avg + 0.30 × min_facet
 
-weighted_avg = sEff×0.25 + sVol×0.16 + sPlay×0.20 + sReb×0.19 + sDef×0.20
+weighted_avg = sEff×0.26 + sVol×0.11 + sPlay×0.18 + sReb×0.20 + sDef×0.25
 min_facet    = min(sEff, sVol, sPlay, sReb, sDef)`}</Formula>
           <p className="text-sm text-[#9ca3af]">
             A perfectly balanced comp is unaffected (min_facet ≈ weighted_avg). A comp
@@ -290,29 +307,35 @@ K_AGE  = 1.5  →  age distance (1 year is a meaningful development gap)`}</Form
         </Section>
 
         {/* ---------------------------------------------------------------- */}
-        <Section id="derived" title="Derived stats — TS%, AST/TOV, 3P%">
-          <p className="text-[#d1d5db] mb-3">Several stats are computed on load rather than stored raw:</p>
-
-          <Sub title="True Shooting % (TS%)">
-            <Formula>{`TS% = PTS / (2 × (FGA + 0.44 × FTA)) × 100
-
-FGA is back-solved from:
-  PTS ≈ 2 × FG% × FGA  +  FT% × FTR × FGA
-  (FTR = free_throw_rate = FTA/FGA)
-
-  FGA_est = PTS / (2 × FG% + FT% × FTR)
-  FTA_est = FTR × FGA_est
-  TS%     = PTS / (2 × (FGA_est + 0.44 × FTA_est)) × 100`}</Formula>
-          </Sub>
+        <Section id="derived" title="Derived stats — AST/TOV, ORB/36, DRB/36">
+          <p className="text-[#d1d5db] mb-3">
+            Three stats are not stored in the dataset and are computed on the fly inside
+            the comparison engine before any z-scoring:
+          </p>
 
           <Sub title="AST/TOV ratio">
-            <Formula>{`ast_tov = assists_per_game / turnovers_per_game
-         (0 if turnovers_per_game = 0)`}</Formula>
+            <Formula>{`ast_tov = ast_per36 / max(tov_per36, 0.1)
+         (floor at 0.1 to avoid division by zero)`}</Formula>
+            <p className="text-sm text-[#9ca3af]">
+              Computed from the per-36 values rather than raw per-game counts so it is
+              already playing-time–normalised and consistent with every other input.
+            </p>
+          </Sub>
+
+          <Sub title="ORB/36 and DRB/36">
+            <Formula>{`orb_per36 = (offensive_rebounds_per_game / minutes_per_game) × 36
+drb_per36 = (defensive_rebounds_per_game / minutes_per_game) × 36`}</Formula>
+            <p className="text-sm text-[#9ca3af]">
+              Splitting the total rebound rate into offensive and defensive components lets
+              the algorithm identify distinct rebounder archetypes — an offensive glass-crasher
+              and a positioning-based defensive rebounder can share identical total Reb/36 numbers
+              but represent very different skillsets.
+            </p>
           </Sub>
 
           <p className="text-sm text-[#6b7280] mt-2">
-            All derived values are computed in <code>dataLoader.ts → toCollegeStats()</code>
-            and apply equally to current prospects and all historical players.
+            All three are computed in <code>comparison.ts → derivedStats()</code> and
+            apply equally to current prospects and all historical players.
           </p>
         </Section>
 

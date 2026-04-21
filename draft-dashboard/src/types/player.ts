@@ -16,6 +16,8 @@ export interface CollegeStats {
   minutes_per_game: number;
   points_per_game: number;
   rebounds_per_game: number;
+  offensive_rebounds_per_game: number;
+  defensive_rebounds_per_game: number;
   assists_per_game: number;
   steals_per_game: number;
   blocks_per_game: number;
@@ -131,11 +133,11 @@ export type ComparisonType = 'statistical' | 'physical';
 
 export interface ComparisonBreakdown {
   // Statistical facets (0-100)
-  scoring_efficiency: number;  // TS%, usage, FT rate, shot profile
+  scoring_efficiency: number;  // FG%, FT%, FT rate, 3P%, usage, off_rtg
   scoring_volume: number;      // Pts/36
-  playmaking: number;          // Ast/36, AST/TOV ratio
-  rebounding: number;          // Reb/36, ORB%
-  defense: number;             // Stl/36, Blk/36
+  playmaking: number;          // Ast/36, AST/TOV (derived), TOV/36
+  rebounding: number;          // Reb/36, ORB/36 (derived), DRB/36 (derived)
+  defense: number;             // Stl/36, Blk/36, def_rtg
   // Physical facets (0-100, only meaningful for physical comparisons)
   physical: number;
 }
@@ -224,15 +226,21 @@ export interface DatasetNorms {
   stl_per36: NormParams;
   blk_per36: NormParams;
   tov_per36: NormParams;
-  // Rate / efficiency stats
-  true_shooting_pct: NormParams;
+  // Derived per-36 rebound splits (computed from per-game / mpg * 36)
+  orb_per36: NormParams;
+  drb_per36: NormParams;
+  // Shooting percentages
+  field_goal_pct: NormParams;
+  free_throw_pct: NormParams;
+  three_point_pct: NormParams;
+  // Rate stats
   usage_rate: NormParams;
   free_throw_rate: NormParams;
-  three_point_pct: NormParams;   // replaces three_pt_attempts_per_game (was always 0)
+  // Derived playmaking ratio (ast_per36 / tov_per36)
   ast_tov_ratio: NormParams;
-  oreb_pct: NormParams;
-  win_shares_per40: NormParams;
-  net_rating: NormParams;
+  // Per-possession team-context ratings
+  offensive_rating: NormParams;
+  defensive_rating: NormParams;
   // Physical
   height_inches: NormParams;
   weight_pounds: NormParams;

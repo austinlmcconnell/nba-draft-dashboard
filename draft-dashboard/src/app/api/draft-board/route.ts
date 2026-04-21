@@ -106,6 +106,8 @@ function toStats(raw: any) {
   return {
     games: n(raw.games), minutes_per_game: n(raw.minutes_per_game),
     points_per_game: n(raw.points_per_game), rebounds_per_game: n(raw.rebounds_per_game),
+    offensive_rebounds_per_game: n(raw.offensive_rebounds_per_game),
+    defensive_rebounds_per_game: n(raw.defensive_rebounds_per_game),
     assists_per_game: apg, steals_per_game: n(raw.steals_per_game),
     blocks_per_game: n(raw.blocks_per_game), turnovers_per_game: tpg,
     field_goal_percentage: n(raw.field_goal_percentage),

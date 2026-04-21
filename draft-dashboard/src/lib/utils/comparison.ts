@@ -4,13 +4,27 @@
  * Two comparison lenses per prospect:
  *
  *   statistical — Who produced the most similarly on the court?
- *     Per-36 stats + efficiency rates, z-score normalised across the dataset.
- *     Five basketball-analytics facets (evidence-based weights):
- *       Scoring efficiency  (TS%, usage, FT rate, 3P%)               25%
- *       Scoring volume      (Pts/36)                                  16%
- *       Playmaking          (Ast/36, AST/TOV, TOV/36)                 20%
- *       Rebounding          (Reb/36, ORB%)                            19%
- *       Defense             (Stl/36, Blk/36)                          20%
+ *     Five basketball-analytics facets covering the full skillset:
+ *
+ *       Scoring & Shooting  (26%)
+ *         FG%, FT%, FT rate, 3P%, usage, off_rtg (0.5×)
+ *         NOTE: true_shooting_pct and oreb_pct are 0% populated in the
+ *         dataset — FG%/FT% are used in their place.
+ *
+ *       Scoring Volume      (11%)
+ *         Pts/36
+ *
+ *       Playmaking          (18%)
+ *         Ast/36, AST/TOV (derived live from ast_per36 / tov_per36), TOV/36
+ *         NOTE: ast_tov_ratio stored field is 0% populated; ratio is computed.
+ *
+ *       Rebounding          (20%)
+ *         Reb/36, ORB/36 (derived), DRB/36 (derived)
+ *         Splitting total rebounds into offensive + defensive captures
+ *         distinct rebounder archetypes.
+ *
+ *       Defense             (25%)
+ *         Stl/36, Blk/36, def_rtg (0.5× — team-context signal)
  *
  *   physical — Who shared the most similar physical profile?
  *     Height 55%, weight 45% (wingspan redistributes: h 40%, w 30%, ws 20%
@@ -45,32 +59,50 @@ function makeParams(vals: number[]): NormParams {
   return { mean, std_dev };
 }
 
+function safeDiv(a: number, b: number): number {
+  return b > 0 ? a / b : 0;
+}
+
+/** Derive the stats that are not pre-computed in the dataset. */
+function derivedStats(s: CollegeStats) {
+  return {
+    orb_per36:   safeDiv(s.offensive_rebounds_per_game, s.minutes_per_game) * 36,
+    drb_per36:   safeDiv(s.defensive_rebounds_per_game, s.minutes_per_game) * 36,
+    ast_tov:     safeDiv(s.ast_per36, Math.max(s.tov_per36, 0.1)),
+  };
+}
+
 export function buildDatasetNorms(players: HistoricalPlayer[]): DatasetNorms {
   const get = (fn: (s: CollegeStats) => number) =>
     makeParams(players.map(p => fn(p.college_stats)).filter(v => isFinite(v) && v != null));
+
+  const getDerived = (fn: (s: CollegeStats) => number) =>
+    makeParams(players.map(p => fn(p.college_stats)).filter(v => isFinite(v) && v != null && v > 0));
 
   const heights = players.map(p => p.physical?.height_inches).filter((v): v is number => v != null && v > 0);
   const weights = players.map(p => p.physical?.weight_pounds).filter((v): v is number => v != null && v > 0);
   const ages    = players.map(p => p.physical?.age_at_season_start).filter((v): v is number => v != null && v > 10);
 
   return {
-    pts_per36:              get(s => s.pts_per36),
-    reb_per36:              get(s => s.reb_per36),
-    ast_per36:              get(s => s.ast_per36),
-    stl_per36:              get(s => s.stl_per36),
-    blk_per36:              get(s => s.blk_per36),
-    tov_per36:              get(s => s.tov_per36),
-    true_shooting_pct:      get(s => s.true_shooting_pct),
-    usage_rate:             get(s => s.usage_rate),
-    free_throw_rate:        get(s => s.free_throw_rate),
-    three_point_pct:        get(s => s.three_point_percentage),
-    ast_tov_ratio:          get(s => s.ast_tov_ratio),
-    oreb_pct:               get(s => s.oreb_pct),
-    win_shares_per40:       get(s => s.win_shares_per40),
-    net_rating:             get(s => s.net_rating),
-    height_inches:          makeParams(heights),
-    weight_pounds:          makeParams(weights),
-    age_at_season_start:    makeParams(ages),
+    pts_per36:        get(s => s.pts_per36),
+    reb_per36:        get(s => s.reb_per36),
+    ast_per36:        get(s => s.ast_per36),
+    stl_per36:        get(s => s.stl_per36),
+    blk_per36:        get(s => s.blk_per36),
+    tov_per36:        get(s => s.tov_per36),
+    orb_per36:        getDerived(s => safeDiv(s.offensive_rebounds_per_game, s.minutes_per_game) * 36),
+    drb_per36:        getDerived(s => safeDiv(s.defensive_rebounds_per_game, s.minutes_per_game) * 36),
+    field_goal_pct:   get(s => s.field_goal_percentage),
+    free_throw_pct:   get(s => s.free_throw_percentage),
+    three_point_pct:  get(s => s.three_point_percentage),
+    usage_rate:       get(s => s.usage_rate),
+    free_throw_rate:  get(s => s.free_throw_rate),
+    ast_tov_ratio:    getDerived(s => safeDiv(s.ast_per36, Math.max(s.tov_per36, 0.1))),
+    offensive_rating: get(s => s.offensive_rating),
+    defensive_rating: get(s => s.defensive_rating),
+    height_inches:    makeParams(heights),
+    weight_pounds:    makeParams(weights),
+    age_at_season_start: makeParams(ages),
   };
 }
 
@@ -79,40 +111,77 @@ export function buildDatasetNorms(players: HistoricalPlayer[]): DatasetNorms {
 // ---------------------------------------------------------------------------
 
 interface StatVec {
-  ts_pct: number; usage: number; ft_rate: number; three_pct: number;
-  pts36: number;
-  ast36: number; ast_tov: number; tov36: number;
-  reb36: number; oreb_pct: number;
-  stl36: number; blk36: number;
+  // Scoring & Shooting Efficiency
+  fg_pct:    number;
+  ft_pct:    number;
+  ft_rate:   number;
+  three_pct: number;
+  usage:     number;
+  off_rtg:   number;
+  // Scoring Volume
+  pts36:     number;
+  // Playmaking
+  ast36:     number;
+  ast_tov:   number;
+  tov36:     number;
+  // Rebounding
+  reb36:     number;
+  orb36:     number;
+  drb36:     number;
+  // Defense
+  stl36:     number;
+  blk36:     number;
+  def_rtg:   number;
 }
 
 function toStatVec(s: CollegeStats, n: DatasetNorms): StatVec {
+  const d = derivedStats(s);
   return {
-    ts_pct:    zScore(s.true_shooting_pct,      n.true_shooting_pct),
-    usage:     zScore(s.usage_rate,             n.usage_rate),
-    ft_rate:   zScore(s.free_throw_rate,        n.free_throw_rate),
-    three_pct: zScore(s.three_point_percentage, n.three_point_pct),
-    pts36:     zScore(s.pts_per36,              n.pts_per36),
-    ast36:     zScore(s.ast_per36,              n.ast_per36),
-    ast_tov:   zScore(s.ast_tov_ratio,          n.ast_tov_ratio),
-    tov36:     zScore(s.tov_per36,              n.tov_per36),
-    reb36:     zScore(s.reb_per36,              n.reb_per36),
-    oreb_pct:  zScore(s.oreb_pct,               n.oreb_pct),
-    stl36:     zScore(s.stl_per36,              n.stl_per36),
-    blk36:     zScore(s.blk_per36,              n.blk_per36),
+    fg_pct:    zScore(s.field_goal_percentage,       n.field_goal_pct),
+    ft_pct:    zScore(s.free_throw_percentage,       n.free_throw_pct),
+    ft_rate:   zScore(s.free_throw_rate,             n.free_throw_rate),
+    three_pct: zScore(s.three_point_percentage,      n.three_point_pct),
+    usage:     zScore(s.usage_rate,                  n.usage_rate),
+    off_rtg:   zScore(s.offensive_rating,            n.offensive_rating),
+    pts36:     zScore(s.pts_per36,                   n.pts_per36),
+    ast36:     zScore(s.ast_per36,                   n.ast_per36),
+    ast_tov:   zScore(d.ast_tov,                     n.ast_tov_ratio),
+    tov36:     zScore(s.tov_per36,                   n.tov_per36),
+    reb36:     zScore(s.reb_per36,                   n.reb_per36),
+    orb36:     zScore(d.orb_per36,                   n.orb_per36),
+    drb36:     zScore(d.drb_per36,                   n.drb_per36),
+    stl36:     zScore(s.stl_per36,                   n.stl_per36),
+    blk36:     zScore(s.blk_per36,                   n.blk_per36),
+    def_rtg:   zScore(s.defensive_rating,            n.defensive_rating),
   };
 }
 
 function sq(a: number, b: number) { return (a - b) ** 2; }
 
 function statDistance(a: StatVec, b: StatVec) {
-  const eff  = Math.sqrt(sq(a.ts_pct, b.ts_pct) + sq(a.usage, b.usage) + sq(a.ft_rate, b.ft_rate) + sq(a.three_pct, b.three_pct));
-  const vol  = Math.abs(a.pts36 - b.pts36);
-  const play = Math.sqrt(sq(a.ast36, b.ast36) + sq(a.ast_tov, b.ast_tov) + sq(a.tov36, b.tov36));
-  const reb  = Math.sqrt(sq(a.reb36, b.reb36) + sq(a.oreb_pct, b.oreb_pct));
-  const def  = Math.sqrt(sq(a.stl36, b.stl36) + sq(a.blk36, b.blk36));
+  // Scoring & Shooting Efficiency (26%)
+  // off_rtg gets 0.5× weight — useful signal but team-context dependent
+  const eff = Math.sqrt(
+    sq(a.fg_pct, b.fg_pct) + sq(a.ft_pct, b.ft_pct) + sq(a.ft_rate, b.ft_rate) +
+    sq(a.three_pct, b.three_pct) + sq(a.usage, b.usage) + 0.5 * sq(a.off_rtg, b.off_rtg)
+  );
 
-  const total = eff * 0.25 + vol * 0.16 + play * 0.20 + reb * 0.19 + def * 0.20;
+  // Scoring Volume (11%)
+  const vol = Math.abs(a.pts36 - b.pts36);
+
+  // Playmaking (18%)
+  const play = Math.sqrt(sq(a.ast36, b.ast36) + sq(a.ast_tov, b.ast_tov) + sq(a.tov36, b.tov36));
+
+  // Rebounding (20%) — total + split into ORB / DRB components
+  const reb = Math.sqrt(sq(a.reb36, b.reb36) + sq(a.orb36, b.orb36) + sq(a.drb36, b.drb36));
+
+  // Defense (25%)
+  // def_rtg gets 0.5× weight — captures team defensive context but is noisy
+  const def = Math.sqrt(
+    sq(a.stl36, b.stl36) + sq(a.blk36, b.blk36) + 0.5 * sq(a.def_rtg, b.def_rtg)
+  );
+
+  const total = eff * 0.26 + vol * 0.11 + play * 0.18 + reb * 0.20 + def * 0.25;
 
   return { total, eff, vol, play, reb, def };
 }
@@ -141,15 +210,14 @@ function physDistance(a: PhysicalAttributes, b: PhysicalAttributes, n: DatasetNo
 // similarity = 100 × e^(−dist / k)
 //
 // k constants — larger k = gentler decay = higher scores for close matches:
-//   K_STAT  = 5.0  statistical facets (broad tolerance; was 3.0)
-//   K_VOL   = 3.0  scoring volume sub-component (was 2.0)
-//   K_PHYS  = 2.0  physical distance (was 1.5)
-//   K_AGE   = 1.5  age distance (unchanged)
+//   K_STAT  = 5.0  statistical facets
+//   K_VOL   = 3.0  scoring volume sub-component
+//   K_PHYS  = 2.0  physical distance
+//   K_AGE   = 1.5  age distance
 // ---------------------------------------------------------------------------
 const K_STAT = 5.0;
 const K_VOL  = 3.0;
 const K_PHYS = 2.0;
-const K_AGE  = 1.5;
 
 function sim(dist: number, k = K_STAT): number {
   return Math.max(0, Math.min(100, 100 * Math.exp(-dist / k)));
@@ -199,7 +267,7 @@ function positionCompatible(prospectPos: string | undefined, histPos: string | u
 /**
  * Return the top N statistical comparisons from a pre-filtered pool.
  * Used by the Draft Board: pool is already restricted to drafted players
- * with RAPTOR data, and we want 10 comps instead of 5.
+ * with career NBA metric data, and we want 10 comps instead of 5.
  */
 export function getTopStatComps(
   prospectStats: CollegeStats,
@@ -224,7 +292,7 @@ export function getTopStatComps(
       const sReb  = sim(s.reb,  K_STAT);
       const sDef  = sim(s.def,  K_STAT);
 
-      const weightedAvg = sEff * 0.25 + sVol * 0.16 + sPlay * 0.20 + sReb * 0.19 + sDef * 0.20;
+      const weightedAvg = sEff * 0.26 + sVol * 0.11 + sPlay * 0.18 + sReb * 0.20 + sDef * 0.25;
       const minFacet    = Math.min(sEff, sVol, sPlay, sReb, sDef);
       const blendedSim  = 0.7 * weightedAvg + 0.3 * minFacet;
 
@@ -258,8 +326,6 @@ export function getProspectComparisons(
   norms: DatasetNorms,
   prospectPosition?: string,
 ): ProspectComparisons {
-  // Filter pool to same position group. If too few players pass the filter,
-  // fall back to the full pool so we always have enough comps.
   const MIN_POSITION_POOL = 50;
   const posFiltered = pool.filter(h => positionCompatible(prospectPosition, h.position));
   const effectivePool = posFiltered.length >= MIN_POSITION_POOL ? posFiltered : pool;
@@ -290,12 +356,6 @@ export function getProspectComparisons(
     };
   }
 
-  // Compute statistical distances for all players in the pool.
-  // Sort key: blend of weighted-average facet similarity and minimum facet
-  // similarity (70/30). This penalises lopsided comps while keeping the
-  // weighted average dominant — a player who is wildly dissimilar in one
-  // facet is still penalised, but not as harshly as in the old 50/50 split.
-  //   blended_sim = 0.7 × weighted_avg + 0.3 × min_facet
   const statRows = effectivePool
     .map(hist => {
       const hVec = toStatVec(hist.college_stats, norms);
@@ -307,7 +367,7 @@ export function getProspectComparisons(
       const sReb  = sim(s.reb,  K_STAT);
       const sDef  = sim(s.def,  K_STAT);
 
-      const weightedAvg = sEff * 0.25 + sVol * 0.16 + sPlay * 0.20 + sReb * 0.19 + sDef * 0.20;
+      const weightedAvg = sEff * 0.26 + sVol * 0.11 + sPlay * 0.18 + sReb * 0.20 + sDef * 0.25;
       const minFacet    = Math.min(sEff, sVol, sPlay, sReb, sDef);
       const blendedSim  = 0.7 * weightedAvg + 0.3 * minFacet;
 
@@ -326,7 +386,6 @@ export function getProspectComparisons(
     make(r.hist, 'statistical', r.blendedSim, r.s.eff, r.s.vol, r.s.play, r.s.reb, r.s.def, r.pDist, r.pSimVal)
   );
 
-  // Physical comparisons — only players with physical data, sorted by physical distance
   let physical: PlayerComparison[] = [];
   if (hasPhys(prospectPhysical)) {
     const physRows = effectivePool
