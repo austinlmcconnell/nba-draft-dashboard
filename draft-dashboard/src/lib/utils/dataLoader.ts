@@ -23,6 +23,7 @@ type BartTorvikEntry = {
   name: string;
   team: string;
   season: number;
+  class_year?: string;
   prpg: number;
   adj_ortg: number | null;
   adj_drtg: number | null;
@@ -67,7 +68,12 @@ async function loadBartTorvikLookup(): Promise<BartTorvikLookup> {
 
 function toBartTorvik(entry: BartTorvikEntry | undefined): BartTorvikStats | undefined {
   if (!entry || typeof entry.prpg !== 'number') return undefined;
-  return { prpg: entry.prpg, adj_ortg: entry.adj_ortg, adj_drtg: entry.adj_drtg };
+  return {
+    prpg: entry.prpg,
+    adj_ortg: entry.adj_ortg,
+    adj_drtg: entry.adj_drtg,
+    class_year: entry.class_year,
+  };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

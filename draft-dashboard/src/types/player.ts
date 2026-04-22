@@ -76,6 +76,7 @@ export interface BartTorvikStats {
   prpg: number;
   adj_ortg: number | null;
   adj_drtg: number | null;
+  class_year?: string;  // "Fr" | "So" | "Jr" | "Sr" — used as age-filter fallback
 }
 
 // ---------------------------------------------------------------------------

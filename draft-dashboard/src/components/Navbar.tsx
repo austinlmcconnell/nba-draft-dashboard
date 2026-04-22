@@ -3,30 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-
-// CompBeasts logo mark — three-arc basketball silhouette, brand palette
-function LogoMark({ size = 36 }: { size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={Math.round(size * 0.76)}
-      viewBox="0 0 100 76"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
-      {/* Outer arc — the ball's upper edge */}
-      <path d="M 12 64 A 38 38 0 0 0 88 64" stroke="#22a052" strokeWidth="6" strokeLinecap="round" fill="none" />
-      {/* Upper seam — steep inner curve */}
-      <path d="M 12 64 Q 50 14 88 64" stroke="#4ade80" strokeWidth="4" strokeLinecap="round" fill="none" />
-      {/* Lower seam — gentle inner curve */}
-      <path d="M 12 64 Q 50 44 88 64" stroke="#4ade80" strokeWidth="4" strokeLinecap="round" fill="none" />
-      {/* Anchor nodes — small, brand-colored */}
-      <circle cx="12" cy="64" r="5" fill="#22a052" />
-      <circle cx="88" cy="64" r="5" fill="#22a052" />
-    </svg>
-  );
-}
+import { Logo } from '@/components/Logo';
 
 const NAV_LINKS = [
   { href: '/big-board',   label: 'My Big Board'     },
@@ -60,12 +37,8 @@ export default function Navbar() {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Brand */}
-          <Link href="/" className="flex items-center gap-3 group" aria-label="CompBeasts home">
-            <LogoMark size={36} />
-            <span className="font-bold text-xl tracking-wide uppercase select-none">
-              <span className="text-[#f9fafb]">COMP </span>
-              <span className="text-[#1a7a3f]">BEASTS</span>
-            </span>
+          <Link href="/" className="group" aria-label="CompBeasts home">
+            <Logo size={42} variant="onDark" textSize="text-xl" />
           </Link>
 
           {/* Desktop nav */}

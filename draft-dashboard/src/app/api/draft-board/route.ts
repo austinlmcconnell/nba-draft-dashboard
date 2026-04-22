@@ -17,13 +17,14 @@ import type {
   HistoricalPlayer, DraftBoardEntry, DraftBoardApiResponse, BpmLookup,
   BartTorvikStats,
 } from '@/types/player';
-import { buildDatasetNorms, getTopStatComps } from '@/lib/utils/comparison';
+import { buildDatasetNorms, getTopStatComps, resolveAge } from '@/lib/utils/comparison';
 import type { BigBoardPlayer } from '@/types/bigboard';
 
 type BartTorvikEntry = {
   name: string;
   team: string;
   season: number;
+  class_year?: string;
   prpg: number;
   adj_ortg: number | null;
   adj_drtg: number | null;
@@ -154,7 +155,12 @@ function toStats(raw: any) {
 
 function toBartStats(entry: BartTorvikEntry | undefined): BartTorvikStats | undefined {
   if (!entry || typeof entry.prpg !== 'number') return undefined;
-  return { prpg: entry.prpg, adj_ortg: entry.adj_ortg, adj_drtg: entry.adj_drtg };
+  return {
+    prpg: entry.prpg,
+    adj_ortg: entry.adj_ortg,
+    adj_drtg: entry.adj_drtg,
+    class_year: entry.class_year,
+  };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -279,8 +285,10 @@ export async function GET() {
       const prospectStats = toStats(match);
       const prospectBart  = bartLookup[`${normalizeForBart(match.name)}|${match.season}`];
       const prospectPrpg  = prospectBart?.prpg;
+      const prospectAge   = resolveAge(match.age_at_season_start, prospectBart?.class_year);
       const topComps = getTopStatComps(
-        prospectStats, prospectPrpg, pool, norms, match.position ?? bb.position, 10,
+        prospectStats, prospectPrpg, prospectAge,
+        pool, norms, match.position ?? bb.position, 10,
       );
 
       const comps = topComps.map(c => {

@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ComparisonCard } from '@/components/ComparisonCard';
 import type { CollegePlayer, ProspectComparisons, NormParams, PlayerComparison } from '@/types/player';
-import { getProspectComparisons } from '@/lib/utils/comparison';
+import { getProspectComparisons, resolveAge } from '@/lib/utils/comparison';
 import {
   loadHistoricalPlayers,
   getDatasetNorms,
@@ -45,8 +45,10 @@ export default function ProspectDetailPage() {
           h.college_season < p.season &&
           h.draft_pick != null,
         );
+        const prospectAge = resolveAge(p.physical?.age_at_season_start, p.barttorvik?.class_year);
         const comps = getProspectComparisons(
-          p.stats, p.physical ?? null, p.barttorvik?.prpg, compPool, norms, p.position,
+          p.stats, p.physical ?? null, p.barttorvik?.prpg, prospectAge,
+          compPool, norms, p.position,
         );
         const avg = await getSeasonAverages(p.season, p.position);
         setProspect(p);

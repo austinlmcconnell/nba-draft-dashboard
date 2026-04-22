@@ -223,6 +223,34 @@ function sim(dist: number, k = K_STAT): number {
 }
 
 // ---------------------------------------------------------------------------
+// Age resolution
+//
+// Only ~18% of historical players have an explicit age_at_season_start.
+// BartTorvik class_year (Fr/So/Jr/Sr), present on every pool member by
+// construction, provides a reliable fallback mapping to a typical age:
+//   Fr → 19, So → 20, Jr → 21, Sr → 22
+// ---------------------------------------------------------------------------
+const CLASS_YEAR_AGE: Record<string, number> = { Fr: 19, So: 20, Jr: 21, Sr: 22 };
+
+export function resolveAge(
+  physicalAge: number | null | undefined,
+  classYear: string | undefined,
+): number | null {
+  if (typeof physicalAge === 'number' && physicalAge > 10) return physicalAge;
+  if (classYear && classYear in CLASS_YEAR_AGE) return CLASS_YEAR_AGE[classYear];
+  return null;
+}
+
+/**
+ * Returns true if the historical player is within ±1 year of the prospect's age.
+ * Returns `true` if either age can't be resolved (filter disabled fallback).
+ */
+export function ageCompatible(prospectAge: number | null, histAge: number | null, maxDiff = 1): boolean {
+  if (prospectAge === null || histAge === null) return true;
+  return Math.abs(prospectAge - histAge) <= maxDiff;
+}
+
+// ---------------------------------------------------------------------------
 // Position grouping — used to restrict the comparison pool so guards aren't
 // compared against forwards/centres and vice-versa.
 //
@@ -301,17 +329,31 @@ const FACET_DEF     = 0.25 * W_ARCHETYPE;  // 0.0875
 export function getTopStatComps(
   prospectStats: CollegeStats,
   prospectPrpg: number | undefined,
+  prospectAge: number | null,
   pool: HistoricalPlayer[],
   norms: DatasetNorms,
   prospectPosition?: string,
   topN = 10,
 ): PlayerComparison[] {
   const MIN_POSITION_POOL = 50;
+  const MIN_AGE_POOL = 30;
   const posFiltered = pool.filter(h => positionCompatible(prospectPosition, h.position));
   const effectivePool = posFiltered.length >= MIN_POSITION_POOL ? posFiltered : pool;
+
+  // Age ±1 filter — drop to position-filtered pool if age filter is too aggressive
+  const ageFiltered = prospectAge !== null
+    ? effectivePool.filter(h =>
+        ageCompatible(
+          prospectAge,
+          resolveAge(h.physical?.age_at_season_start, h.barttorvik?.class_year),
+        ),
+      )
+    : effectivePool;
+  const finalPool = ageFiltered.length >= MIN_AGE_POOL ? ageFiltered : effectivePool;
+
   const pVec = toStatVec(prospectStats, norms);
 
-  return effectivePool
+  return finalPool
     .map(hist => {
       const hVec = toStatVec(hist.college_stats, norms);
       const s = statDistance(pVec, hVec);
@@ -353,13 +395,26 @@ export function getProspectComparisons(
   prospectStats: CollegeStats,
   prospectPhysical: PhysicalAttributes | undefined | null,
   prospectPrpg: number | undefined,
+  prospectAge: number | null,
   pool: HistoricalPlayer[],
   norms: DatasetNorms,
   prospectPosition?: string,
 ): ProspectComparisons {
   const MIN_POSITION_POOL = 50;
+  const MIN_AGE_POOL = 30;
   const posFiltered = pool.filter(h => positionCompatible(prospectPosition, h.position));
   const effectivePool = posFiltered.length >= MIN_POSITION_POOL ? posFiltered : pool;
+
+  const ageFiltered = prospectAge !== null
+    ? effectivePool.filter(h =>
+        ageCompatible(
+          prospectAge,
+          resolveAge(h.physical?.age_at_season_start, h.barttorvik?.class_year),
+        ),
+      )
+    : effectivePool;
+  const finalPool = ageFiltered.length >= MIN_AGE_POOL ? ageFiltered : effectivePool;
+
   const pVec = toStatVec(prospectStats, norms);
   const hasPhys = (p: PhysicalAttributes | undefined | null): p is PhysicalAttributes =>
     !!p && (p.height_inches != null || p.weight_pounds != null);
@@ -387,7 +442,7 @@ export function getProspectComparisons(
     };
   }
 
-  const statRows = effectivePool
+  const statRows = finalPool
     .map(hist => {
       const hVec = toStatVec(hist.college_stats, norms);
       const s = statDistance(pVec, hVec);
