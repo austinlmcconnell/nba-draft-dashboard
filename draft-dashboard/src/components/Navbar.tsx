@@ -38,7 +38,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Brand */}
           <Link href="/" className="group" aria-label="CompBeasts home">
-            <Logo size={42} variant="onDark" textSize="text-xl" />
+            <Logo size={52} variant="onDark" textSize="text-xl" />
           </Link>
 
           {/* Desktop nav */}
