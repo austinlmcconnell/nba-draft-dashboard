@@ -16,6 +16,8 @@ export interface CollegeStats {
   minutes_per_game: number;
   points_per_game: number;
   rebounds_per_game: number;
+  offensive_rebounds_per_game: number;
+  defensive_rebounds_per_game: number;
   assists_per_game: number;
   steals_per_game: number;
   blocks_per_game: number;
@@ -64,6 +66,20 @@ export interface PhysicalAttributes {
 }
 
 // ---------------------------------------------------------------------------
+// BartTorvik advanced metrics — primary signal for player quality in college.
+// Sourced from barttorvik.com via build_barttorvik_lookup.py.
+//   prpg      — Points per Replacement Player per Game (overall impact)
+//   adj_ortg  — adjusted offensive rating, points per 100 possessions
+//   adj_drtg  — adjusted defensive rating, points per 100 possessions allowed
+// ---------------------------------------------------------------------------
+export interface BartTorvikStats {
+  prpg: number;
+  adj_ortg: number | null;
+  adj_drtg: number | null;
+  class_year?: string;  // "Fr" | "So" | "Jr" | "Sr" — used as age-filter fallback
+}
+
+// ---------------------------------------------------------------------------
 // College Player (current prospect or historical)
 // ---------------------------------------------------------------------------
 export interface CollegePlayer {
@@ -78,7 +94,8 @@ export interface CollegePlayer {
   team_primary_color?: string;
   team_secondary_color?: string;
   stats: CollegeStats;
-  physical?: PhysicalAttributes; // only populated when data is available
+  physical?: PhysicalAttributes;   // only populated when data is available
+  barttorvik?: BartTorvikStats;    // present for players with a BartTorvik match
 }
 
 // ---------------------------------------------------------------------------
@@ -119,6 +136,8 @@ export interface HistoricalPlayer {
   espn_team_id?: number;
   team_primary_color?: string;
   team_secondary_color?: string;
+  // BartTorvik advanced metrics — present for seasons 2008+ with a name match
+  barttorvik?: BartTorvikStats;
 }
 
 // ---------------------------------------------------------------------------
@@ -131,11 +150,11 @@ export type ComparisonType = 'statistical' | 'physical';
 
 export interface ComparisonBreakdown {
   // Statistical facets (0-100)
-  scoring_efficiency: number;  // TS%, usage, FT rate, shot profile
+  scoring_efficiency: number;  // FG%, FT%, FT rate, 3P%, usage, off_rtg
   scoring_volume: number;      // Pts/36
-  playmaking: number;          // Ast/36, AST/TOV ratio
-  rebounding: number;          // Reb/36, ORB%
-  defense: number;             // Stl/36, Blk/36
+  playmaking: number;          // Ast/36, AST/TOV (derived), TOV/36
+  rebounding: number;          // Reb/36, ORB/36 (derived), DRB/36 (derived)
+  defense: number;             // Stl/36, Blk/36, def_rtg
   // Physical facets (0-100, only meaningful for physical comparisons)
   physical: number;
 }
@@ -153,17 +172,24 @@ export interface ProspectComparisons {
 }
 
 // ---------------------------------------------------------------------------
-// RAPTOR-based Draft Board types
+// NBA career metric types (Basketball Reference advanced stats)
+//
+// We store both VORP (cumulative) and WS (cumulative) per player. The Draft
+// Board ranks by career Win Shares per 48 minutes (WS/48 = ws / mp × 48),
+// a rate stat that is not biased by career length — unlike pure cumulative
+// VORP where a long-career star like James Harden would dominate a comp
+// average even when the prospect's other 9 comps are ordinary.
 // ---------------------------------------------------------------------------
 
-export interface RaptorEntry {
-  raptor: number;   // career weighted-average RAPTOR+/-
-  mp: number;       // total career minutes in dataset
-  seasons: number;  // number of regular seasons
+export interface VorpEntry {
+  vorp: number;     // career total VORP (summed across seasons)
+  ws: number;       // career total Win Shares (summed across seasons)
+  mp: number;       // total career minutes played
+  seasons: number;  // number of regular seasons with ≥1 MP
   display: string;  // original display name from dataset
 }
 
-export type RaptorLookup = Record<string, RaptorEntry>; // keyed by normalized name
+export type VorpLookup = Record<string, VorpEntry>;  // keyed by normalized name
 
 export interface DraftComp {
   name: string;
@@ -171,9 +197,10 @@ export interface DraftComp {
   collegeTeam: string;
   position: string;
   similarity: number;   // 0-100 statistical similarity score
-  raptor: number | null;
-  raptorMp: number | null;
-  raptorSeasons: number | null;
+  ws48: number | null;  // career Win Shares per 48 minutes
+  vorp: number | null;  // career total VORP (shown alongside WS/48 for context)
+  nbaMp: number | null; // career NBA minutes
+  nbaSeasons: number | null;
 }
 
 export interface DraftBoardEntry {
@@ -185,8 +212,8 @@ export interface DraftBoardEntry {
   mockPickNo: number | null;
   mockTeam: string | null;
   comps: DraftComp[];
-  avgRaptor: number | null;
-  raptorCoverage: number; // how many of the 10 comps have RAPTOR scores
+  avgWs48: number | null;    // ranking signal — mean of 10 comps' WS/48
+  ws48Coverage: number;      // how many of the 10 comps have a WS/48 value
 }
 
 export interface DraftBoardApiResponse {
@@ -224,17 +251,25 @@ export interface DatasetNorms {
   stl_per36: NormParams;
   blk_per36: NormParams;
   tov_per36: NormParams;
-  // Rate / efficiency stats
-  true_shooting_pct: NormParams;
+  // Derived per-36 rebound splits (computed from per-game / mpg * 36)
+  orb_per36: NormParams;
+  drb_per36: NormParams;
+  // Shooting percentages
+  field_goal_pct: NormParams;
+  free_throw_pct: NormParams;
+  three_point_pct: NormParams;
+  // Rate stats
   usage_rate: NormParams;
   free_throw_rate: NormParams;
-  three_point_pct: NormParams;   // replaces three_pt_attempts_per_game (was always 0)
+  // Derived playmaking ratio (ast_per36 / tov_per36)
   ast_tov_ratio: NormParams;
-  oreb_pct: NormParams;
-  win_shares_per40: NormParams;
-  net_rating: NormParams;
+  // Per-possession team-context ratings
+  offensive_rating: NormParams;
+  defensive_rating: NormParams;
   // Physical
   height_inches: NormParams;
   weight_pounds: NormParams;
   age_at_season_start: NormParams;
+  // BartTorvik — primary comparison dimension (only present when lookup joined)
+  prpg: NormParams;
 }

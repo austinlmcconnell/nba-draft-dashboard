@@ -54,7 +54,7 @@ export default function MethodologyPage() {
           <p className="text-xs font-bold uppercase tracking-widest text-[#4ade80] mb-3">Documentation</p>
           <h1 className="text-3xl sm:text-4xl font-black text-[#f9fafb]">Methodology</h1>
           <p className="mt-2 text-[#9ca3af] text-sm">
-            How the Draft Board ranks prospects and how the comparison engine finds their historical matches
+            How the comparison engine finds each prospect&apos;s historical matches, and how the Draft Board ranks them
           </p>
         </div>
       </div>
@@ -66,14 +66,15 @@ export default function MethodologyPage() {
           <p className="text-xs font-bold uppercase tracking-widest text-[#4ade80] mb-3">Contents</p>
           <ol className="list-decimal list-inside space-y-1.5 text-sm text-[#9ca3af]">
             {[
-              ['#draftboard',  'Draft Board ranking — RAPTOR-weighted comps'],
-              ['#raptor',      'RAPTOR explained'],
-              ['#pool',        'Comparison pool (drafted players only)'],
+              ['#overview',    'Overview — what drives the comparisons'],
+              ['#prpg',        'PRPG!/40-min — the primary signal'],
+              ['#pool',        'Comparison pool — drafted, 2008+, same age ±1'],
+              ['#weighting',   'Weighting — PRPG! primary (65%), archetype (35%)'],
+              ['#archetype',   'Archetype facets — the five raw-stat dimensions'],
               ['#normalise',   'Z-score normalisation'],
-              ['#stats',       'Statistical distance — five facets'],
-              ['#sort',        'Ranking the comps'],
               ['#similarity',  'Distance → similarity score'],
-              ['#derived',     'Derived stats (TS%, AST/TOV, 3P%)'],
+              ['#derived',     'Derived stats (AST/TOV, ORB/36, DRB/36)'],
+              ['#draftboard',  'Draft Board ranking — career WS/48'],
               ['#statboxes',   'Profile stat box shading'],
             ].map(([href, label]) => (
               <li key={href}><a href={href} className="hover:text-[#4ade80] hover:underline transition-colors">{label}</a></li>
@@ -82,132 +83,151 @@ export default function MethodologyPage() {
         </nav>
 
         {/* ---------------------------------------------------------------- */}
-        <Section id="draftboard" title="Draft Board ranking — RAPTOR-weighted comps">
-          <p className="text-[#d1d5db] mb-4">
-            The Draft Board ranks every prospect on the Big Board by the{' '}
-            <strong>average career RAPTOR</strong> of their 10 closest historical college
-            statistical comparisons. The intuition: if a prospect&apos;s college production
-            most resembles 10 historical players who became high-impact NBA pros,
-            that&apos;s a much stronger signal than if they resemble 10 journeymen.
-          </p>
-
-          <Formula>{`For each Big Board prospect:
-  1. Find 10 closest college statistical comps
-     (restricted to drafted players who have RAPTOR data)
-  2. Look up each comp's career RAPTOR (FiveThirtyEight dataset)
-  3. avg_raptor = mean(comp.career_raptor for comp in 10)
-  4. Rank the board by avg_raptor descending`}</Formula>
-
-          <p className="text-[#d1d5db] mt-4">
-            Higher avg RAPTOR = prospect resembles historical players who had more
-            NBA impact per 100 possessions. A +4 avg means their 10 comps averaged
-            All-Star-level impact; a −1 avg means they averaged below replacement level.
-          </p>
-        </Section>
-
-        {/* ---------------------------------------------------------------- */}
-        <Section id="raptor" title="RAPTOR explained">
-          <p className="text-[#d1d5db] mb-4">
-            RAPTOR (Robust Algorithm using Player Tracking and On/Off Ratings) is
-            FiveThirtyEight&apos;s impact metric, expressed as points above
-            average per 100 possessions. It combines:
-          </p>
-          <ul className="list-disc list-inside text-sm text-[#9ca3af] space-y-1 ml-2 mb-4">
-            <li><strong>On/off regularized plus-minus (RAPM)</strong> — how the team performs with the player on vs. off the court, regularized to reduce noise</li>
-            <li><strong>Player-tracking inputs</strong> (2014+ only) — spatial and movement data that capture off-ball defense and positioning</li>
-          </ul>
-
-          <Sub title="Career RAPTOR used here">
-            <Formula>{`career_raptor = Σ(season_raptor × minutes_played)
-                / Σ(minutes_played)
-
-Regular-season games only. Playoffs excluded.`}</Formula>
-            <p className="text-sm text-[#9ca3af]">
-              Weighting by minutes played ensures a single monster season doesn&apos;t
-              dominate a long career, and a short stint doesn&apos;t weight as heavily
-              as a 20-year career.
-            </p>
-          </Sub>
-
-          <Sub title="Scale">
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center">
-              {[
-                { range: '≥ +4.0', label: 'Elite / All-Star',    cls: 'text-emerald-400' },
-                { range: '+1.5',   label: 'Solid Starter',       cls: 'text-[#4ade80]' },
-                { range: '0',      label: 'Average',             cls: 'text-[#9ca3af]' },
-                { range: '−2',     label: 'Below Average',       cls: 'text-amber-400' },
-                { range: '< −2',   label: 'Replacement Level',   cls: 'text-red-400' },
-              ].map(({ range, label, cls }) => (
-                <div key={range} className="p-3 bg-[#0d1117] rounded-lg border border-[#1f2937]">
-                  <p className={`text-sm font-black ${cls}`}>{range}</p>
-                  <p className="text-[10px] text-[#4b5563] mt-0.5">{label}</p>
-                </div>
-              ))}
-            </div>
-          </Sub>
-
-          <Sub title="Source">
-            <p className="text-sm text-[#9ca3af]">
-              RAPTOR data comes from FiveThirtyEight&apos;s open-source
-              <a href="https://github.com/fivethirtyeight/nba-player-advanced-metrics"
-                target="_blank" rel="noopener noreferrer"
-                className="text-[#4ade80] hover:underline mx-1">nba-player-advanced-metrics</a>
-              repository, processed into a lookup table at{' '}
-              <code>public/data/raptor_lookup.json</code> via{' '}
-              <code>scripts/build_raptor_lookup.py</code>. The script computes minute-weighted
-              career averages for every NBA player with at least 100 career minutes.
-            </p>
-          </Sub>
-        </Section>
-
-        {/* ---------------------------------------------------------------- */}
-        <Section id="pool" title="Comparison pool — drafted players only">
+        <Section id="overview" title="Overview — what drives the comparisons">
           <p className="text-[#d1d5db] mb-3">
-            The historical comparison pool is restricted to players who were
-            <strong> drafted to the NBA</strong> and have career RAPTOR data. This ensures
-            every comparison represents a player with meaningful NBA exposure — and a
-            real RAPTOR score to contribute to the prospect&apos;s avg RAPTOR ranking.
+            Every prospect comparison is driven by two lenses that work together:
+          </p>
+          <ol className="list-decimal list-inside text-[#d1d5db] space-y-2 ml-2 mb-4">
+            <li>
+              <strong>PRPG!</strong> — BartTorvik&apos;s Points per Replacement Player per Game.
+              A single-number, per-possession, tempo- and competition-adjusted metric capturing
+              <em> both offensive and defensive impact</em>. This is the <strong>primary signal
+              (65% weight)</strong>.
+            </li>
+            <li>
+              <strong>Five raw-stat archetype facets</strong> — shooting, volume, playmaking,
+              rebounding, defense. These keep comps tethered to the right play style after
+              PRPG! filters for quality. <strong>Secondary signal (35% weight)</strong>.
+            </li>
+          </ol>
+          <p className="text-[#d1d5db]">
+            The pool itself is narrowed to <strong>drafted players (2008–present) within ±1 year
+            of the prospect&apos;s age</strong>, so comps are always scouted peers who produced
+            at a similar career stage.
+          </p>
+        </Section>
+
+        {/* ---------------------------------------------------------------- */}
+        <Section id="prpg" title="PRPG!/40-min — the primary signal">
+          <p className="text-[#d1d5db] mb-3">
+            PRPG! (Points per Replacement Player per Game) is Bart Torvik&apos;s single-number
+            player value — how many points per game a team gains by replacing a
+            D1-average bench player with this player, opponent- and tempo-adjusted.
+            We <strong>normalize it to 40 minutes of playing time</strong> so players
+            with low mpg (injuries, bench usage) aren&apos;t unfairly penalised:
+          </p>
+          <Formula>{`prpg40 = prpg × (40 / minutes_per_game)`}</Formula>
+          <p className="text-[#d1d5db] mb-3">
+            Raw PRPG! ≈ per-possession-value × usage × minutes-per-game. The mpg
+            factor is what we strip out. Two players with identical per-possession
+            production but different mpg now score the same prpg40.
+          </p>
+          <Formula>{`source   : https://barttorvik.com/getadvstats.php?year=YYYY&csv=1
+coverage : 2008 season through present, ~5,000 D1 players per year
+built by : scripts/build_barttorvik_lookup.py
+stored   : draft-dashboard/public/data/barttorvik_lookup.json
+join key : normalize(player_name) + '|' + season`}</Formula>
+
+          <Sub title="Why PRPG!/40 and not pure Net Rating?">
+            <p className="text-sm text-[#9ca3af]">
+              We also considered using adj_ortg − adj_drtg (team on-court Net
+              Rating) as the primary signal — it&apos;s purely per-possession. But
+              those are TEAM ratings when the player is on the court, so they
+              absorb teammates&apos; quality. A great individual on a poor
+              defensive team would score low Net Rating through no fault of
+              their own. PRPG! tries to isolate the individual contribution,
+              so normalizing its mpg factor gives the best of both worlds.
+            </p>
+          </Sub>
+
+          <Sub title="PRPG!/40 similarity">
+            <Formula>{`sim_prpg40 = 100 × e^(−|Δ prpg40| / K_PRPG40)   K_PRPG40 = 2.0
+
+Examples:
+  Δ = 0.0 →  100   (identical per-40-min production)
+  Δ = 0.7 →  ~70
+  Δ = 2.0 →  ~37
+  Δ = 4.0 →  ~14`}</Formula>
+          </Sub>
+        </Section>
+
+        {/* ---------------------------------------------------------------- */}
+        <Section id="pool" title="Comparison pool — drafted, 2008+, same age ±1, NBA-established">
+          <p className="text-[#d1d5db] mb-3">
+            Every comparison is drawn from a pool defined by four filters:
           </p>
           <Formula>{`pool = historical_players WHERE
-         draft_pick IS NOT NULL
-         AND normalized_name IN raptor_lookup
-         AND college_season < 2026`}</Formula>
-          <p className="text-sm text-[#9ca3af]">
-            Position groups (G / F / C, plus hybrid G-F and F-C) further restrict the pool
-            so guards are compared against guards, forwards against forwards, etc.
+         draft_pick IS NOT NULL            -- drafted only (scouted prospects)
+         AND 2008 ≤ college_season < 2026  -- matches BartTorvik coverage
+         AND normalized_name+season IN barttorvik_lookup
+         AND |prospect_age - player_age| ≤ 1
+         AND vorp_lookup[normalized_name].mp ≥ 1500   -- NBA-established`}</Formula>
+
+          <Sub title="Drafted only">
+            <p className="text-sm text-[#9ca3af]">
+              Restricting the pool to drafted players removes mid-major statistical doppelgangers
+              whose raw stats look similar but whose NBA trajectories are not analogous. Every
+              comp was someone scouts identified as an NBA-caliber prospect.
+            </p>
+          </Sub>
+
+          <Sub title="2008–present">
+            <p className="text-sm text-[#9ca3af]">
+              BartTorvik&apos;s earliest season is 2007-08. Restricting the pool to seasons with
+              PRPG! coverage ensures every comp can be scored on the primary signal.
+            </p>
+          </Sub>
+
+          <Sub title="Same age ±1">
+            <p className="text-sm text-[#9ca3af]">
+              An 18-year-old freshman producing elite stats is very different from a
+              22-year-old senior producing the same stats; the ceiling implications
+              diverge sharply. We use <code>age_at_season_start</code> when available
+              (~18% of players); otherwise fall back to mapping <code>class_year</code>
+              to an approximate age (Fr→19, So→20, Jr→21, Sr→22). The filter is relaxed
+              automatically if too few candidates remain after age-gating (fewer than 30).
+            </p>
+          </Sub>
+
+          <Sub title="Minimum 1,500 career NBA minutes">
+            <p className="text-sm text-[#9ca3af]">
+              Drafted players who never established NBA rotation roles (Cameron
+              Bairstow-type careers: drafted, a handful of games, out of the league)
+              have noisy per-possession metrics that would distort the avg-WS/48
+              ranking. 1,500 MP ≈ one season of rotation-level minutes, which is
+              enough sample size for a meaningful career rate.
+            </p>
+          </Sub>
+
+          <p className="text-sm text-[#9ca3af] mt-3">
+            Position groups (G / F / C, plus hybrid G-F and F-C) further restrict the pool so
+            guards are compared against guards, forwards against forwards, etc.
           </p>
         </Section>
 
         {/* ---------------------------------------------------------------- */}
-        <Section id="normalise" title="Z-score normalisation">
+        <Section id="weighting" title="Weighting — PRPG!/40 primary (65 %), archetype (35 %)">
           <p className="text-[#d1d5db] mb-3">
-            Raw stat values aren&apos;t comparable across dimensions.
-            Every stat is standardised to a z-score before any distance is computed:
+            Each candidate is scored by blending PRPG! similarity with the five-facet raw-stat
+            archetype similarity:
           </p>
-          <Formula>{`z(x) = (x − μ) / σ
+          <Formula>{`blended_sim = 0.65 × sim_prpg  +  0.35 × archetype_avg
 
-μ  = mean of that stat across ALL historical players in the pool
-σ  = standard deviation (if σ = 0, z = 0 to avoid division by zero)`}</Formula>
-          <p className="text-[#d1d5db] mb-2">
-            Norms are computed once at page load from the full historical dataset
-            (<code>buildDatasetNorms()</code> in <code>comparison.ts</code>). They include:
+archetype_avg = sEff×0.26 + sVol×0.11 + sPlay×0.18 + sReb×0.20 + sDef×0.25`}</Formula>
+          <p className="text-sm text-[#9ca3af]">
+            If a candidate has no BartTorvik record (no PRPG!), the algorithm falls back to
+            pure archetype similarity. Within the 35% archetype budget, the original facet
+            proportions are preserved — so <code>scoring &amp; shooting</code> contributes
+            26 × 35 = <strong>9.1%</strong> of the final score, and so on.
           </p>
-          <ul className="list-disc list-inside text-sm text-[#9ca3af] space-y-1 ml-2">
-            <li>pts_per36, reb_per36, ast_per36, stl_per36, blk_per36, tov_per36</li>
-            <li>true_shooting_pct, usage_rate, free_throw_rate, three_point_pct</li>
-            <li>ast_tov_ratio, oreb_pct, win_shares_per40, net_rating</li>
-            <li>height_inches, weight_pounds, age_at_season_start</li>
-          </ul>
         </Section>
 
         {/* ---------------------------------------------------------------- */}
-        <Section id="stats" title="Statistical distance — five facets">
+        <Section id="archetype" title="Archetype facets — the five raw-stat dimensions">
           <p className="text-[#d1d5db] mb-4">
-            Stats are grouped into five <em>basketball-analytics facets</em>. Each facet is a
-            Euclidean distance (or absolute difference) of z-score values, then the five facets
-            are combined with an analytics-informed weighted sum. Defence and rebounding are
-            weighted highly because steal/block rates and reb/36 are the strongest positional
-            discriminators at the college level.
+            The raw-stat archetype keeps comps anchored to the right play style. Each facet
+            is a Euclidean distance of z-score values (or absolute difference for volume),
+            with the proportions below.
           </p>
 
           <div className="overflow-x-auto mb-5">
@@ -215,104 +235,152 @@ Regular-season games only. Playoffs excluded.`}</Formula>
               <thead>
                 <tr className="text-left text-xs font-semibold text-[#6b7280] uppercase tracking-wide">
                   <th className="pb-2 pr-4">Facet</th>
-                  <th className="pb-2 pr-6">Weight</th>
+                  <th className="pb-2 pr-6">Share of 35%</th>
                   <th className="pb-2 pr-4">Inputs</th>
-                  <th className="pb-2">Distance formula</th>
+                  <th className="pb-2">Notes</th>
                 </tr>
               </thead>
               <tbody>
-                <WeightRow facet="Scoring Efficiency" weight="25 %" fields={['TS%', 'Usage', 'FT rate', '3P%']} note="√(Δts² + Δusage² + Δftr² + Δ3p%²)" />
-                <WeightRow facet="Scoring Volume"     weight="16 %" fields={['Pts/36']}                         note="|Δpts36|" />
-                <WeightRow facet="Playmaking"         weight="20 %" fields={['Ast/36', 'AST/TOV', 'TOV/36']}    note="√(Δast² + Δast_tov² + Δtov²)" />
-                <WeightRow facet="Rebounding"         weight="19 %" fields={['Reb/36', 'OReb%']}                note="√(Δreb² + Δoreb_pct²)" />
-                <WeightRow facet="Defense"            weight="20 %" fields={['Stl/36', 'Blk/36']}               note="√(Δstl² + Δblk²)" />
+                <WeightRow facet="Scoring & Shooting" weight="9.1 %"  fields={['FG%', 'FT%', 'FT rate', '3P%', 'Usage', 'Off Rtg']}  note="Off Rtg at 0.5× (team-context signal)" />
+                <WeightRow facet="Scoring Volume"     weight="3.85 %" fields={['Pts/36']}                                           note="|Δpts36|" />
+                <WeightRow facet="Playmaking"         weight="6.3 %"  fields={['Ast/36', 'AST/TOV', 'TOV/36']}                      note="AST/TOV derived live" />
+                <WeightRow facet="Rebounding"         weight="7.0 %"  fields={['Reb/36', 'ORB/36', 'DRB/36']}                       note="ORB and DRB derived from per-game ÷ mpg" />
+                <WeightRow facet="Defense"            weight="8.75 %" fields={['Stl/36', 'Blk/36', 'Def Rtg']}                      note="Def Rtg at 0.5× (team-context signal)" />
               </tbody>
             </table>
           </div>
 
-          <Formula>{`stat_distance = 0.25 × eff_dist
-             + 0.16 × vol_dist
-             + 0.20 × play_dist
-             + 0.19 × reb_dist
-             + 0.20 × def_dist`}</Formula>
-
-          <Sub title="Scoring profile: 3P% vs FT rate">
+          <Sub title="Rebounding — splitting ORB and DRB">
             <p className="text-sm text-[#9ca3af]">
-              Inside vs outside scoring is captured through two complementary signals:
+              Total Reb/36 plus ORB/36 and DRB/36. Using all three lets the algorithm
+              distinguish a glass-crashing offensive rebounder from a positioning-based
+              defensive rebounder — two meaningfully different archetypes that can share
+              identical total rebound numbers.
             </p>
-            <ul className="list-disc list-inside text-sm text-[#9ca3af] space-y-1 ml-2 mt-2">
-              <li><strong>FT rate</strong> (FTA/FGA) — high FT rate flags an inside scorer who draws contact. Paint-oriented players typically show FT rate 40–60%; perimeter players 20–35%.</li>
-              <li><strong>3P%</strong> — distinguishes a genuine perimeter shooter from a player who rarely attempts threes.</li>
-            </ul>
-            <p className="text-sm text-[#9ca3af] mt-2">
-              Together with TS% and usage rate, these four metrics paint a clear
-              inside/outside scoring profile for each player.
+          </Sub>
+
+          <Sub title="Defense — counting stats + team rating">
+            <p className="text-sm text-[#9ca3af]">
+              Stl/36 and Blk/36 are the primary individual signals. Def Rtg is added at
+              half-weight for context on anchor defenders who don&apos;t rack up blocks or
+              steals but shrink a team&apos;s points-allowed.
             </p>
           </Sub>
         </Section>
 
         {/* ---------------------------------------------------------------- */}
-        <Section id="sort" title="Ranking the comps">
+        <Section id="normalise" title="Z-score normalisation">
           <p className="text-[#d1d5db] mb-3">
-            Comps are ranked by a <strong>blended similarity</strong> that combines the
-            weighted-average facet score with the worst single facet (70/30). This
-            penalises lopsided comps without letting one weak dimension dominate
-            the ranking the way a 50/50 split would:
+            Raw stat values aren&apos;t comparable across dimensions. Every raw-archetype input
+            is standardised to a z-score before any distance is computed:
           </p>
-          <Formula>{`blended_sim = 0.70 × weighted_avg + 0.30 × min_facet
+          <Formula>{`z(x) = (x − μ) / σ
 
-weighted_avg = sEff×0.25 + sVol×0.16 + sPlay×0.20 + sReb×0.19 + sDef×0.20
-min_facet    = min(sEff, sVol, sPlay, sReb, sDef)`}</Formula>
+μ  = mean of that stat across ALL historical players in the pool
+σ  = standard deviation (if σ = 0, z = 0 to avoid division by zero)`}</Formula>
           <p className="text-sm text-[#9ca3af]">
-            A perfectly balanced comp is unaffected (min_facet ≈ weighted_avg). A comp
-            that is strong in four facets but weak in one is penalised by roughly
-            30% of the gap — enough to prefer a more balanced match, but not enough
-            to bury an otherwise excellent comp.
+            PRPG! is <strong>not</strong> z-scored — it&apos;s already on a calibrated scale
+            (replacement = 0) that&apos;s interpretable across eras. Raw |Δ PRPG!| is used
+            directly with an exponential decay.
           </p>
         </Section>
 
         {/* ---------------------------------------------------------------- */}
         <Section id="similarity" title="Distance → similarity score">
           <p className="text-[#d1d5db] mb-3">
-            Raw distance is an unbounded, unitless number. It&apos;s converted to an
-            intuitive 0–100 similarity score using a decaying exponential:
+            Raw distances are unbounded. They&apos;re converted to intuitive 0–100 similarity
+            scores using a decaying exponential:
           </p>
           <Formula>{`similarity = 100 × e^(−dist / k)
 
-K_STAT = 5.0  →  statistical facets (broad tolerance)
+K_PRPG = 1.5  →  PRPG! similarity (primary)
+K_STAT = 5.0  →  archetype facets (Euclidean in z-space)
 K_VOL  = 3.0  →  scoring volume sub-component
-K_PHYS = 2.0  →  physical distance (body profiles less variable)
-K_AGE  = 1.5  →  age distance (1 year is a meaningful development gap)`}</Formula>
+K_PHYS = 2.0  →  physical distance`}</Formula>
           <p className="text-sm text-[#9ca3af]">
-            A similarity score of 100 means identical profiles.
-            Scores above 80 indicate a very strong match; below 55 is a loose comp.
+            A similarity score of 100 means identical profiles. Above 80 is a very strong
+            match; below 55 is loose.
           </p>
         </Section>
 
         {/* ---------------------------------------------------------------- */}
-        <Section id="derived" title="Derived stats — TS%, AST/TOV, 3P%">
-          <p className="text-[#d1d5db] mb-3">Several stats are computed on load rather than stored raw:</p>
-
-          <Sub title="True Shooting % (TS%)">
-            <Formula>{`TS% = PTS / (2 × (FGA + 0.44 × FTA)) × 100
-
-FGA is back-solved from:
-  PTS ≈ 2 × FG% × FGA  +  FT% × FTR × FGA
-  (FTR = free_throw_rate = FTA/FGA)
-
-  FGA_est = PTS / (2 × FG% + FT% × FTR)
-  FTA_est = FTR × FGA_est
-  TS%     = PTS / (2 × (FGA_est + 0.44 × FTA_est)) × 100`}</Formula>
-          </Sub>
+        <Section id="derived" title="Derived stats — AST/TOV, ORB/36, DRB/36">
+          <p className="text-[#d1d5db] mb-3">
+            Three stats aren&apos;t stored in the raw dataset and are computed on the fly
+            inside the comparison engine before any z-scoring:
+          </p>
 
           <Sub title="AST/TOV ratio">
-            <Formula>{`ast_tov = assists_per_game / turnovers_per_game
-         (0 if turnovers_per_game = 0)`}</Formula>
+            <Formula>{`ast_tov = ast_per36 / max(tov_per36, 0.1)
+         (floor at 0.1 to avoid division by zero)`}</Formula>
+            <p className="text-sm text-[#9ca3af]">
+              Computed from per-36 values rather than raw per-game counts, so it is already
+              playing-time-normalised and consistent with every other input.
+            </p>
+          </Sub>
+
+          <Sub title="ORB/36 and DRB/36">
+            <Formula>{`orb_per36 = (offensive_rebounds_per_game / minutes_per_game) × 36
+drb_per36 = (defensive_rebounds_per_game / minutes_per_game) × 36`}</Formula>
           </Sub>
 
           <p className="text-sm text-[#6b7280] mt-2">
-            All derived values are computed in <code>dataLoader.ts → toCollegeStats()</code>
-            and apply equally to current prospects and all historical players.
+            All three are computed in <code>comparison.ts → derivedStats()</code> and apply
+            equally to current prospects and all historical players.
+          </p>
+        </Section>
+
+        {/* ---------------------------------------------------------------- */}
+        <Section id="draftboard" title="Draft Board ranking — career WS/48">
+          <p className="text-[#d1d5db] mb-3">
+            The Draft Board sorts Big Board prospects by the <strong>average career
+            Win Shares per 48 minutes (WS/48)</strong> of their 10 closest historical
+            comps. WS/48 is a Basketball Reference <em>rate</em> statistic — it
+            measures how many wins a player produces per 48 minutes on the floor,
+            without rewarding career length. That matters because cumulative
+            metrics like career VORP let a single long-career star (James Harden,
+            90+ career VORP) dominate the 10-comp average even when the other
+            nine comps are ordinary. WS/48 puts every comp on the same per-minute
+            scale so no outlier swamps the group.
+          </p>
+          <Formula>{`For each Big Board prospect:
+  1. Find 10 closest college statistical comps (PRPG!/40-primary)
+  2. Look up each comp's career WS and MP (vorp_lookup.json)
+  3. comp.ws48 = comp.ws / comp.mp × 48
+  4. avg_ws48 = Σ(comp.ws48 × comp.similarity) / Σ(comp.similarity)
+  5. Rank the board by avg_ws48 descending`}</Formula>
+          <p className="text-[#d1d5db] mb-3">
+            Step 4 is <strong>similarity-weighted</strong> rather than a plain
+            mean — each comp contributes proportionally to how strong a match
+            it is to the prospect. A 90%-similarity comp weighs meaningfully
+            more than a 65% one. When all ten comps cluster tightly in
+            similarity, the weights converge to a flat average; when the list
+            spreads out, closer comps dominate.
+          </p>
+          <p className="text-[#d1d5db] mb-3">
+            WS/48 calibration (league average ≈ 0.100):
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center">
+            {[
+              { range: '≥ 0.200', label: 'Superstar',            cls: 'text-emerald-400' },
+              { range: '≥ 0.150', label: 'All-Star Starter',     cls: 'text-[#4ade80]' },
+              { range: '≥ 0.100', label: 'Starter (league avg)', cls: 'text-[#9ca3af]' },
+              { range: '≥ 0.050', label: 'Rotation',             cls: 'text-amber-400' },
+              { range: '< 0.050', label: 'Below rotation',       cls: 'text-red-400' },
+            ].map(({ range, label, cls }) => (
+              <div key={range} className="p-3 bg-[#0d1117] rounded-lg border border-[#1f2937]">
+                <p className={`text-sm font-black ${cls}`}>{range}</p>
+                <p className="text-[10px] text-[#4b5563] mt-0.5">{label}</p>
+              </div>
+            ))}
+          </div>
+          <p className="text-sm text-[#9ca3af] mt-3">
+            We evaluated BPM (wing-biased), cumulative VORP (longevity-biased),
+            and WS/48 before settling here. WS/48 uses a different framework
+            from BPM — offensive + defensive win shares each built from
+            distinct box-score components — so it doesn&apos;t inherit BPM&apos;s
+            positional biases, and as a per-minute rate it isn&apos;t dominated
+            by outliers with many seasons.
           </p>
         </Section>
 
@@ -330,9 +398,9 @@ z =  0.0  →  factor = 1.00  →  primary colour as-is (average)
 z ≤ −2.0  →  factor ≈ 1.50  →  lightened toward white (below average)`}</Formula>
           <p className="text-sm text-[#9ca3af]">
             <strong>Darker = better.</strong> Stats are z-scored against the same position
-            group (G / F / C) in the current 2026 prospect season, so a centre&apos;s
-            blocks are compared to other centres, not to guards. Text colour is chosen
-            automatically for WCAG contrast.
+            group (G / F / C) in the current 2026 prospect season, so a centre&apos;s blocks
+            are compared to other centres, not to guards. Text colour is chosen automatically
+            for WCAG contrast.
           </p>
         </Section>
 
@@ -341,6 +409,7 @@ z ≤ −2.0  →  factor ≈ 1.50  →  lightened toward white (below average)`
       <div className="border-t border-[#1f2937] mt-6">
         <div className="max-w-5xl mx-auto px-4 py-5 text-center text-sm text-[#6b7280]">
           Comparison engine in <code>src/lib/utils/comparison.ts</code> ·
+          BartTorvik scraper in <code>scripts/build_barttorvik_lookup.py</code> ·
           Draft Board ranking in <code>src/app/api/draft-board/route.ts</code>
         </div>
       </div>

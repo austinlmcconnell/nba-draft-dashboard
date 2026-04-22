@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { Logo } from '@/components/Logo';
 
 const LINKS = [
   { group: 'Product',   items: [
@@ -21,18 +22,8 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {/* Brand column */}
           <div>
-            <div className="flex items-center gap-2 mb-3">
-              <svg width="28" height="21" viewBox="0 0 100 76" fill="none" aria-hidden="true">
-                <path d="M 12 64 A 38 38 0 0 0 88 64" stroke="#22a052" strokeWidth="6" strokeLinecap="round" fill="none" />
-                <path d="M 12 64 Q 50 14 88 64" stroke="#4ade80" strokeWidth="4" strokeLinecap="round" fill="none" />
-                <path d="M 12 64 Q 50 44 88 64" stroke="#4ade80" strokeWidth="4" strokeLinecap="round" fill="none" />
-                <circle cx="12" cy="64" r="5" fill="#22a052" />
-                <circle cx="88" cy="64" r="5" fill="#22a052" />
-              </svg>
-              <span className="font-bold text-base tracking-wide uppercase">
-                <span className="text-[#f9fafb]">COMP </span>
-                <span className="text-[#22a052]">BEASTS</span>
-              </span>
+            <div className="mb-3">
+              <Logo size={32} variant="onDark" textSize="text-base" />
             </div>
             <p className="text-[#6b7280] text-sm leading-relaxed max-w-xs">
               Advanced NBA draft analytics. Compare college prospects to

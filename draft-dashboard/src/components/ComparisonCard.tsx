@@ -260,7 +260,10 @@ export function ComparisonCard({ comparison, className = '' }: Props) {
               <StatLine label="RPG" value={h.college_stats.rebounds_per_game.toFixed(1)} />
               <StatLine label="APG" value={h.college_stats.assists_per_game.toFixed(1)} />
               <StatLine label="TS%"  value={`${h.college_stats.true_shooting_pct.toFixed(1)}%`} />
-              <StatLine label="USG" value={`${h.college_stats.usage_rate.toFixed(1)}%`} />
+              <StatLine
+                label="PRPG!"
+                value={typeof h.barttorvik?.prpg === 'number' ? h.barttorvik.prpg.toFixed(2) : '—'}
+              />
             </div>
           </div>
           <div>

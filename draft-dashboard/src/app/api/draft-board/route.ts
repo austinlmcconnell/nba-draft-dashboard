@@ -1,20 +1,44 @@
-// Server-side route: ranks Big Board prospects by average career RAPTOR
+// Server-side route: ranks Big Board prospects by average career WS/48
 // of their 10 closest historical college statistical comparisons.
 //
 // Flow:
 //   1. Fetch Big Board from Google Sheets
-//   2. Read historical college stats + RAPTOR lookup from disk (fs)
+//   2. Read historical college stats + NBA career lookup + BartTorvik from disk
 //   3. For each Big Board player, find their current-season college stats
-//   4. Run top-10 stat comparison against drafted players who have RAPTOR data
-//   5. Average the RAPTOR scores → ranking signal
-//   6. Return sorted list (best avg RAPTOR first)
+//   4. Run top-10 stat comparison against drafted players 2008+ with BartTorvik
+//      data AND a minimum 1,500 career NBA minutes (filters noise from
+//      cup-of-coffee NBA careers). PRPG! primary similarity.
+//   5. Compute career WS/48 = career_ws / career_mp × 48 for each comp, then
+//      average those across the 10 comps → ranking signal. WS/48 is a rate
+//      stat, so a long-career star like Harden doesn't dominate the average.
+//   6. Return sorted list (best avg WS/48 first).
 
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
-import type { HistoricalPlayer, DraftBoardEntry, DraftBoardApiResponse, RaptorLookup } from '@/types/player';
-import { buildDatasetNorms, getTopStatComps } from '@/lib/utils/comparison';
+import type {
+  HistoricalPlayer, DraftBoardEntry, DraftBoardApiResponse, VorpLookup,
+  BartTorvikStats,
+} from '@/types/player';
+import { buildDatasetNorms, getTopStatComps, resolveAge } from '@/lib/utils/comparison';
 import type { BigBoardPlayer } from '@/types/bigboard';
+
+// Minimum career NBA minutes required for a historical player to appear as
+// a comp. Roughly one season of rotation-level play. Filters out draftees
+// who never established themselves in the league (Cameron Bairstow, etc.)
+// whose sample-sized career metrics would distort the avg-VORP ranking.
+const MIN_NBA_MP = 1500;
+
+type BartTorvikEntry = {
+  name: string;
+  team: string;
+  season: number;
+  class_year?: string;
+  prpg: number;
+  adj_ortg: number | null;
+  adj_drtg: number | null;
+};
+type BartTorvikLookup = Record<string, BartTorvikEntry>;
 
 export const dynamic = 'force-dynamic';
 
@@ -27,12 +51,25 @@ const API_KEY  = process.env.GOOGLE_SHEETS_API_KEY;
 let cache: { data: DraftBoardApiResponse; ts: number } | null = null;
 const CACHE_TTL = 5 * 60 * 1000;
 
-// ─── Name normalization (must match build_raptor_lookup.py) ──────────────────
-function normalizeForRaptor(name: string): string {
+// ─── Name normalization (must match build_vorp_lookup.py) ────────────────────
+function normalizeForVorp(name: string): string {
   return name
     .toLowerCase()
     .replace(/[''`]/g, '')
     .replace(/\s+(jr|sr|ii|iii|iv|v)\.?\s*$/i, '')
+    .replace(/[^a-z\s]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+// ─── Name normalization (must match build_barttorvik_lookup.py) ──────────────
+function normalizeForBart(name: string): string {
+  return name
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')  // strip diacritics
+    .toLowerCase()
+    .replace(/['`'']/g, '')
+    .replace(/\b(jr\.?|sr\.?|ii|iii|iv)\b/g, '')
     .replace(/[^a-z\s]/g, '')
     .replace(/\s+/g, ' ')
     .trim();
@@ -106,6 +143,8 @@ function toStats(raw: any) {
   return {
     games: n(raw.games), minutes_per_game: n(raw.minutes_per_game),
     points_per_game: n(raw.points_per_game), rebounds_per_game: n(raw.rebounds_per_game),
+    offensive_rebounds_per_game: n(raw.offensive_rebounds_per_game),
+    defensive_rebounds_per_game: n(raw.defensive_rebounds_per_game),
     assists_per_game: apg, steals_per_game: n(raw.steals_per_game),
     blocks_per_game: n(raw.blocks_per_game), turnovers_per_game: tpg,
     field_goal_percentage: n(raw.field_goal_percentage),
@@ -123,8 +162,21 @@ function toStats(raw: any) {
   };
 }
 
+function toBartStats(entry: BartTorvikEntry | undefined): BartTorvikStats | undefined {
+  if (!entry || typeof entry.prpg !== 'number') return undefined;
+  return {
+    prpg: entry.prpg,
+    adj_ortg: entry.adj_ortg,
+    adj_drtg: entry.adj_drtg,
+    class_year: entry.class_year,
+  };
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function toHistoricalPlayer(r: any): HistoricalPlayer {
+function toHistoricalPlayer(r: any, bart?: BartTorvikLookup): HistoricalPlayer {
+  const bartEntry = bart
+    ? bart[`${normalizeForBart(r.name)}|${r.college_season}`]
+    : undefined;
   return {
     id:           r.id ?? `hist_${r.name}_${r.college_season}`,
     name:         r.name,
@@ -155,6 +207,7 @@ function toHistoricalPlayer(r: any): HistoricalPlayer {
     draft_round: r.draft_round ?? null,
     draft_pick:  r.draft_pick  ?? null,
     position:    r.college_stats?.position ?? undefined,
+    barttorvik:  toBartStats(bartEntry),
   };
 }
 
@@ -190,26 +243,34 @@ export async function GET() {
     }
 
     // 2. Load data files
-    const raptorLookup: RaptorLookup = readJson('raptor_lookup.json');
+    const vorpLookup: VorpLookup = readJson('vorp_lookup.json');
+    const bartLookup: BartTorvikLookup = readJson('barttorvik_lookup.json');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const historicalRaw: any[] = readJson('nba_career_stats.json');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const prospectsRaw: any[]  = readJson('historical_college_stats.json');
 
-    // 3. Build comparison pool: drafted players who have RAPTOR data
+    // 3. Build comparison pool: drafted players 2008-present with BartTorvik
+    //    data AND at least MIN_NBA_MP career minutes in the VORP lookup.
+    //    2008 is the earliest BartTorvik season (matches PRPG! coverage).
+    //    Restricting to drafted players removes mid-major statistical
+    //    doppelgangers whose careers diverged from scouted prospects, and the
+    //    MP floor filters out draftees who never established NBA rotation roles.
     const pool: HistoricalPlayer[] = historicalRaw
-      .filter(r =>
-        r.draft_pick != null &&
-        r.college_season < 2026 &&
-        normalizeForRaptor(r.name) in raptorLookup,
-      )
-      .map(toHistoricalPlayer);
+      .filter(r => {
+        if (r.draft_pick == null) return false;
+        if (r.college_season < 2008 || r.college_season >= 2026) return false;
+        if (!(`${normalizeForBart(r.name)}|${r.college_season}` in bartLookup)) return false;
+        const vorp = vorpLookup[normalizeForVorp(r.name)];
+        return vorp != null && vorp.mp >= MIN_NBA_MP;
+      })
+      .map(r => toHistoricalPlayer(r, bartLookup));
 
-    // 4. Build norms from the full historical pool (not just the RAPTOR subset)
+    // 4. Build norms from the full historical pool (not just the pool subset)
     //    so z-scores stay calibrated across the whole dataset
     const fullPool: HistoricalPlayer[] = historicalRaw
       .filter(r => r.college_season < 2026)
-      .map(toHistoricalPlayer);
+      .map(r => toHistoricalPlayer(r, bartLookup));
     const norms = buildDatasetNorms(fullPool);
 
     // 5. Current-season prospects (for finding Big Board players' stats)
@@ -229,31 +290,46 @@ export async function GET() {
           name: bb.name, slug: bb.slug, school: bb.school,
           position: bb.position, bigBoardRank: bb.rank,
           mockPickNo: bb.mockPickNo, mockTeam: bb.mockTeam,
-          comps: [], avgRaptor: null, raptorCoverage: 0,
+          comps: [], avgWs48: null, ws48Coverage: 0,
         };
       }
 
       const prospectStats = toStats(match);
-      const topComps = getTopStatComps(prospectStats, pool, norms, match.position ?? bb.position, 10);
+      const prospectBart  = bartLookup[`${normalizeForBart(match.name)}|${match.season}`];
+      const prospectPrpg  = prospectBart?.prpg;
+      const prospectAge   = resolveAge(match.age_at_season_start, prospectBart?.class_year);
+      const topComps = getTopStatComps(
+        prospectStats, prospectPrpg, prospectAge,
+        pool, norms, match.position ?? bb.position, 10,
+      );
 
       const comps = topComps.map(c => {
-        const key   = normalizeForRaptor(c.historical_player.name);
-        const entry = raptorLookup[key] ?? null;
+        const key   = normalizeForVorp(c.historical_player.name);
+        const entry = vorpLookup[key] ?? null;
+        const ws48  = entry && entry.mp > 0
+          ? (entry.ws / entry.mp) * 48
+          : null;
         return {
           name:         c.historical_player.name,
           collegeSeason: c.historical_player.college_season,
           collegeTeam:  c.historical_player.college_team,
           position:     c.historical_player.position ?? '',
           similarity:   c.similarity_score,
-          raptor:        entry?.raptor ?? null,
-          raptorMp:      entry?.mp     ?? null,
-          raptorSeasons: entry?.seasons ?? null,
+          ws48:        ws48 !== null ? Math.round(ws48 * 1000) / 1000 : null,
+          vorp:        entry?.vorp    ?? null,
+          nbaMp:       entry?.mp      ?? null,
+          nbaSeasons:  entry?.seasons ?? null,
         };
       });
 
-      const raptorComps = comps.filter(c => c.raptor !== null);
-      const avgRaptor = raptorComps.length > 0
-        ? raptorComps.reduce((s, c) => s + c.raptor!, 0) / raptorComps.length
+      // Similarity-weighted average of comp WS/48 — each comp's contribution
+      // is proportional to how close a statistical match it is to the prospect.
+      // A 90%-similarity comp counts meaningfully more than a 65% one, and when
+      // all 10 comps are tightly clustered the weights converge to a flat mean.
+      const ws48Comps = comps.filter(c => c.ws48 !== null);
+      const weightSum = ws48Comps.reduce((s, c) => s + c.similarity, 0);
+      const avgWs48 = ws48Comps.length > 0 && weightSum > 0
+        ? ws48Comps.reduce((s, c) => s + c.ws48! * c.similarity, 0) / weightSum
         : null;
 
       return {
@@ -261,17 +337,17 @@ export async function GET() {
         position: bb.position, bigBoardRank: bb.rank,
         mockPickNo: bb.mockPickNo, mockTeam: bb.mockTeam,
         comps,
-        avgRaptor: avgRaptor !== null ? Math.round(avgRaptor * 100) / 100 : null,
-        raptorCoverage: raptorComps.length,
+        avgWs48: avgWs48 !== null ? Math.round(avgWs48 * 1000) / 1000 : null,
+        ws48Coverage: ws48Comps.length,
       };
     });
 
-    // 7. Sort by avg RAPTOR descending (nulls last)
+    // 7. Sort by avg WS/48 descending (nulls last)
     entries.sort((a, b) => {
-      if (a.avgRaptor === null && b.avgRaptor === null) return 0;
-      if (a.avgRaptor === null) return 1;
-      if (b.avgRaptor === null) return -1;
-      return b.avgRaptor - a.avgRaptor;
+      if (a.avgWs48 === null && b.avgWs48 === null) return 0;
+      if (a.avgWs48 === null) return 1;
+      if (b.avgWs48 === null) return -1;
+      return b.avgWs48 - a.avgWs48;
     });
 
     const result: DraftBoardApiResponse = { entries, updatedAt: new Date().toISOString() };

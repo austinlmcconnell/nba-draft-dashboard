@@ -7,6 +7,7 @@
  */
 
 import type {
+  BartTorvikStats,
   CollegePlayer,
   CollegeStats,
   HistoricalPlayer,
@@ -18,10 +19,62 @@ import type {
 
 import { buildDatasetNorms } from './comparison';
 
+type BartTorvikEntry = {
+  name: string;
+  team: string;
+  season: number;
+  class_year?: string;
+  prpg: number;
+  adj_ortg: number | null;
+  adj_drtg: number | null;
+};
+type BartTorvikLookup = Record<string, BartTorvikEntry>;
+
 let historicalCache: HistoricalPlayer[] | null = null;
 let prospectsCache: CollegePlayer[] | null = null;
 let normsCache: DatasetNorms | null = null;
 let rankingsCache: DraftRanking[] | null = null;
+let bartCache: BartTorvikLookup | null = null;
+
+/**
+ * Normalize a player name to match BartTorvik's lookup key format.
+ * Mirrors scripts/build_barttorvik_lookup.py normalize() exactly.
+ */
+function normalizeForBart(name: string): string {
+  return name
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/['`’]/g, '')
+    .replace(/\b(jr\.?|sr\.?|ii|iii|iv)\b/g, '')
+    .replace(/[^a-z\s]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+async function loadBartTorvikLookup(): Promise<BartTorvikLookup> {
+  if (bartCache) return bartCache;
+  try {
+    const res = await fetch('/data/barttorvik_lookup.json');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    bartCache = await res.json();
+    return bartCache!;
+  } catch (e) {
+    console.warn('BartTorvik lookup unavailable:', e);
+    bartCache = {};
+    return bartCache;
+  }
+}
+
+function toBartTorvik(entry: BartTorvikEntry | undefined): BartTorvikStats | undefined {
+  if (!entry || typeof entry.prpg !== 'number') return undefined;
+  return {
+    prpg: entry.prpg,
+    adj_ortg: entry.adj_ortg,
+    adj_drtg: entry.adj_drtg,
+    class_year: entry.class_year,
+  };
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function computeTS(raw: any): number {
@@ -52,14 +105,16 @@ function toCollegeStats(raw: any): CollegeStats {
   const ast_tov   = n(raw.ast_tov_ratio)  || (tpg > 0 ? apg / tpg : 0);
 
   return {
-    games:                      n(raw.games),
-    minutes_per_game:           n(raw.minutes_per_game),
-    points_per_game:            n(raw.points_per_game),
-    rebounds_per_game:          n(raw.rebounds_per_game),
-    assists_per_game:           apg,
-    steals_per_game:            n(raw.steals_per_game),
-    blocks_per_game:            n(raw.blocks_per_game),
-    turnovers_per_game:         tpg,
+    games:                       n(raw.games),
+    minutes_per_game:            n(raw.minutes_per_game),
+    points_per_game:             n(raw.points_per_game),
+    rebounds_per_game:           n(raw.rebounds_per_game),
+    offensive_rebounds_per_game: n(raw.offensive_rebounds_per_game),
+    defensive_rebounds_per_game: n(raw.defensive_rebounds_per_game),
+    assists_per_game:            apg,
+    steals_per_game:             n(raw.steals_per_game),
+    blocks_per_game:             n(raw.blocks_per_game),
+    turnovers_per_game:          tpg,
     field_goal_percentage:      n(raw.field_goal_percentage),
     three_point_percentage:     n(raw.three_point_percentage),
     free_throw_percentage:      n(raw.free_throw_percentage),
@@ -97,7 +152,10 @@ function toPhysical(raw: any): PhysicalAttributes {
 export async function loadHistoricalPlayers(): Promise<HistoricalPlayer[]> {
   if (historicalCache) return historicalCache;
   try {
-    const res = await fetch('/data/nba_career_stats.json');
+    const [res, bart] = await Promise.all([
+      fetch('/data/nba_career_stats.json'),
+      loadBartTorvikLookup(),
+    ]);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const raw: any[] = await res.json();
@@ -115,6 +173,7 @@ export async function loadHistoricalPlayers(): Promise<HistoricalPlayer[]> {
       espn_team_id:         r.college_stats?.espn_team_id        ?? undefined,
       team_primary_color:   r.college_stats?.team_primary_color  ?? undefined,
       team_secondary_color: r.college_stats?.team_secondary_color ?? undefined,
+      barttorvik:           toBartTorvik(bart[`${normalizeForBart(r.name)}|${r.college_season}`]),
       nba_career: {
         seasons_played: r.nba_career?.seasons_played ?? 0,
         games_played:   r.nba_career?.games_played   ?? 0,
@@ -143,7 +202,10 @@ export async function loadHistoricalPlayers(): Promise<HistoricalPlayer[]> {
 export async function loadProspects(season = 2024): Promise<CollegePlayer[]> {
   if (prospectsCache) return prospectsCache;
   try {
-    const res = await fetch('/data/historical_college_stats.json');
+    const [res, bart] = await Promise.all([
+      fetch('/data/historical_college_stats.json'),
+      loadBartTorvikLookup(),
+    ]);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const raw: any[] = await res.json();
@@ -162,6 +224,7 @@ export async function loadProspects(season = 2024): Promise<CollegePlayer[]> {
         team_secondary_color: r.team_secondary_color ?? undefined,
         stats:                toCollegeStats(r),
         physical:             (r.height_inches != null || r.weight_pounds != null) ? toPhysical(r) : undefined,
+        barttorvik:           toBartTorvik(bart[`${normalizeForBart(r.name)}|${r.season}`]),
       }));
     return prospectsCache;
   } catch (e) {
@@ -278,4 +341,5 @@ export function clearDataCache() {
   prospectsCache  = null;
   normsCache      = null;
   rankingsCache   = null;
+  bartCache       = null;
 }
