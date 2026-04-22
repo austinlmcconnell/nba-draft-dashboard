@@ -67,7 +67,7 @@ export default function MethodologyPage() {
           <ol className="list-decimal list-inside space-y-1.5 text-sm text-[#9ca3af]">
             {[
               ['#overview',    'Overview — what drives the comparisons'],
-              ['#prpg',        'PRPG! — the primary signal'],
+              ['#prpg',        'PRPG!/40-min — the primary signal'],
               ['#pool',        'Comparison pool — drafted, 2008+, same age ±1'],
               ['#weighting',   'Weighting — PRPG! primary (65%), archetype (35%)'],
               ['#archetype',   'Archetype facets — the five raw-stat dimensions'],
@@ -108,13 +108,19 @@ export default function MethodologyPage() {
         </Section>
 
         {/* ---------------------------------------------------------------- */}
-        <Section id="prpg" title="PRPG! — the primary signal">
+        <Section id="prpg" title="PRPG!/40-min — the primary signal">
           <p className="text-[#d1d5db] mb-3">
             PRPG! (Points per Replacement Player per Game) is Bart Torvik&apos;s single-number
-            player value. It estimates how many points per game a team gains by replacing a
-            D1-average bench player with this player, adjusted for pace and the strength of
-            the opponents faced. In one number it captures offense, defense, usage, and
-            the quality of competition.
+            player value — how many points per game a team gains by replacing a
+            D1-average bench player with this player, opponent- and tempo-adjusted.
+            We <strong>normalize it to 40 minutes of playing time</strong> so players
+            with low mpg (injuries, bench usage) aren&apos;t unfairly penalised:
+          </p>
+          <Formula>{`prpg40 = prpg × (40 / minutes_per_game)`}</Formula>
+          <p className="text-[#d1d5db] mb-3">
+            Raw PRPG! ≈ per-possession-value × usage × minutes-per-game. The mpg
+            factor is what we strip out. Two players with identical per-possession
+            production but different mpg now score the same prpg40.
           </p>
           <Formula>{`source   : https://barttorvik.com/getadvstats.php?year=YYYY&csv=1
 coverage : 2008 season through present, ~5,000 D1 players per year
@@ -122,23 +128,26 @@ built by : scripts/build_barttorvik_lookup.py
 stored   : draft-dashboard/public/data/barttorvik_lookup.json
 join key : normalize(player_name) + '|' + season`}</Formula>
 
-          <Sub title="Why PRPG! and not raw box-score comparisons?">
+          <Sub title="Why PRPG!/40 and not pure Net Rating?">
             <p className="text-sm text-[#9ca3af]">
-              Raw per-36 stats cannot distinguish a 26 pts/36 wing in the Big 12 from a 26 pts/36
-              wing at a mid-major — the former is facing dramatically tougher opponents, so the
-              production is worth more. PRPG! adjusts for opponent strength and tempo, so
-              same-number PRPG! means same-level impact regardless of conference.
+              We also considered using adj_ortg − adj_drtg (team on-court Net
+              Rating) as the primary signal — it&apos;s purely per-possession. But
+              those are TEAM ratings when the player is on the court, so they
+              absorb teammates&apos; quality. A great individual on a poor
+              defensive team would score low Net Rating through no fault of
+              their own. PRPG! tries to isolate the individual contribution,
+              so normalizing its mpg factor gives the best of both worlds.
             </p>
           </Sub>
 
-          <Sub title="PRPG! similarity">
-            <Formula>{`sim_prpg = 100 × e^(−|Δ PRPG!| / K_PRPG)      K_PRPG = 1.5
+          <Sub title="PRPG!/40 similarity">
+            <Formula>{`sim_prpg40 = 100 × e^(−|Δ prpg40| / K_PRPG40)   K_PRPG40 = 2.0
 
 Examples:
-  Δ = 0.0 →  100   (identical production level)
-  Δ = 0.5 →  ~72
-  Δ = 1.5 →  ~37
-  Δ = 3.0 →  ~14`}</Formula>
+  Δ = 0.0 →  100   (identical per-40-min production)
+  Δ = 0.7 →  ~70
+  Δ = 2.0 →  ~37
+  Δ = 4.0 →  ~14`}</Formula>
           </Sub>
         </Section>
 
@@ -197,7 +206,7 @@ Examples:
         </Section>
 
         {/* ---------------------------------------------------------------- */}
-        <Section id="weighting" title="Weighting — PRPG! primary (65 %), archetype (35 %)">
+        <Section id="weighting" title="Weighting — PRPG!/40 primary (65 %), archetype (35 %)">
           <p className="text-[#d1d5db] mb-3">
             Each candidate is scored by blending PRPG! similarity with the five-facet raw-stat
             archetype similarity:

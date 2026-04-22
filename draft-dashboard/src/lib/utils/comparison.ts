@@ -292,43 +292,59 @@ function positionCompatible(prospectPos: string | undefined, histPos: string | u
 // ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
-// PRPG! similarity
+// Minutes-normalized PRPG! similarity
 //
-// PRPG! is BartTorvik's single-number per-possession value metric. We
-// compare prospect vs historical player by absolute PRPG! distance and
-// convert to a 0-100 similarity with an exponential decay.
+// Raw PRPG! ≈ per-possession value × usage × minutes-per-game. The first two
+// factors are per-possession; the third scales with mpg and unfairly
+// penalises players who play fewer minutes per game (e.g., Peterson's
+// injury-shortened season at 29 mpg). We strip out the mpg factor by
+// normalizing to a full-game-equivalent:
 //
-// K_PRPG = 1.5 — a PRPG! gap of 1.5 maps to ~37 similarity, 3.0 to ~14.
-// Calibrated so near-identical PRPG! (within ~0.3) scores ≥ 80.
+//   prpg40 = prpg × (40 / mpg)
+//
+// This keeps PRPG!'s individual-contribution framework (so we don't absorb
+// team-defense context the way pure Net Rating would) while making the
+// comparison fair across variable playing-time profiles.
+//
+// K_PRPG40 = 2.0 — a gap of 2.0 maps to ~37 similarity, 4.0 to ~14. Typical
+// prospect prpg40 values are roughly 2-12 so this span separates reasonably.
 // ---------------------------------------------------------------------------
-const K_PRPG = 1.5;
+const K_PRPG40 = 2.0;
+const MIN_MPG  = 10;   // floor to avoid divide-by-zero / extreme adjustments
 
-function prpgSim(prospectPrpg: number | undefined, histPrpg: number | undefined): number | null {
-  if (typeof prospectPrpg !== 'number' || typeof histPrpg !== 'number') return null;
-  return sim(Math.abs(prospectPrpg - histPrpg), K_PRPG);
+function prpg40(prpg: number | null | undefined, mpg: number | null | undefined): number | null {
+  if (typeof prpg !== 'number' || typeof mpg !== 'number' || mpg < MIN_MPG) return null;
+  return prpg * (40 / mpg);
+}
+
+function prpg40Sim(
+  prospectPrpg: number | null | undefined,
+  prospectMpg:  number | null | undefined,
+  histPrpg:     number | null | undefined,
+  histMpg:      number | null | undefined,
+): number | null {
+  const pn = prpg40(prospectPrpg, prospectMpg);
+  const hn = prpg40(histPrpg,     histMpg);
+  if (pn === null || hn === null) return null;
+  return sim(Math.abs(pn - hn), K_PRPG40);
 }
 
 // PRPG! is the primary driver (65%); raw stat archetype fills in the remainder (35%).
 // Within the 35% archetype budget, the original facet weights (0.26/0.11/0.18/0.20/0.25)
 // are preserved proportionally — so facet contributions become 0.091, 0.0385, 0.063, 0.070, 0.0875.
-const W_PRPG        = 0.65;
-const W_ARCHETYPE   = 1 - W_PRPG;        // 0.35
-const FACET_EFF     = 0.26 * W_ARCHETYPE;  // 0.0910
-const FACET_VOL     = 0.11 * W_ARCHETYPE;  // 0.0385
-const FACET_PLAY    = 0.18 * W_ARCHETYPE;  // 0.0630
-const FACET_REB     = 0.20 * W_ARCHETYPE;  // 0.0700
-const FACET_DEF     = 0.25 * W_ARCHETYPE;  // 0.0875
+const W_PRPG40      = 0.65;
+const W_ARCHETYPE   = 1 - W_PRPG40;        // 0.35
 
 /**
  * Return the top N statistical comparisons from a pre-filtered pool.
  * Used by the Draft Board: pool is already restricted to drafted players
  * with career NBA metric data, and we want 10 comps instead of 5.
  *
- * Ranking priority: PRPG! similarity (65%) > raw archetype facets (35%).
+ * Ranking priority: PRPG!/40min similarity (65%) > raw archetype facets (35%).
  */
 export function getTopStatComps(
   prospectStats: CollegeStats,
-  prospectPrpg: number | undefined,
+  prospectPrpg: number | null | undefined,
   prospectAge: number | null,
   pool: HistoricalPlayer[],
   norms: DatasetNorms,
@@ -340,7 +356,6 @@ export function getTopStatComps(
   const posFiltered = pool.filter(h => positionCompatible(prospectPosition, h.position));
   const effectivePool = posFiltered.length >= MIN_POSITION_POOL ? posFiltered : pool;
 
-  // Age ±1 filter — drop to position-filtered pool if age filter is too aggressive
   const ageFiltered = prospectAge !== null
     ? effectivePool.filter(h =>
         ageCompatible(
@@ -367,10 +382,13 @@ export function getTopStatComps(
       const archetypeAvg =
         sEff * 0.26 + sVol * 0.11 + sPlay * 0.18 + sReb * 0.20 + sDef * 0.25;
 
-      const sPrpg = prpgSim(prospectPrpg, hist.barttorvik?.prpg);
+      const sPrpg = prpg40Sim(
+        prospectPrpg, prospectStats.minutes_per_game,
+        hist.barttorvik?.prpg, hist.college_stats.minutes_per_game,
+      );
       const blendedSim = sPrpg != null
-        ? sPrpg * W_PRPG + archetypeAvg * W_ARCHETYPE
-        : archetypeAvg;  // fallback when PRPG! unavailable
+        ? sPrpg * W_PRPG40 + archetypeAvg * W_ARCHETYPE
+        : archetypeAvg;  // fallback when PRPG!/mpg unavailable
 
       return { hist, s, sEff, sVol, sPlay, sReb, sDef, sPrpg, blendedSim };
     })
@@ -394,7 +412,7 @@ export function getTopStatComps(
 export function getProspectComparisons(
   prospectStats: CollegeStats,
   prospectPhysical: PhysicalAttributes | undefined | null,
-  prospectPrpg: number | undefined,
+  prospectPrpg: number | null | undefined,
   prospectAge: number | null,
   pool: HistoricalPlayer[],
   norms: DatasetNorms,
@@ -456,9 +474,12 @@ export function getProspectComparisons(
       const archetypeAvg =
         sEff * 0.26 + sVol * 0.11 + sPlay * 0.18 + sReb * 0.20 + sDef * 0.25;
 
-      const sPrpg = prpgSim(prospectPrpg, hist.barttorvik?.prpg);
+      const sPrpg = prpg40Sim(
+        prospectPrpg, prospectStats.minutes_per_game,
+        hist.barttorvik?.prpg, hist.college_stats.minutes_per_game,
+      );
       const blendedSim = sPrpg != null
-        ? sPrpg * W_PRPG + archetypeAvg * W_ARCHETYPE
+        ? sPrpg * W_PRPG40 + archetypeAvg * W_ARCHETYPE
         : archetypeAvg;
 
       let pDist: number | null = null;

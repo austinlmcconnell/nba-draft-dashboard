@@ -47,7 +47,8 @@ export default function ProspectDetailPage() {
         );
         const prospectAge = resolveAge(p.physical?.age_at_season_start, p.barttorvik?.class_year);
         const comps = getProspectComparisons(
-          p.stats, p.physical ?? null, p.barttorvik?.prpg, prospectAge,
+          p.stats, p.physical ?? null,
+          p.barttorvik?.prpg, prospectAge,
           compPool, norms, p.position,
         );
         const avg = await getSeasonAverages(p.season, p.position);
