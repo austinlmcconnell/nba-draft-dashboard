@@ -74,7 +74,7 @@ export default function MethodologyPage() {
               ['#normalise',   'Z-score normalisation'],
               ['#similarity',  'Distance → similarity score'],
               ['#derived',     'Derived stats (AST/TOV, ORB/36, DRB/36)'],
-              ['#draftboard',  'Draft Board ranking (TBD metric)'],
+              ['#draftboard',  'Draft Board ranking — career VORP'],
               ['#statboxes',   'Profile stat box shading'],
             ].map(([href, label]) => (
               <li key={href}><a href={href} className="hover:text-[#4ade80] hover:underline transition-colors">{label}</a></li>
@@ -143,15 +143,16 @@ Examples:
         </Section>
 
         {/* ---------------------------------------------------------------- */}
-        <Section id="pool" title="Comparison pool — drafted, 2008+, same age ±1">
+        <Section id="pool" title="Comparison pool — drafted, 2008+, same age ±1, NBA-established">
           <p className="text-[#d1d5db] mb-3">
-            Every comparison is drawn from a pool defined by three filters:
+            Every comparison is drawn from a pool defined by four filters:
           </p>
           <Formula>{`pool = historical_players WHERE
          draft_pick IS NOT NULL            -- drafted only (scouted prospects)
          AND 2008 ≤ college_season < 2026  -- matches BartTorvik coverage
          AND normalized_name+season IN barttorvik_lookup
-         AND |prospect_age - player_age| ≤ 1`}</Formula>
+         AND |prospect_age - player_age| ≤ 1
+         AND vorp_lookup[normalized_name].mp ≥ 1500   -- NBA-established`}</Formula>
 
           <Sub title="Drafted only">
             <p className="text-sm text-[#9ca3af]">
@@ -176,6 +177,16 @@ Examples:
               (~18% of players); otherwise fall back to mapping <code>class_year</code>
               to an approximate age (Fr→19, So→20, Jr→21, Sr→22). The filter is relaxed
               automatically if too few candidates remain after age-gating (fewer than 30).
+            </p>
+          </Sub>
+
+          <Sub title="Minimum 1,500 career NBA minutes">
+            <p className="text-sm text-[#9ca3af]">
+              Drafted players who never established NBA rotation roles (Cameron
+              Bairstow-type careers: drafted, a handful of games, out of the league)
+              have noisy per-possession metrics that would distort the avg-VORP
+              ranking. 1,500 MP ≈ one season of rotation-level minutes, which is
+              enough sample size for a meaningful career VORP.
             </p>
           </Sub>
 
@@ -311,17 +322,42 @@ drb_per36 = (defensive_rebounds_per_game / minutes_per_game) × 36`}</Formula>
         </Section>
 
         {/* ---------------------------------------------------------------- */}
-        <Section id="draftboard" title="Draft Board ranking — TBD metric">
+        <Section id="draftboard" title="Draft Board ranking — career VORP">
           <p className="text-[#d1d5db] mb-3">
-            The Draft Board sorts Big Board prospects by some NBA-outcome metric averaged
-            across each prospect&apos;s 10 closest comps. The <em>which metric</em> is
-            currently being reworked — earlier versions used career Box Plus-Minus (BPM),
-            which proved to be structurally biased against wing players and was removed.
-            A replacement outcome metric is pending.
+            The Draft Board sorts Big Board prospects by the <strong>average career
+            total VORP</strong> of their 10 closest historical comps. VORP (Value
+            Over Replacement Player) is a Basketball Reference cumulative metric
+            — per-possession impact multiplied by minutes played, summed across
+            every NBA season. It rewards both per-minute quality and longevity,
+            so it&apos;s a compact answer to &quot;did this comp&apos;s NBA career
+            amount to something?&quot;
           </p>
-          <p className="text-sm text-[#9ca3af]">
-            The comp <em>finding</em> is fully driven by the PRPG!-primary methodology above.
-            Only the final ranking aggregation is in flux.
+          <Formula>{`For each Big Board prospect:
+  1. Find 10 closest college statistical comps (PRPG!-primary)
+  2. Look up each comp's career total VORP (vorp_lookup.json)
+  3. avg_vorp = mean(comp.vorp for comp in 10)
+  4. Rank the board by avg_vorp descending`}</Formula>
+          <p className="text-[#d1d5db] mb-3">
+            Approximate VORP career-total scale:
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center">
+            {[
+              { range: '≥ 25', label: 'Franchise-level',    cls: 'text-emerald-400' },
+              { range: '≥ 10', label: 'Long-time starter',  cls: 'text-[#4ade80]' },
+              { range: '≥ 2',  label: 'Established',        cls: 'text-[#9ca3af]' },
+              { range: '≥ 0',  label: 'Fringe/Role',        cls: 'text-amber-400' },
+              { range: '< 0',  label: 'Below replacement',  cls: 'text-red-400' },
+            ].map(({ range, label, cls }) => (
+              <div key={range} className="p-3 bg-[#0d1117] rounded-lg border border-[#1f2937]">
+                <p className={`text-sm font-black ${cls}`}>{range}</p>
+                <p className="text-[10px] text-[#4b5563] mt-0.5">{label}</p>
+              </div>
+            ))}
+          </div>
+          <p className="text-sm text-[#9ca3af] mt-3">
+            Unlike BPM (a rate statistic that systematically undervalued wings),
+            VORP credits accumulated impact — so a long-career wing like Paul
+            George shows up as a top-tier career, not a middling one.
           </p>
         </Section>
 

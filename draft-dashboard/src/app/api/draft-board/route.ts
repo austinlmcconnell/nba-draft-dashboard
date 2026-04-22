@@ -1,24 +1,31 @@
-// Server-side route: ranks Big Board prospects by average career BPM
+// Server-side route: ranks Big Board prospects by average career VORP
 // of their 10 closest historical college statistical comparisons.
 //
 // Flow:
 //   1. Fetch Big Board from Google Sheets
-//   2. Read historical college stats + BPM lookup + BartTorvik lookup from disk
+//   2. Read historical college stats + VORP lookup + BartTorvik lookup from disk
 //   3. For each Big Board player, find their current-season college stats
 //   4. Run top-10 stat comparison against drafted players 2008+ with BartTorvik
-//      data (PRPG! primary similarity, raw stat archetype secondary)
-//   5. Average the BPM scores → ranking signal (TBD: replace BPM sort)
-//   6. Return sorted list (best avg BPM first)
+//      data AND a minimum 1,500 career NBA minutes (filters out noise from
+//      cup-of-coffee NBA careers), PRPG! primary similarity
+//   5. Average the career VORP of the comps → ranking signal
+//   6. Return sorted list (best avg VORP first)
 
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import type {
-  HistoricalPlayer, DraftBoardEntry, DraftBoardApiResponse, BpmLookup,
+  HistoricalPlayer, DraftBoardEntry, DraftBoardApiResponse, VorpLookup,
   BartTorvikStats,
 } from '@/types/player';
 import { buildDatasetNorms, getTopStatComps, resolveAge } from '@/lib/utils/comparison';
 import type { BigBoardPlayer } from '@/types/bigboard';
+
+// Minimum career NBA minutes required for a historical player to appear as
+// a comp. Roughly one season of rotation-level play. Filters out draftees
+// who never established themselves in the league (Cameron Bairstow, etc.)
+// whose sample-sized career metrics would distort the avg-VORP ranking.
+const MIN_NBA_MP = 1500;
 
 type BartTorvikEntry = {
   name: string;
@@ -42,8 +49,8 @@ const API_KEY  = process.env.GOOGLE_SHEETS_API_KEY;
 let cache: { data: DraftBoardApiResponse; ts: number } | null = null;
 const CACHE_TTL = 5 * 60 * 1000;
 
-// ─── Name normalization (must match build_bpm_lookup.py) ─────────────────────
-function normalizeForBpm(name: string): string {
+// ─── Name normalization (must match build_vorp_lookup.py) ────────────────────
+function normalizeForVorp(name: string): string {
   return name
     .toLowerCase()
     .replace(/[''`]/g, '')
@@ -234,24 +241,27 @@ export async function GET() {
     }
 
     // 2. Load data files
-    const bpmLookup: BpmLookup = readJson('bpm_lookup.json');
+    const vorpLookup: VorpLookup = readJson('vorp_lookup.json');
     const bartLookup: BartTorvikLookup = readJson('barttorvik_lookup.json');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const historicalRaw: any[] = readJson('nba_career_stats.json');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const prospectsRaw: any[]  = readJson('historical_college_stats.json');
 
-    // 3. Build comparison pool: drafted players 2008-present with BartTorvik data.
+    // 3. Build comparison pool: drafted players 2008-present with BartTorvik
+    //    data AND at least MIN_NBA_MP career minutes in the VORP lookup.
     //    2008 is the earliest BartTorvik season (matches PRPG! coverage).
-    //    Restricting to drafted players removes undrafted/mid-major statistical
-    //    doppelgangers whose careers diverged from scouted prospects.
+    //    Restricting to drafted players removes mid-major statistical
+    //    doppelgangers whose careers diverged from scouted prospects, and the
+    //    MP floor filters out draftees who never established NBA rotation roles.
     const pool: HistoricalPlayer[] = historicalRaw
-      .filter(r =>
-        r.draft_pick != null &&
-        r.college_season >= 2008 &&
-        r.college_season < 2026 &&
-        `${normalizeForBart(r.name)}|${r.college_season}` in bartLookup,
-      )
+      .filter(r => {
+        if (r.draft_pick == null) return false;
+        if (r.college_season < 2008 || r.college_season >= 2026) return false;
+        if (!(`${normalizeForBart(r.name)}|${r.college_season}` in bartLookup)) return false;
+        const vorp = vorpLookup[normalizeForVorp(r.name)];
+        return vorp != null && vorp.mp >= MIN_NBA_MP;
+      })
       .map(r => toHistoricalPlayer(r, bartLookup));
 
     // 4. Build norms from the full historical pool (not just the pool subset)
@@ -278,7 +288,7 @@ export async function GET() {
           name: bb.name, slug: bb.slug, school: bb.school,
           position: bb.position, bigBoardRank: bb.rank,
           mockPickNo: bb.mockPickNo, mockTeam: bb.mockTeam,
-          comps: [], avgBpm: null, bpmCoverage: 0,
+          comps: [], avgVorp: null, vorpCoverage: 0,
         };
       }
 
@@ -292,23 +302,23 @@ export async function GET() {
       );
 
       const comps = topComps.map(c => {
-        const key   = normalizeForBpm(c.historical_player.name);
-        const entry = bpmLookup[key] ?? null;
+        const key   = normalizeForVorp(c.historical_player.name);
+        const entry = vorpLookup[key] ?? null;
         return {
           name:         c.historical_player.name,
           collegeSeason: c.historical_player.college_season,
           collegeTeam:  c.historical_player.college_team,
           position:     c.historical_player.position ?? '',
           similarity:   c.similarity_score,
-          bpm:        entry?.bpm     ?? null,
-          bpmMp:      entry?.mp      ?? null,
-          bpmSeasons: entry?.seasons ?? null,
+          vorp:        entry?.vorp    ?? null,
+          vorpMp:      entry?.mp      ?? null,
+          vorpSeasons: entry?.seasons ?? null,
         };
       });
 
-      const bpmComps = comps.filter(c => c.bpm !== null);
-      const avgBpm = bpmComps.length > 0
-        ? bpmComps.reduce((s, c) => s + c.bpm!, 0) / bpmComps.length
+      const vorpComps = comps.filter(c => c.vorp !== null);
+      const avgVorp = vorpComps.length > 0
+        ? vorpComps.reduce((s, c) => s + c.vorp!, 0) / vorpComps.length
         : null;
 
       return {
@@ -316,17 +326,17 @@ export async function GET() {
         position: bb.position, bigBoardRank: bb.rank,
         mockPickNo: bb.mockPickNo, mockTeam: bb.mockTeam,
         comps,
-        avgBpm: avgBpm !== null ? Math.round(avgBpm * 100) / 100 : null,
-        bpmCoverage: bpmComps.length,
+        avgVorp: avgVorp !== null ? Math.round(avgVorp * 100) / 100 : null,
+        vorpCoverage: vorpComps.length,
       };
     });
 
-    // 7. Sort by avg BPM descending (nulls last)
+    // 7. Sort by avg VORP descending (nulls last)
     entries.sort((a, b) => {
-      if (a.avgBpm === null && b.avgBpm === null) return 0;
-      if (a.avgBpm === null) return 1;
-      if (b.avgBpm === null) return -1;
-      return b.avgBpm - a.avgBpm;
+      if (a.avgVorp === null && b.avgVorp === null) return 0;
+      if (a.avgVorp === null) return 1;
+      if (b.avgVorp === null) return -1;
+      return b.avgVorp - a.avgVorp;
     });
 
     const result: DraftBoardApiResponse = { entries, updatedAt: new Date().toISOString() };

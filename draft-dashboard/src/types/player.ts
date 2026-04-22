@@ -172,17 +172,21 @@ export interface ProspectComparisons {
 }
 
 // ---------------------------------------------------------------------------
-// BPM-based Draft Board types
+// VORP-based Draft Board types
+//
+// VORP (Value Over Replacement Player) is a Basketball Reference cumulative
+// career metric: per-possession impact × minutes played, summed across all
+// seasons. Captures both peak quality AND longevity in one number.
 // ---------------------------------------------------------------------------
 
-export interface BpmEntry {
-  bpm: number;      // career minute-weighted BPM (Box Plus-Minus)
+export interface VorpEntry {
+  vorp: number;     // career total VORP (summed across seasons)
   mp: number;       // total career minutes in dataset
   seasons: number;  // number of regular seasons
   display: string;  // original display name from dataset
 }
 
-export type BpmLookup = Record<string, BpmEntry>; // keyed by normalized name
+export type VorpLookup = Record<string, VorpEntry>; // keyed by normalized name
 
 export interface DraftComp {
   name: string;
@@ -190,9 +194,9 @@ export interface DraftComp {
   collegeTeam: string;
   position: string;
   similarity: number;   // 0-100 statistical similarity score
-  bpm: number | null;
-  bpmMp: number | null;
-  bpmSeasons: number | null;
+  vorp: number | null;
+  vorpMp: number | null;
+  vorpSeasons: number | null;
 }
 
 export interface DraftBoardEntry {
@@ -204,8 +208,8 @@ export interface DraftBoardEntry {
   mockPickNo: number | null;
   mockTeam: string | null;
   comps: DraftComp[];
-  avgBpm: number | null;
-  bpmCoverage: number; // how many of the 10 comps have BPM scores
+  avgVorp: number | null;
+  vorpCoverage: number; // how many of the 10 comps have VORP scores
 }
 
 export interface DraftBoardApiResponse {

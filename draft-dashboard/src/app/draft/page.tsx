@@ -4,35 +4,36 @@ import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import type { DraftBoardEntry, DraftBoardApiResponse } from '@/types/player';
 
-// ─── BPM color helper ──────────────────────────────────────────────────────
-function bpmColor(r: number | null): string {
+// ─── VORP color helper ──────────────────────────────────────────────────────
+// Avg career-total VORP thresholds (the Draft Board ranking signal).
+function vorpColor(r: number | null): string {
   if (r === null) return 'text-[#6b7280]';
-  if (r >= 4)   return 'text-emerald-400';
-  if (r >= 1.5) return 'text-[#4ade80]';
-  if (r >= 0)   return 'text-[#9ca3af]';
-  if (r >= -2)  return 'text-amber-400';
+  if (r >= 20) return 'text-emerald-400';
+  if (r >=  8) return 'text-[#4ade80]';
+  if (r >=  2) return 'text-[#9ca3af]';
+  if (r >=  0) return 'text-amber-400';
   return 'text-red-400';
 }
 
-function bpmBadge(r: number | null): string {
+function vorpBadge(r: number | null): string {
   if (r === null) return 'bg-[#1a2332] border-[#1f2937] text-[#6b7280]';
-  if (r >= 4)   return 'bg-emerald-900/30 border-emerald-700/40 text-emerald-300';
-  if (r >= 1.5) return 'bg-[#1a7a3f]/20 border-[#1a7a3f]/40 text-[#4ade80]';
-  if (r >= 0)   return 'bg-[#1a2332] border-[#1f2937] text-[#9ca3af]';
-  if (r >= -2)  return 'bg-amber-900/20 border-amber-700/30 text-amber-400';
+  if (r >= 20) return 'bg-emerald-900/30 border-emerald-700/40 text-emerald-300';
+  if (r >=  8) return 'bg-[#1a7a3f]/20 border-[#1a7a3f]/40 text-[#4ade80]';
+  if (r >=  2) return 'bg-[#1a2332] border-[#1f2937] text-[#9ca3af]';
+  if (r >=  0) return 'bg-amber-900/20 border-amber-700/30 text-amber-400';
   return 'bg-red-900/20 border-red-700/30 text-red-400';
 }
 
 // ─── Row ──────────────────────────────────────────────────────────────────────
-function BoardRow({ entry, bpmRank }: { entry: DraftBoardEntry; bpmRank: number }) {
+function BoardRow({ entry, vorpRank }: { entry: DraftBoardEntry; vorpRank: number }) {
   return (
     <Link
       href={`/draft/${entry.slug}`}
       className="flex items-center gap-4 px-5 py-3.5 border-b border-[#1f2937] hover:bg-white/[0.02] transition-colors group"
     >
-      {/* BPM rank */}
+      {/* VORP rank */}
       <div className="w-8 text-center text-sm font-black text-[#4b5563] group-hover:text-[#6b7280] transition-colors">
-        {bpmRank}
+        {vorpRank}
       </div>
 
       {/* Player info */}
@@ -50,11 +51,11 @@ function BoardRow({ entry, bpmRank }: { entry: DraftBoardEntry; bpmRank: number 
         <span className="text-xs text-[#6b7280]">#{entry.bigBoardRank}</span>
       </div>
 
-      {/* Avg BPM */}
+      {/* Avg VORP */}
       <div className="w-28 text-right">
-        {entry.avgBpm !== null ? (
-          <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-black border ${bpmBadge(entry.avgBpm)}`}>
-            {entry.avgBpm >= 0 ? '+' : ''}{entry.avgBpm.toFixed(2)}
+        {entry.avgVorp !== null ? (
+          <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-black border ${vorpBadge(entry.avgVorp)}`}>
+            {entry.avgVorp >= 0 ? '+' : ''}{entry.avgVorp.toFixed(2)}
           </span>
         ) : (
           <span className="text-xs text-[#374151]">—</span>
@@ -63,7 +64,7 @@ function BoardRow({ entry, bpmRank }: { entry: DraftBoardEntry; bpmRank: number 
 
       {/* Comps coverage */}
       <div className="hidden lg:block w-20 text-right">
-        <span className="text-xs text-[#374151]">{entry.bpmCoverage}/10 comps</span>
+        <span className="text-xs text-[#374151]">{entry.vorpCoverage}/10 comps</span>
       </div>
 
       {/* Chevron */}
@@ -132,7 +133,7 @@ export default function DraftBoardPage() {
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <span className="px-2.5 py-0.5 bg-[#1a7a3f]/20 border border-[#1a7a3f]/40 rounded-full text-xs font-semibold text-[#4ade80]">
-                  BPM Rankings
+                  VORP Rankings
                 </span>
                 {updatedAt && (
                   <span className="flex items-center gap-1.5 text-xs text-[#6b7280]">
@@ -145,7 +146,7 @@ export default function DraftBoardPage() {
                 2026 Draft <span className="gradient-text">Board</span>
               </h1>
               <p className="mt-2 text-[#6b7280] text-sm max-w-lg">
-                Big Board prospects ranked by the average career BPM of their 10 closest
+                Big Board prospects ranked by the average career VORP of their 10 closest
                 historical college statistical comparisons.
               </p>
             </div>
@@ -165,7 +166,7 @@ export default function DraftBoardPage() {
               <div className="w-8 text-center text-xs font-semibold uppercase tracking-wider text-[#6b7280]">#</div>
               <div className="flex-1 text-xs font-semibold uppercase tracking-wider text-[#6b7280]">Prospect</div>
               <div className="hidden sm:block w-20 text-right text-xs font-semibold uppercase tracking-wider text-[#6b7280]">My Rank</div>
-              <div className="w-28 text-right text-xs font-semibold uppercase tracking-wider text-[#6b7280]">Avg BPM</div>
+              <div className="w-28 text-right text-xs font-semibold uppercase tracking-wider text-[#6b7280]">Avg VORP</div>
               <div className="hidden lg:block w-20 text-right text-xs font-semibold uppercase tracking-wider text-[#6b7280]">Coverage</div>
               <div className="w-4" />
             </div>
@@ -187,11 +188,11 @@ export default function DraftBoardPage() {
           ) : (
             <div>
               {entries.map((entry, i) => (
-                <BoardRow key={entry.slug} entry={entry} bpmRank={i + 1} />
+                <BoardRow key={entry.slug} entry={entry} vorpRank={i + 1} />
               ))}
               <div className="px-5 py-4 border-t border-[#1f2937] flex items-center justify-between flex-wrap gap-2">
                 <p className="text-xs text-[#374151]">
-                  Ranked by avg career BPM of 10 historical college comps · click any prospect for full breakdown
+                  Ranked by avg career VORP of 10 historical college comps · click any prospect for full breakdown
                 </p>
                 <button
                   onClick={() => load(true)}
@@ -211,7 +212,7 @@ export default function DraftBoardPage() {
         {/* Legend */}
         {entries.length > 0 && (
           <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 px-1">
-            <p className="text-xs text-[#374151] font-semibold uppercase tracking-wider">BPM scale:</p>
+            <p className="text-xs text-[#374151] font-semibold uppercase tracking-wider">VORP scale:</p>
             {[
               { label: '≥ +4.0 Elite',       cls: 'text-emerald-400' },
               { label: '+1.5 Starter',        cls: 'text-[#4ade80]' },
