@@ -344,11 +344,19 @@ drb_per36 = (defensive_rebounds_per_game / minutes_per_game) × 36`}</Formula>
             scale so no outlier swamps the group.
           </p>
           <Formula>{`For each Big Board prospect:
-  1. Find 10 closest college statistical comps (PRPG!-primary)
+  1. Find 10 closest college statistical comps (PRPG!/40-primary)
   2. Look up each comp's career WS and MP (vorp_lookup.json)
   3. comp.ws48 = comp.ws / comp.mp × 48
-  4. avg_ws48 = mean(comp.ws48 for comp in 10)
+  4. avg_ws48 = Σ(comp.ws48 × comp.similarity) / Σ(comp.similarity)
   5. Rank the board by avg_ws48 descending`}</Formula>
+          <p className="text-[#d1d5db] mb-3">
+            Step 4 is <strong>similarity-weighted</strong> rather than a plain
+            mean — each comp contributes proportionally to how strong a match
+            it is to the prospect. A 90%-similarity comp weighs meaningfully
+            more than a 65% one. When all ten comps cluster tightly in
+            similarity, the weights converge to a flat average; when the list
+            spreads out, closer comps dominate.
+          </p>
           <p className="text-[#d1d5db] mb-3">
             WS/48 calibration (league average ≈ 0.100):
           </p>

@@ -322,9 +322,14 @@ export async function GET() {
         };
       });
 
+      // Similarity-weighted average of comp WS/48 — each comp's contribution
+      // is proportional to how close a statistical match it is to the prospect.
+      // A 90%-similarity comp counts meaningfully more than a 65% one, and when
+      // all 10 comps are tightly clustered the weights converge to a flat mean.
       const ws48Comps = comps.filter(c => c.ws48 !== null);
-      const avgWs48 = ws48Comps.length > 0
-        ? ws48Comps.reduce((s, c) => s + c.ws48!, 0) / ws48Comps.length
+      const weightSum = ws48Comps.reduce((s, c) => s + c.similarity, 0);
+      const avgWs48 = ws48Comps.length > 0 && weightSum > 0
+        ? ws48Comps.reduce((s, c) => s + c.ws48! * c.similarity, 0) / weightSum
         : null;
 
       return {
