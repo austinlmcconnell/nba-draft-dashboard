@@ -331,42 +331,59 @@ drb_per36 = (defensive_rebounds_per_game / minutes_per_game) × 36`}</Formula>
         </Section>
 
         {/* ---------------------------------------------------------------- */}
-        <Section id="draftboard" title="Draft Board ranking — career WS/48">
+        <Section id="draftboard" title="Draft Board ranking — position-adjusted WS/48">
           <p className="text-[#d1d5db] mb-3">
-            The Draft Board sorts Big Board prospects by the <strong>average career
-            Win Shares per 48 minutes (WS/48)</strong> of their 10 closest historical
-            comps. WS/48 is a Basketball Reference <em>rate</em> statistic — it
-            measures how many wins a player produces per 48 minutes on the floor,
-            without rewarding career length. That matters because cumulative
-            metrics like career VORP let a single long-career star (James Harden,
-            90+ career VORP) dominate the 10-comp average even when the other
-            nine comps are ordinary. WS/48 puts every comp on the same per-minute
-            scale so no outlier swamps the group.
+            The Draft Board sorts prospects by <strong>position-adjusted career
+            WS/48</strong> of their 10 closest historical comps. Raw WS/48 has a
+            structural position bias — centers average ~0.121 WS/48 while guards
+            average ~0.070, a gap of over one standard deviation. Without
+            adjustment, big-man prospects would always outscore guard prospects
+            on the board even when the guard is equally projectable.
           </p>
           <Formula>{`For each Big Board prospect:
-  1. Find 10 closest college statistical comps (PRPG!/40-primary)
-  2. Look up each comp's career WS and MP (vorp_lookup.json)
-  3. comp.ws48 = comp.ws / comp.mp × 48
-  4. avg_ws48 = Σ(comp.ws48 × comp.similarity) / Σ(comp.similarity)
-  5. Rank the board by avg_ws48 descending`}</Formula>
+  1. Find 10 closest college statistical comps (PRPG!-primary)
+  2. Look up each comp's career WS, MP, and NBA position
+  3. comp.ws48 = comp.ws / comp.mp × 48  (raw rate)
+  4. z = (comp.ws48 − position_group_mean) / position_group_std
+  5. pa_ws48 = overall_mean + z × overall_std  (normalized to common scale)
+  6. avg_pa_ws48 = Σ(pa_ws48 × similarity) / Σ(similarity)
+  7. Rank the board by avg_pa_ws48 descending`}</Formula>
           <p className="text-[#d1d5db] mb-3">
-            Step 4 is <strong>similarity-weighted</strong> rather than a plain
-            mean — each comp contributes proportionally to how strong a match
-            it is to the prospect. A 90%-similarity comp weighs meaningfully
-            more than a 65% one. When all ten comps cluster tightly in
-            similarity, the weights converge to a flat average; when the list
-            spreads out, closer comps dominate.
+            Step 4–5 z-scores each comp within its NBA position group (PG, SG, SF,
+            PF, or C), then converts back to WS/48 units using the overall
+            population mean and standard deviation. A guard comp at +1.5σ above
+            the guard average contributes the same PA WS/48 as a center comp at
+            +1.5σ above the center average — guards and bigs are judged on equal
+            footing. Step 6 is <strong>similarity-weighted</strong>: a 90%-match
+            comp counts more than a 65% one.
           </p>
-          <p className="text-[#d1d5db] mb-3">
-            WS/48 calibration (league average ≈ 0.100):
+          <p className="text-[#d1d5db] mb-2">
+            Position group baselines (drafted players, ≥1,500 NBA MP):
+          </p>
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 text-center mb-3">
+            {[
+              { pos: 'PG',  avg: '0.073' },
+              { pos: 'SG',  avg: '0.066' },
+              { pos: 'SF',  avg: '0.077' },
+              { pos: 'PF',  avg: '0.092' },
+              { pos: 'C',   avg: '0.121' },
+            ].map(({ pos, avg }) => (
+              <div key={pos} className="p-3 bg-[#0d1117] rounded-lg border border-[#1f2937]">
+                <p className="text-sm font-black text-[#9ca3af]">{pos}</p>
+                <p className="text-[10px] text-[#4b5563] mt-0.5">avg {avg}</p>
+              </div>
+            ))}
+          </div>
+          <p className="text-[#d1d5db] mb-2">
+            PA WS/48 scale (anchored to overall mean ≈ 0.085):
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center">
             {[
-              { range: '≥ 0.200', label: 'Superstar',            cls: 'text-emerald-400' },
-              { range: '≥ 0.150', label: 'All-Star Starter',     cls: 'text-[#4ade80]' },
-              { range: '≥ 0.100', label: 'Starter (league avg)', cls: 'text-[#9ca3af]' },
-              { range: '≥ 0.050', label: 'Rotation',             cls: 'text-amber-400' },
-              { range: '< 0.050', label: 'Below rotation',       cls: 'text-red-400' },
+              { range: '≥ 0.140', label: 'Star comps',      cls: 'text-emerald-400' },
+              { range: '≥ 0.095', label: 'Above average',   cls: 'text-[#4ade80]' },
+              { range: '≥ 0.075', label: 'Near average',    cls: 'text-[#9ca3af]' },
+              { range: '≥ 0.055', label: 'Below average',   cls: 'text-amber-400' },
+              { range: '< 0.055', label: 'Fringe careers',  cls: 'text-red-400' },
             ].map(({ range, label, cls }) => (
               <div key={range} className="p-3 bg-[#0d1117] rounded-lg border border-[#1f2937]">
                 <p className={`text-sm font-black ${cls}`}>{range}</p>
@@ -375,12 +392,8 @@ drb_per36 = (defensive_rebounds_per_game / minutes_per_game) × 36`}</Formula>
             ))}
           </div>
           <p className="text-sm text-[#9ca3af] mt-3">
-            We evaluated BPM (wing-biased), cumulative VORP (longevity-biased),
-            and WS/48 before settling here. WS/48 uses a different framework
-            from BPM — offensive + defensive win shares each built from
-            distinct box-score components — so it doesn&apos;t inherit BPM&apos;s
-            positional biases, and as a per-minute rate it isn&apos;t dominated
-            by outliers with many seasons.
+            Individual prospect profiles still show each comp&apos;s raw WS/48 for
+            context. Only the board-level ranking uses the position-adjusted value.
           </p>
         </Section>
 

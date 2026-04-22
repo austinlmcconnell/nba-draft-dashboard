@@ -187,6 +187,7 @@ export interface VorpEntry {
   mp: number;       // total career minutes played
   seasons: number;  // number of regular seasons with ≥1 MP
   display: string;  // original display name from dataset
+  pos?: string;     // NBA primary position (PG/SG/SF/PF/C) — used for position-normalizing WS/48
 }
 
 export type VorpLookup = Record<string, VorpEntry>;  // keyed by normalized name
@@ -212,8 +213,9 @@ export interface DraftBoardEntry {
   mockPickNo: number | null;
   mockTeam: string | null;
   comps: DraftComp[];
-  avgWs48: number | null;    // ranking signal — mean of 10 comps' WS/48
+  avgWs48: number | null;    // raw mean of 10 comps' WS/48 (shown on profile pages)
   ws48Coverage: number;      // how many of the 10 comps have a WS/48 value
+  paWs48: number | null;     // position-adjusted WS/48 — ranking signal (guards/bigs on same scale)
 }
 
 export interface DraftBoardApiResponse {

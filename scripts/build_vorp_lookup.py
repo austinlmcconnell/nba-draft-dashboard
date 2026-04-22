@@ -28,7 +28,7 @@ import json
 import re
 import time
 import unicodedata
-from collections import defaultdict
+from collections import Counter, defaultdict
 from io import StringIO
 from pathlib import Path
 
@@ -110,17 +110,26 @@ def fetch_season(year: int) -> pd.DataFrame | None:
     df = df.dropna(subset=['mp', 'vorp', 'ws'])
     df = df[df['mp'] > 0].copy()
 
+    # Capture position column — present as 'pos' in BBRef advanced tables
+    if 'pos' in df.columns:
+        df['pos'] = df['pos'].fillna('').astype(str).str.strip()
+    else:
+        df['pos'] = ''
+
     # For traded players, keep only the TOT combined row
     if 'tm' in df.columns:
         traded = df.groupby('player')['tm'].apply(lambda x: (x == 'TOT').any())
         traded_names = traded[traded].index
         df = df[~(df['player'].isin(traded_names) & (df['tm'] != 'TOT'))].copy()
 
-    return df[['player', 'mp', 'vorp', 'ws']].reset_index(drop=True)
+    return df[['player', 'mp', 'vorp', 'ws', 'pos']].reset_index(drop=True)
 
 
 def main() -> None:
-    career: dict = defaultdict(lambda: {'vorp': 0.0, 'ws': 0.0, 'mp': 0, 'seasons': 0, 'display': ''})
+    career: dict = defaultdict(lambda: {
+        'vorp': 0.0, 'ws': 0.0, 'mp': 0, 'seasons': 0, 'display': '',
+        '_pos': Counter(),
+    })
 
     for year in SEASONS:
         print(f'Season {year - 1}–{str(year)[2:]} ...', end=' ', flush=True)
@@ -135,6 +144,7 @@ def main() -> None:
             mp       = float(row['mp'])
             vorp     = float(row['vorp'])
             ws       = float(row['ws'])
+            pos      = str(row.get('pos', '')).strip()
 
             e = career[norm]
             e['vorp']    += vorp      # cumulative across seasons
@@ -143,6 +153,8 @@ def main() -> None:
             e['seasons'] += 1
             if not e['display']:
                 e['display'] = raw_name
+            if pos and pos.lower() not in ('', 'nan', 'pos'):
+                e['_pos'][pos] += 1
 
         print(f'{len(df)} rows')
         time.sleep(4)
@@ -150,12 +162,15 @@ def main() -> None:
     lookup: dict = {}
     for norm, e in career.items():
         if e['mp'] >= MIN_MP:
+            pos_counter: Counter = e['_pos']
+            primary_pos = pos_counter.most_common(1)[0][0] if pos_counter else ''
             lookup[norm] = {
                 'vorp':    round(e['vorp'], 2),
                 'ws':      round(e['ws'],   2),
                 'mp':      int(e['mp']),
                 'seasons': e['seasons'],
                 'display': e['display'],
+                'pos':     primary_pos,
             }
 
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
