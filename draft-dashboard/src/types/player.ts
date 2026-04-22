@@ -66,6 +66,19 @@ export interface PhysicalAttributes {
 }
 
 // ---------------------------------------------------------------------------
+// BartTorvik advanced metrics — primary signal for player quality in college.
+// Sourced from barttorvik.com via build_barttorvik_lookup.py.
+//   prpg      — Points per Replacement Player per Game (overall impact)
+//   adj_ortg  — adjusted offensive rating, points per 100 possessions
+//   adj_drtg  — adjusted defensive rating, points per 100 possessions allowed
+// ---------------------------------------------------------------------------
+export interface BartTorvikStats {
+  prpg: number;
+  adj_ortg: number | null;
+  adj_drtg: number | null;
+}
+
+// ---------------------------------------------------------------------------
 // College Player (current prospect or historical)
 // ---------------------------------------------------------------------------
 export interface CollegePlayer {
@@ -80,7 +93,8 @@ export interface CollegePlayer {
   team_primary_color?: string;
   team_secondary_color?: string;
   stats: CollegeStats;
-  physical?: PhysicalAttributes; // only populated when data is available
+  physical?: PhysicalAttributes;   // only populated when data is available
+  barttorvik?: BartTorvikStats;    // present for players with a BartTorvik match
 }
 
 // ---------------------------------------------------------------------------
@@ -121,6 +135,8 @@ export interface HistoricalPlayer {
   espn_team_id?: number;
   team_primary_color?: string;
   team_secondary_color?: string;
+  // BartTorvik advanced metrics — present for seasons 2008+ with a name match
+  barttorvik?: BartTorvikStats;
 }
 
 // ---------------------------------------------------------------------------
@@ -245,4 +261,6 @@ export interface DatasetNorms {
   height_inches: NormParams;
   weight_pounds: NormParams;
   age_at_season_start: NormParams;
+  // BartTorvik — primary comparison dimension (only present when lookup joined)
+  prpg: NormParams;
 }

@@ -3,18 +3,32 @@
 //
 // Flow:
 //   1. Fetch Big Board from Google Sheets
-//   2. Read historical college stats + BPM lookup from disk (fs)
+//   2. Read historical college stats + BPM lookup + BartTorvik lookup from disk
 //   3. For each Big Board player, find their current-season college stats
-//   4. Run top-10 stat comparison against drafted players who have BPM data
-//   5. Average the BPM scores → ranking signal
+//   4. Run top-10 stat comparison against drafted players 2008+ with BartTorvik
+//      data (PRPG! primary similarity, raw stat archetype secondary)
+//   5. Average the BPM scores → ranking signal (TBD: replace BPM sort)
 //   6. Return sorted list (best avg BPM first)
 
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
-import type { HistoricalPlayer, DraftBoardEntry, DraftBoardApiResponse, BpmLookup } from '@/types/player';
+import type {
+  HistoricalPlayer, DraftBoardEntry, DraftBoardApiResponse, BpmLookup,
+  BartTorvikStats,
+} from '@/types/player';
 import { buildDatasetNorms, getTopStatComps } from '@/lib/utils/comparison';
 import type { BigBoardPlayer } from '@/types/bigboard';
+
+type BartTorvikEntry = {
+  name: string;
+  team: string;
+  season: number;
+  prpg: number;
+  adj_ortg: number | null;
+  adj_drtg: number | null;
+};
+type BartTorvikLookup = Record<string, BartTorvikEntry>;
 
 export const dynamic = 'force-dynamic';
 
@@ -33,6 +47,19 @@ function normalizeForBpm(name: string): string {
     .toLowerCase()
     .replace(/[''`]/g, '')
     .replace(/\s+(jr|sr|ii|iii|iv|v)\.?\s*$/i, '')
+    .replace(/[^a-z\s]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+// ─── Name normalization (must match build_barttorvik_lookup.py) ──────────────
+function normalizeForBart(name: string): string {
+  return name
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')  // strip diacritics
+    .toLowerCase()
+    .replace(/['`'']/g, '')
+    .replace(/\b(jr\.?|sr\.?|ii|iii|iv)\b/g, '')
     .replace(/[^a-z\s]/g, '')
     .replace(/\s+/g, ' ')
     .trim();
@@ -125,8 +152,16 @@ function toStats(raw: any) {
   };
 }
 
+function toBartStats(entry: BartTorvikEntry | undefined): BartTorvikStats | undefined {
+  if (!entry || typeof entry.prpg !== 'number') return undefined;
+  return { prpg: entry.prpg, adj_ortg: entry.adj_ortg, adj_drtg: entry.adj_drtg };
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function toHistoricalPlayer(r: any): HistoricalPlayer {
+function toHistoricalPlayer(r: any, bart?: BartTorvikLookup): HistoricalPlayer {
+  const bartEntry = bart
+    ? bart[`${normalizeForBart(r.name)}|${r.college_season}`]
+    : undefined;
   return {
     id:           r.id ?? `hist_${r.name}_${r.college_season}`,
     name:         r.name,
@@ -157,6 +192,7 @@ function toHistoricalPlayer(r: any): HistoricalPlayer {
     draft_round: r.draft_round ?? null,
     draft_pick:  r.draft_pick  ?? null,
     position:    r.college_stats?.position ?? undefined,
+    barttorvik:  toBartStats(bartEntry),
   };
 }
 
@@ -193,25 +229,30 @@ export async function GET() {
 
     // 2. Load data files
     const bpmLookup: BpmLookup = readJson('bpm_lookup.json');
+    const bartLookup: BartTorvikLookup = readJson('barttorvik_lookup.json');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const historicalRaw: any[] = readJson('nba_career_stats.json');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const prospectsRaw: any[]  = readJson('historical_college_stats.json');
 
-    // 3. Build comparison pool: drafted players who have BPM data
+    // 3. Build comparison pool: drafted players 2008-present with BartTorvik data.
+    //    2008 is the earliest BartTorvik season (matches PRPG! coverage).
+    //    Restricting to drafted players removes undrafted/mid-major statistical
+    //    doppelgangers whose careers diverged from scouted prospects.
     const pool: HistoricalPlayer[] = historicalRaw
       .filter(r =>
         r.draft_pick != null &&
+        r.college_season >= 2008 &&
         r.college_season < 2026 &&
-        normalizeForBpm(r.name) in bpmLookup,
+        `${normalizeForBart(r.name)}|${r.college_season}` in bartLookup,
       )
-      .map(toHistoricalPlayer);
+      .map(r => toHistoricalPlayer(r, bartLookup));
 
-    // 4. Build norms from the full historical pool (not just the BPM subset)
+    // 4. Build norms from the full historical pool (not just the pool subset)
     //    so z-scores stay calibrated across the whole dataset
     const fullPool: HistoricalPlayer[] = historicalRaw
       .filter(r => r.college_season < 2026)
-      .map(toHistoricalPlayer);
+      .map(r => toHistoricalPlayer(r, bartLookup));
     const norms = buildDatasetNorms(fullPool);
 
     // 5. Current-season prospects (for finding Big Board players' stats)
@@ -236,7 +277,11 @@ export async function GET() {
       }
 
       const prospectStats = toStats(match);
-      const topComps = getTopStatComps(prospectStats, pool, norms, match.position ?? bb.position, 10);
+      const prospectBart  = bartLookup[`${normalizeForBart(match.name)}|${match.season}`];
+      const prospectPrpg  = prospectBart?.prpg;
+      const topComps = getTopStatComps(
+        prospectStats, prospectPrpg, pool, norms, match.position ?? bb.position, 10,
+      );
 
       const comps = topComps.map(c => {
         const key   = normalizeForBpm(c.historical_player.name);

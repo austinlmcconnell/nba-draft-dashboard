@@ -38,8 +38,16 @@ export default function ProspectDetailPage() {
 
         // Only compare against players from PREVIOUS seasons to avoid
         // self-comparison and comparisons against current-season teammates.
-        const compPool = historical.filter(h => h.college_season < p.season);
-        const comps = getProspectComparisons(p.stats, p.physical ?? null, compPool, norms, p.position);
+        // Further restrict to drafted players from 2008+ (matches BartTorvik
+        // coverage and ensures the comparison pool is scouted prospects).
+        const compPool = historical.filter(h =>
+          h.college_season >= 2008 &&
+          h.college_season < p.season &&
+          h.draft_pick != null,
+        );
+        const comps = getProspectComparisons(
+          p.stats, p.physical ?? null, p.barttorvik?.prpg, compPool, norms, p.position,
+        );
         const avg = await getSeasonAverages(p.season, p.position);
         setProspect(p);
         setComparisons(comps);
@@ -136,6 +144,29 @@ export default function ProspectDetailPage() {
                 ))}
               </div>
             </div>
+
+            {/* BartTorvik advanced metrics */}
+            {prospect.barttorvik && (
+              <div className="mt-4 p-4 bg-[#1a2332] rounded-lg border border-[#1f2937]">
+                <p className="text-xs font-semibold text-[#6b7280] uppercase tracking-wide mb-2">
+                  BartTorvik Advanced — 2008+ D1 baseline
+                </p>
+                <div className="grid grid-cols-3 gap-2 text-sm">
+                  <div className="text-center">
+                    <p className="text-xs text-[#6b7280]">PRPG!</p>
+                    <p className="font-bold text-[#4ade80]">{prospect.barttorvik.prpg.toFixed(2)}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-xs text-[#6b7280]">Adj ORtg</p>
+                    <p className="font-bold text-[#d1d5db]">{prospect.barttorvik.adj_ortg?.toFixed(1) ?? '—'}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-xs text-[#6b7280]">Adj DRtg</p>
+                    <p className="font-bold text-[#d1d5db]">{prospect.barttorvik.adj_drtg?.toFixed(1) ?? '—'}</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

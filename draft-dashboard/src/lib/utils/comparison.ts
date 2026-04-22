@@ -4,27 +4,24 @@
  * Two comparison lenses per prospect:
  *
  *   statistical — Who produced the most similarly on the court?
- *     Five basketball-analytics facets covering the full skillset:
  *
- *       Scoring & Shooting  (26%)
- *         FG%, FT%, FT rate, 3P%, usage, off_rtg (0.5×)
- *         NOTE: true_shooting_pct and oreb_pct are 0% populated in the
- *         dataset — FG%/FT% are used in their place.
+ *     Primary (65%): BartTorvik PRPG! similarity
+ *       PRPG! (Points per Replacement Per Game) is a per-possession, tempo-
+ *       and competition-adjusted single-number player value that captures
+ *       both offensive and defensive impact. It's the single best freely-
+ *       available college metric and does the heavy lifting here.
  *
- *       Scoring Volume      (11%)
- *         Pts/36
+ *     Secondary (35%): raw statistical archetype facets
+ *       These keep comps tethered to the right play style after PRPG!
+ *       filters for quality. Total 35% split proportionally:
+ *         Scoring & Shooting (9.1%)  — FG%, FT%, FT rate, 3P%, usage, off_rtg (0.5×)
+ *         Scoring Volume    (3.85%)  — Pts/36
+ *         Playmaking        (6.3%)   — Ast/36, AST/TOV, TOV/36
+ *         Rebounding        (7.0%)   — Reb/36, ORB/36, DRB/36
+ *         Defense           (8.75%)  — Stl/36, Blk/36, def_rtg (0.5×)
  *
- *       Playmaking          (18%)
- *         Ast/36, AST/TOV (derived live from ast_per36 / tov_per36), TOV/36
- *         NOTE: ast_tov_ratio stored field is 0% populated; ratio is computed.
- *
- *       Rebounding          (20%)
- *         Reb/36, ORB/36 (derived), DRB/36 (derived)
- *         Splitting total rebounds into offensive + defensive captures
- *         distinct rebounder archetypes.
- *
- *       Defense             (25%)
- *         Stl/36, Blk/36, def_rtg (0.5× — team-context signal)
+ *     When PRPG! is unavailable (missing BartTorvik match), the raw facets
+ *     are used at their original weights as a fallback.
  *
  *   physical — Who shared the most similar physical profile?
  *     Height 55%, weight 45% (wingspan redistributes: h 40%, w 30%, ws 20%
@@ -82,6 +79,7 @@ export function buildDatasetNorms(players: HistoricalPlayer[]): DatasetNorms {
   const heights = players.map(p => p.physical?.height_inches).filter((v): v is number => v != null && v > 0);
   const weights = players.map(p => p.physical?.weight_pounds).filter((v): v is number => v != null && v > 0);
   const ages    = players.map(p => p.physical?.age_at_season_start).filter((v): v is number => v != null && v > 10);
+  const prpgs   = players.map(p => p.barttorvik?.prpg).filter((v): v is number => typeof v === 'number' && isFinite(v));
 
   return {
     pts_per36:        get(s => s.pts_per36),
@@ -103,6 +101,7 @@ export function buildDatasetNorms(players: HistoricalPlayer[]): DatasetNorms {
     height_inches:    makeParams(heights),
     weight_pounds:    makeParams(weights),
     age_at_season_start: makeParams(ages),
+    prpg:             makeParams(prpgs),
   };
 }
 
@@ -264,13 +263,44 @@ function positionCompatible(prospectPos: string | undefined, histPos: string | u
 // Public: compute statistical and physical comparisons for a prospect
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// PRPG! similarity
+//
+// PRPG! is BartTorvik's single-number per-possession value metric. We
+// compare prospect vs historical player by absolute PRPG! distance and
+// convert to a 0-100 similarity with an exponential decay.
+//
+// K_PRPG = 1.5 — a PRPG! gap of 1.5 maps to ~37 similarity, 3.0 to ~14.
+// Calibrated so near-identical PRPG! (within ~0.3) scores ≥ 80.
+// ---------------------------------------------------------------------------
+const K_PRPG = 1.5;
+
+function prpgSim(prospectPrpg: number | undefined, histPrpg: number | undefined): number | null {
+  if (typeof prospectPrpg !== 'number' || typeof histPrpg !== 'number') return null;
+  return sim(Math.abs(prospectPrpg - histPrpg), K_PRPG);
+}
+
+// PRPG! is the primary driver (65%); raw stat archetype fills in the remainder (35%).
+// Within the 35% archetype budget, the original facet weights (0.26/0.11/0.18/0.20/0.25)
+// are preserved proportionally — so facet contributions become 0.091, 0.0385, 0.063, 0.070, 0.0875.
+const W_PRPG        = 0.65;
+const W_ARCHETYPE   = 1 - W_PRPG;        // 0.35
+const FACET_EFF     = 0.26 * W_ARCHETYPE;  // 0.0910
+const FACET_VOL     = 0.11 * W_ARCHETYPE;  // 0.0385
+const FACET_PLAY    = 0.18 * W_ARCHETYPE;  // 0.0630
+const FACET_REB     = 0.20 * W_ARCHETYPE;  // 0.0700
+const FACET_DEF     = 0.25 * W_ARCHETYPE;  // 0.0875
+
 /**
  * Return the top N statistical comparisons from a pre-filtered pool.
  * Used by the Draft Board: pool is already restricted to drafted players
  * with career NBA metric data, and we want 10 comps instead of 5.
+ *
+ * Ranking priority: PRPG! similarity (65%) > raw archetype facets (35%).
  */
 export function getTopStatComps(
   prospectStats: CollegeStats,
+  prospectPrpg: number | undefined,
   pool: HistoricalPlayer[],
   norms: DatasetNorms,
   prospectPosition?: string,
@@ -292,15 +322,15 @@ export function getTopStatComps(
       const sReb  = sim(s.reb,  K_STAT);
       const sDef  = sim(s.def,  K_STAT);
 
-      const weightedAvg = sEff * 0.26 + sVol * 0.11 + sPlay * 0.18 + sReb * 0.20 + sDef * 0.25;
-      const minFacet    = Math.min(sEff, sVol, sPlay, sReb, sDef);
-      const blendedSim  = 0.7 * weightedAvg + 0.3 * minFacet;
+      const archetypeAvg =
+        sEff * 0.26 + sVol * 0.11 + sPlay * 0.18 + sReb * 0.20 + sDef * 0.25;
 
-      return {
-        hist, s,
-        sEff, sVol, sPlay, sReb, sDef,
-        blendedSim,
-      };
+      const sPrpg = prpgSim(prospectPrpg, hist.barttorvik?.prpg);
+      const blendedSim = sPrpg != null
+        ? sPrpg * W_PRPG + archetypeAvg * W_ARCHETYPE
+        : archetypeAvg;  // fallback when PRPG! unavailable
+
+      return { hist, s, sEff, sVol, sPlay, sReb, sDef, sPrpg, blendedSim };
     })
     .sort((a, b) => b.blendedSim - a.blendedSim)
     .slice(0, topN)
@@ -309,11 +339,11 @@ export function getTopStatComps(
       comparison_type: 'statistical' as const,
       similarity_score: Math.round(r.blendedSim * 10) / 10,
       breakdown: {
-        scoring_efficiency: Math.round(sim(r.s.eff,  K_STAT)),
-        scoring_volume:     Math.round(sim(r.s.vol,  K_VOL)),
-        playmaking:         Math.round(sim(r.s.play, K_STAT)),
-        rebounding:         Math.round(sim(r.s.reb,  K_STAT)),
-        defense:            Math.round(sim(r.s.def,  K_STAT)),
+        scoring_efficiency: Math.round(r.sEff),
+        scoring_volume:     Math.round(r.sVol),
+        playmaking:         Math.round(r.sPlay),
+        rebounding:         Math.round(r.sReb),
+        defense:            Math.round(r.sDef),
         physical:           0,
       },
     }));
@@ -322,6 +352,7 @@ export function getTopStatComps(
 export function getProspectComparisons(
   prospectStats: CollegeStats,
   prospectPhysical: PhysicalAttributes | undefined | null,
+  prospectPrpg: number | undefined,
   pool: HistoricalPlayer[],
   norms: DatasetNorms,
   prospectPosition?: string,
@@ -346,11 +377,11 @@ export function getProspectComparisons(
       comparison_type: type,
       similarity_score: Math.round(score * 10) / 10,
       breakdown: {
-        scoring_efficiency: Math.round(sim(sEff,  K_STAT)),
-        scoring_volume:     Math.round(sim(sVol,  K_VOL)),
-        playmaking:         Math.round(sim(sPlay, K_STAT)),
-        rebounding:         Math.round(sim(sReb,  K_STAT)),
-        defense:            Math.round(sim(sDef,  K_STAT)),
+        scoring_efficiency: Math.round(sEff),
+        scoring_volume:     Math.round(sVol),
+        playmaking:         Math.round(sPlay),
+        rebounding:         Math.round(sReb),
+        defense:            Math.round(sDef),
         physical:           pDist != null ? Math.round(pSim) : 0,
       },
     };
@@ -367,9 +398,13 @@ export function getProspectComparisons(
       const sReb  = sim(s.reb,  K_STAT);
       const sDef  = sim(s.def,  K_STAT);
 
-      const weightedAvg = sEff * 0.26 + sVol * 0.11 + sPlay * 0.18 + sReb * 0.20 + sDef * 0.25;
-      const minFacet    = Math.min(sEff, sVol, sPlay, sReb, sDef);
-      const blendedSim  = 0.7 * weightedAvg + 0.3 * minFacet;
+      const archetypeAvg =
+        sEff * 0.26 + sVol * 0.11 + sPlay * 0.18 + sReb * 0.20 + sDef * 0.25;
+
+      const sPrpg = prpgSim(prospectPrpg, hist.barttorvik?.prpg);
+      const blendedSim = sPrpg != null
+        ? sPrpg * W_PRPG + archetypeAvg * W_ARCHETYPE
+        : archetypeAvg;
 
       let pDist: number | null = null;
       let pSimVal = 0;
@@ -383,7 +418,8 @@ export function getProspectComparisons(
     .sort((a, b) => b.blendedSim - a.blendedSim);
 
   const statistical: PlayerComparison[] = statRows.slice(0, 5).map(r =>
-    make(r.hist, 'statistical', r.blendedSim, r.s.eff, r.s.vol, r.s.play, r.s.reb, r.s.def, r.pDist, r.pSimVal)
+    make(r.hist, 'statistical', r.blendedSim,
+         r.sEff, r.sVol, r.sPlay, r.sReb, r.sDef, r.pDist, r.pSimVal)
   );
 
   let physical: PlayerComparison[] = [];
@@ -393,14 +429,20 @@ export function getProspectComparisons(
       .map(hist => {
         const hVec = toStatVec(hist.college_stats, norms);
         const s = statDistance(pVec, hVec);
+        const sEff  = sim(s.eff,  K_STAT);
+        const sVol  = sim(s.vol,  K_VOL);
+        const sPlay = sim(s.play, K_STAT);
+        const sReb  = sim(s.reb,  K_STAT);
+        const sDef  = sim(s.def,  K_STAT);
         const pDist = physDistance(prospectPhysical, hist.physical, norms);
         const pSimVal = sim(pDist, K_PHYS);
-        return { hist, s, pDist, pSimVal };
+        return { hist, sEff, sVol, sPlay, sReb, sDef, pDist, pSimVal };
       })
       .sort((a, b) => a.pDist - b.pDist);
 
     physical = physRows.slice(0, 5).map(r =>
-      make(r.hist, 'physical', r.pSimVal, r.s.eff, r.s.vol, r.s.play, r.s.reb, r.s.def, r.pDist, r.pSimVal)
+      make(r.hist, 'physical', r.pSimVal,
+           r.sEff, r.sVol, r.sPlay, r.sReb, r.sDef, r.pDist, r.pSimVal)
     );
   }
 
