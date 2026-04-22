@@ -1,15 +1,17 @@
-// Server-side route: ranks Big Board prospects by average career VORP
+// Server-side route: ranks Big Board prospects by average career WS/48
 // of their 10 closest historical college statistical comparisons.
 //
 // Flow:
 //   1. Fetch Big Board from Google Sheets
-//   2. Read historical college stats + VORP lookup + BartTorvik lookup from disk
+//   2. Read historical college stats + NBA career lookup + BartTorvik from disk
 //   3. For each Big Board player, find their current-season college stats
 //   4. Run top-10 stat comparison against drafted players 2008+ with BartTorvik
-//      data AND a minimum 1,500 career NBA minutes (filters out noise from
-//      cup-of-coffee NBA careers), PRPG! primary similarity
-//   5. Average the career VORP of the comps → ranking signal
-//   6. Return sorted list (best avg VORP first)
+//      data AND a minimum 1,500 career NBA minutes (filters noise from
+//      cup-of-coffee NBA careers). PRPG! primary similarity.
+//   5. Compute career WS/48 = career_ws / career_mp × 48 for each comp, then
+//      average those across the 10 comps → ranking signal. WS/48 is a rate
+//      stat, so a long-career star like Harden doesn't dominate the average.
+//   6. Return sorted list (best avg WS/48 first).
 
 import { NextResponse } from 'next/server';
 import fs from 'fs';
@@ -288,7 +290,7 @@ export async function GET() {
           name: bb.name, slug: bb.slug, school: bb.school,
           position: bb.position, bigBoardRank: bb.rank,
           mockPickNo: bb.mockPickNo, mockTeam: bb.mockTeam,
-          comps: [], avgVorp: null, vorpCoverage: 0,
+          comps: [], avgWs48: null, ws48Coverage: 0,
         };
       }
 
@@ -304,21 +306,25 @@ export async function GET() {
       const comps = topComps.map(c => {
         const key   = normalizeForVorp(c.historical_player.name);
         const entry = vorpLookup[key] ?? null;
+        const ws48  = entry && entry.mp > 0
+          ? (entry.ws / entry.mp) * 48
+          : null;
         return {
           name:         c.historical_player.name,
           collegeSeason: c.historical_player.college_season,
           collegeTeam:  c.historical_player.college_team,
           position:     c.historical_player.position ?? '',
           similarity:   c.similarity_score,
+          ws48:        ws48 !== null ? Math.round(ws48 * 1000) / 1000 : null,
           vorp:        entry?.vorp    ?? null,
-          vorpMp:      entry?.mp      ?? null,
-          vorpSeasons: entry?.seasons ?? null,
+          nbaMp:       entry?.mp      ?? null,
+          nbaSeasons:  entry?.seasons ?? null,
         };
       });
 
-      const vorpComps = comps.filter(c => c.vorp !== null);
-      const avgVorp = vorpComps.length > 0
-        ? vorpComps.reduce((s, c) => s + c.vorp!, 0) / vorpComps.length
+      const ws48Comps = comps.filter(c => c.ws48 !== null);
+      const avgWs48 = ws48Comps.length > 0
+        ? ws48Comps.reduce((s, c) => s + c.ws48!, 0) / ws48Comps.length
         : null;
 
       return {
@@ -326,17 +332,17 @@ export async function GET() {
         position: bb.position, bigBoardRank: bb.rank,
         mockPickNo: bb.mockPickNo, mockTeam: bb.mockTeam,
         comps,
-        avgVorp: avgVorp !== null ? Math.round(avgVorp * 100) / 100 : null,
-        vorpCoverage: vorpComps.length,
+        avgWs48: avgWs48 !== null ? Math.round(avgWs48 * 1000) / 1000 : null,
+        ws48Coverage: ws48Comps.length,
       };
     });
 
-    // 7. Sort by avg VORP descending (nulls last)
+    // 7. Sort by avg WS/48 descending (nulls last)
     entries.sort((a, b) => {
-      if (a.avgVorp === null && b.avgVorp === null) return 0;
-      if (a.avgVorp === null) return 1;
-      if (b.avgVorp === null) return -1;
-      return b.avgVorp - a.avgVorp;
+      if (a.avgWs48 === null && b.avgWs48 === null) return 0;
+      if (a.avgWs48 === null) return 1;
+      if (b.avgWs48 === null) return -1;
+      return b.avgWs48 - a.avgWs48;
     });
 
     const result: DraftBoardApiResponse = { entries, updatedAt: new Date().toISOString() };

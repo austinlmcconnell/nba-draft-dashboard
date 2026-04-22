@@ -1,23 +1,27 @@
 #!/usr/bin/env python3
 """
-Build VORP (Value Over Replacement Player) career lookup from Basketball
-Reference per-season advanced stats tables.
+Build NBA career career-value lookup from Basketball Reference per-season
+advanced stats tables.
 
-VORP is per-possession impact × minutes played, summed across a career. It
-rewards both per-minute quality AND longevity, so a career total correlates
-well with "did this player amount to something in the NBA?" — which is what
-the Draft Board ranking is trying to answer.
+Captures, per player:
+  vorp    — career-total VORP (Value Over Replacement Player), cumulative
+  ws      — career-total Win Shares, cumulative
+  mp      — career-total minutes played
+  seasons — number of regular seasons with ≥1 MP
 
-Scrapes NBA seasons 2005-06 through 2024-25 (year IDs 2006–2025), computes
-each player's career-total VORP (summed across seasons) and total minutes
-played, and writes draft-dashboard/public/data/vorp_lookup.json.
+From these we derive WS/48 in the UI as ws / mp × 48 — a rate stat that
+does not reward longevity (unlike cumulative VORP or WS on their own) and
+uses a different framework from BPM (offensive + defensive WS built from
+distinct box-score components), so it avoids BPM's position biases.
+
+Writes to draft-dashboard/public/data/vorp_lookup.json.
 
 Usage:
     pip install requests beautifulsoup4 lxml pandas
     python3 scripts/build_vorp_lookup.py
 
 Rate limit: sleeps 4 s between requests (~15 req/min, safely under BBRef's 20/min cap).
-Full run takes ~90 seconds.
+Full run takes ~90 seconds (longer with retries when BBRef rate-limits).
 """
 
 import json
@@ -58,7 +62,7 @@ def normalize(name: str) -> str:
 
 
 def fetch_season(year: int) -> pd.DataFrame | None:
-    """Returns a DataFrame with [player, tm, mp, vorp] or None on failure."""
+    """Returns a DataFrame with [player, tm, mp, vorp, ws] or None on failure."""
     url = f'https://www.basketball-reference.com/leagues/NBA_{year}_advanced.html'
     try:
         resp = requests.get(url, headers=HEADERS, timeout=30)
@@ -96,13 +100,14 @@ def fetch_season(year: int) -> pd.DataFrame | None:
     if 'player' in df.columns:
         df = df[df['player'] != 'Player'].copy()
 
-    if 'vorp' not in df.columns:
-        print(f'  No VORP column for {year} (cols: {list(df.columns)[:10]})')
+    if 'vorp' not in df.columns or 'ws' not in df.columns:
+        print(f'  Missing VORP/WS for {year} (cols: {list(df.columns)[:10]})')
         return None
 
     df['mp']   = pd.to_numeric(df.get('mp', 0), errors='coerce')
     df['vorp'] = pd.to_numeric(df['vorp'],       errors='coerce')
-    df = df.dropna(subset=['mp', 'vorp'])
+    df['ws']   = pd.to_numeric(df['ws'],         errors='coerce')
+    df = df.dropna(subset=['mp', 'vorp', 'ws'])
     df = df[df['mp'] > 0].copy()
 
     # For traded players, keep only the TOT combined row
@@ -111,11 +116,11 @@ def fetch_season(year: int) -> pd.DataFrame | None:
         traded_names = traded[traded].index
         df = df[~(df['player'].isin(traded_names) & (df['tm'] != 'TOT'))].copy()
 
-    return df[['player', 'mp', 'vorp']].reset_index(drop=True)
+    return df[['player', 'mp', 'vorp', 'ws']].reset_index(drop=True)
 
 
 def main() -> None:
-    career: dict = defaultdict(lambda: {'vorp': 0.0, 'mp': 0, 'seasons': 0, 'display': ''})
+    career: dict = defaultdict(lambda: {'vorp': 0.0, 'ws': 0.0, 'mp': 0, 'seasons': 0, 'display': ''})
 
     for year in SEASONS:
         print(f'Season {year - 1}–{str(year)[2:]} ...', end=' ', flush=True)
@@ -129,9 +134,11 @@ def main() -> None:
             norm     = normalize(raw_name)
             mp       = float(row['mp'])
             vorp     = float(row['vorp'])
+            ws       = float(row['ws'])
 
             e = career[norm]
-            e['vorp']    += vorp      # VORP is cumulative — sum across seasons
+            e['vorp']    += vorp      # cumulative across seasons
+            e['ws']      += ws        # cumulative across seasons
             e['mp']      += mp
             e['seasons'] += 1
             if not e['display']:
@@ -144,7 +151,8 @@ def main() -> None:
     for norm, e in career.items():
         if e['mp'] >= MIN_MP:
             lookup[norm] = {
-                'vorp':    round(e['vorp'], 2),     # career total VORP
+                'vorp':    round(e['vorp'], 2),
+                'ws':      round(e['ws'],   2),
                 'mp':      int(e['mp']),
                 'seasons': e['seasons'],
                 'display': e['display'],
@@ -157,10 +165,12 @@ def main() -> None:
     print(f'\nWrote {len(lookup)} players → {OUT_PATH}')
 
     for check in ['lebron james', 'stephen curry', 'jalen brunson', 'nikola jokic',
-                  'kevin durant', 'cameron bairstow']:
+                  'kevin durant', 'james harden', 'cameron bairstow']:
         if check in lookup:
             e = lookup[check]
-            print(f'  {e["display"]:<22}  VORP {e["vorp"]:+.2f}  ({e["mp"]:,} MP, {e["seasons"]}s)')
+            ws48 = e['ws'] / e['mp'] * 48 if e['mp'] else 0
+            print(f'  {e["display"]:<22}  VORP {e["vorp"]:+6.1f}  WS {e["ws"]:+6.1f}  '
+                  f'WS/48 {ws48:.3f}  ({e["mp"]:,} MP, {e["seasons"]}s)')
         else:
             print(f'  {check}: NOT FOUND')
 

@@ -172,21 +172,24 @@ export interface ProspectComparisons {
 }
 
 // ---------------------------------------------------------------------------
-// VORP-based Draft Board types
+// NBA career metric types (Basketball Reference advanced stats)
 //
-// VORP (Value Over Replacement Player) is a Basketball Reference cumulative
-// career metric: per-possession impact × minutes played, summed across all
-// seasons. Captures both peak quality AND longevity in one number.
+// We store both VORP (cumulative) and WS (cumulative) per player. The Draft
+// Board ranks by career Win Shares per 48 minutes (WS/48 = ws / mp × 48),
+// a rate stat that is not biased by career length — unlike pure cumulative
+// VORP where a long-career star like James Harden would dominate a comp
+// average even when the prospect's other 9 comps are ordinary.
 // ---------------------------------------------------------------------------
 
 export interface VorpEntry {
   vorp: number;     // career total VORP (summed across seasons)
-  mp: number;       // total career minutes in dataset
-  seasons: number;  // number of regular seasons
+  ws: number;       // career total Win Shares (summed across seasons)
+  mp: number;       // total career minutes played
+  seasons: number;  // number of regular seasons with ≥1 MP
   display: string;  // original display name from dataset
 }
 
-export type VorpLookup = Record<string, VorpEntry>; // keyed by normalized name
+export type VorpLookup = Record<string, VorpEntry>;  // keyed by normalized name
 
 export interface DraftComp {
   name: string;
@@ -194,9 +197,10 @@ export interface DraftComp {
   collegeTeam: string;
   position: string;
   similarity: number;   // 0-100 statistical similarity score
-  vorp: number | null;
-  vorpMp: number | null;
-  vorpSeasons: number | null;
+  ws48: number | null;  // career Win Shares per 48 minutes
+  vorp: number | null;  // career total VORP (shown alongside WS/48 for context)
+  nbaMp: number | null; // career NBA minutes
+  nbaSeasons: number | null;
 }
 
 export interface DraftBoardEntry {
@@ -208,8 +212,8 @@ export interface DraftBoardEntry {
   mockPickNo: number | null;
   mockTeam: string | null;
   comps: DraftComp[];
-  avgVorp: number | null;
-  vorpCoverage: number; // how many of the 10 comps have VORP scores
+  avgWs48: number | null;    // ranking signal — mean of 10 comps' WS/48
+  ws48Coverage: number;      // how many of the 10 comps have a WS/48 value
 }
 
 export interface DraftBoardApiResponse {

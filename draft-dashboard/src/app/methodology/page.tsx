@@ -74,7 +74,7 @@ export default function MethodologyPage() {
               ['#normalise',   'Z-score normalisation'],
               ['#similarity',  'Distance → similarity score'],
               ['#derived',     'Derived stats (AST/TOV, ORB/36, DRB/36)'],
-              ['#draftboard',  'Draft Board ranking — career VORP'],
+              ['#draftboard',  'Draft Board ranking — career WS/48'],
               ['#statboxes',   'Profile stat box shading'],
             ].map(([href, label]) => (
               <li key={href}><a href={href} className="hover:text-[#4ade80] hover:underline transition-colors">{label}</a></li>
@@ -184,9 +184,9 @@ Examples:
             <p className="text-sm text-[#9ca3af]">
               Drafted players who never established NBA rotation roles (Cameron
               Bairstow-type careers: drafted, a handful of games, out of the league)
-              have noisy per-possession metrics that would distort the avg-VORP
+              have noisy per-possession metrics that would distort the avg-WS/48
               ranking. 1,500 MP ≈ one season of rotation-level minutes, which is
-              enough sample size for a meaningful career VORP.
+              enough sample size for a meaningful career rate.
             </p>
           </Sub>
 
@@ -322,31 +322,34 @@ drb_per36 = (defensive_rebounds_per_game / minutes_per_game) × 36`}</Formula>
         </Section>
 
         {/* ---------------------------------------------------------------- */}
-        <Section id="draftboard" title="Draft Board ranking — career VORP">
+        <Section id="draftboard" title="Draft Board ranking — career WS/48">
           <p className="text-[#d1d5db] mb-3">
             The Draft Board sorts Big Board prospects by the <strong>average career
-            total VORP</strong> of their 10 closest historical comps. VORP (Value
-            Over Replacement Player) is a Basketball Reference cumulative metric
-            — per-possession impact multiplied by minutes played, summed across
-            every NBA season. It rewards both per-minute quality and longevity,
-            so it&apos;s a compact answer to &quot;did this comp&apos;s NBA career
-            amount to something?&quot;
+            Win Shares per 48 minutes (WS/48)</strong> of their 10 closest historical
+            comps. WS/48 is a Basketball Reference <em>rate</em> statistic — it
+            measures how many wins a player produces per 48 minutes on the floor,
+            without rewarding career length. That matters because cumulative
+            metrics like career VORP let a single long-career star (James Harden,
+            90+ career VORP) dominate the 10-comp average even when the other
+            nine comps are ordinary. WS/48 puts every comp on the same per-minute
+            scale so no outlier swamps the group.
           </p>
           <Formula>{`For each Big Board prospect:
   1. Find 10 closest college statistical comps (PRPG!-primary)
-  2. Look up each comp's career total VORP (vorp_lookup.json)
-  3. avg_vorp = mean(comp.vorp for comp in 10)
-  4. Rank the board by avg_vorp descending`}</Formula>
+  2. Look up each comp's career WS and MP (vorp_lookup.json)
+  3. comp.ws48 = comp.ws / comp.mp × 48
+  4. avg_ws48 = mean(comp.ws48 for comp in 10)
+  5. Rank the board by avg_ws48 descending`}</Formula>
           <p className="text-[#d1d5db] mb-3">
-            Approximate VORP career-total scale:
+            WS/48 calibration (league average ≈ 0.100):
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center">
             {[
-              { range: '≥ 25', label: 'Franchise-level',    cls: 'text-emerald-400' },
-              { range: '≥ 10', label: 'Long-time starter',  cls: 'text-[#4ade80]' },
-              { range: '≥ 2',  label: 'Established',        cls: 'text-[#9ca3af]' },
-              { range: '≥ 0',  label: 'Fringe/Role',        cls: 'text-amber-400' },
-              { range: '< 0',  label: 'Below replacement',  cls: 'text-red-400' },
+              { range: '≥ 0.200', label: 'Superstar',            cls: 'text-emerald-400' },
+              { range: '≥ 0.150', label: 'All-Star Starter',     cls: 'text-[#4ade80]' },
+              { range: '≥ 0.100', label: 'Starter (league avg)', cls: 'text-[#9ca3af]' },
+              { range: '≥ 0.050', label: 'Rotation',             cls: 'text-amber-400' },
+              { range: '< 0.050', label: 'Below rotation',       cls: 'text-red-400' },
             ].map(({ range, label, cls }) => (
               <div key={range} className="p-3 bg-[#0d1117] rounded-lg border border-[#1f2937]">
                 <p className={`text-sm font-black ${cls}`}>{range}</p>
@@ -355,9 +358,12 @@ drb_per36 = (defensive_rebounds_per_game / minutes_per_game) × 36`}</Formula>
             ))}
           </div>
           <p className="text-sm text-[#9ca3af] mt-3">
-            Unlike BPM (a rate statistic that systematically undervalued wings),
-            VORP credits accumulated impact — so a long-career wing like Paul
-            George shows up as a top-tier career, not a middling one.
+            We evaluated BPM (wing-biased), cumulative VORP (longevity-biased),
+            and WS/48 before settling here. WS/48 uses a different framework
+            from BPM — offensive + defensive win shares each built from
+            distinct box-score components — so it doesn&apos;t inherit BPM&apos;s
+            positional biases, and as a per-minute rate it isn&apos;t dominated
+            by outliers with many seasons.
           </p>
         </Section>
 
