@@ -29,6 +29,44 @@ import type { BigBoardPlayer } from '@/types/bigboard';
 // whose sample-sized career metrics would distort the avg-VORP ranking.
 const MIN_NBA_MP = 1500;
 
+// ─── Position group helpers ───────────────────────────────────────────────────
+type PosGroup = 'PG' | 'SG' | 'SF' | 'PF' | 'C';
+const POS_GROUPS: PosGroup[] = ['PG', 'SG', 'SF', 'PF', 'C'];
+
+function toPosGroup(pos: string): PosGroup {
+  const p = (pos || '').split('-')[0].toUpperCase().trim() as PosGroup;
+  return POS_GROUPS.includes(p) ? p : 'SF'; // SF as neutral fallback
+}
+
+interface PosNorms {
+  byPos: Record<PosGroup, { mean: number; std: number }>;
+  overall: { mean: number; std: number };
+}
+
+function buildPosNorms(vorpLookup: VorpLookup, minMp: number): PosNorms {
+  const grouped: Record<PosGroup, number[]> = { PG: [], SG: [], SF: [], PF: [], C: [] };
+
+  for (const entry of Object.values(vorpLookup)) {
+    if (entry.mp < minMp || !entry.pos) continue;
+    const ws48 = (entry.ws / entry.mp) * 48;
+    if (!isFinite(ws48)) continue;
+    grouped[toPosGroup(entry.pos)].push(ws48);
+  }
+
+  const calcStats = (vals: number[]) => {
+    if (vals.length === 0) return { mean: 0.085, std: 0.045 };
+    const mean = vals.reduce((s, v) => s + v, 0) / vals.length;
+    const std  = Math.sqrt(vals.reduce((s, v) => s + (v - mean) ** 2, 0) / vals.length);
+    return { mean, std: Math.max(std, 0.001) };
+  };
+
+  const all = Object.values(grouped).flat();
+  return {
+    byPos:   { PG: calcStats(grouped.PG), SG: calcStats(grouped.SG), SF: calcStats(grouped.SF), PF: calcStats(grouped.PF), C: calcStats(grouped.C) },
+    overall: calcStats(all),
+  };
+}
+
 type BartTorvikEntry = {
   name: string;
   team: string;
@@ -273,6 +311,12 @@ export async function GET() {
       .map(r => toHistoricalPlayer(r, bartLookup));
     const norms = buildDatasetNorms(fullPool);
 
+    // 4b. Build position-group WS/48 norms so guards and bigs are ranked on
+    //     a level playing field. Centers structurally average ~0.121 WS/48 vs
+    //     guards at ~0.070 — a gap of >1 standard deviation. Without adjustment,
+    //     big-man prospects always outscore guard prospects on the board.
+    const posNorms = buildPosNorms(vorpLookup, MIN_NBA_MP);
+
     // 5. Current-season prospects (for finding Big Board players' stats)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const currentProspects: any[] = prospectsRaw.filter((r: any) => r.season === 2026);
@@ -290,7 +334,7 @@ export async function GET() {
           name: bb.name, slug: bb.slug, school: bb.school,
           position: bb.position, bigBoardRank: bb.rank,
           mockPickNo: bb.mockPickNo, mockTeam: bb.mockTeam,
-          comps: [], avgWs48: null, ws48Coverage: 0,
+          comps: [], avgWs48: null, ws48Coverage: 0, paWs48: null,
         };
       }
 
@@ -319,35 +363,54 @@ export async function GET() {
           vorp:        entry?.vorp    ?? null,
           nbaMp:       entry?.mp      ?? null,
           nbaSeasons:  entry?.seasons ?? null,
+          // NBA position from vorp_lookup — needed for position normalization
+          _nbaPos:     entry?.pos ?? '',
         };
       });
 
-      // Similarity-weighted average of comp WS/48 — each comp's contribution
-      // is proportional to how close a statistical match it is to the prospect.
-      // A 90%-similarity comp counts meaningfully more than a 65% one, and when
-      // all 10 comps are tightly clustered the weights converge to a flat mean.
+      // Similarity-weighted average of raw comp WS/48 (for display on profiles)
       const ws48Comps = comps.filter(c => c.ws48 !== null);
       const weightSum = ws48Comps.reduce((s, c) => s + c.similarity, 0);
       const avgWs48 = ws48Comps.length > 0 && weightSum > 0
         ? ws48Comps.reduce((s, c) => s + c.ws48! * c.similarity, 0) / weightSum
         : null;
 
+      // Position-adjusted WS/48 — ranking signal. Each comp's raw WS/48 is
+      // z-scored within its NBA position group (centers and guards have very
+      // different baselines), then converted back to overall WS/48 units so
+      // the display numbers stay familiar. A guard comp at +1.5σ and a center
+      // comp at +1.5σ both contribute the same position-adjusted value.
+      const paComps = ws48Comps.map(c => {
+        const grp = toPosGroup(c._nbaPos || c.position);
+        const { mean: gMean, std: gStd } = posNorms.byPos[grp];
+        const z = (c.ws48! - gMean) / gStd;
+        return { ...c, paWs48: posNorms.overall.mean + z * posNorms.overall.std };
+      });
+      const paWeightSum = paComps.reduce((s, c) => s + c.similarity, 0);
+      const avgPaWs48 = paComps.length > 0 && paWeightSum > 0
+        ? paComps.reduce((s, c) => s + c.paWs48 * c.similarity, 0) / paWeightSum
+        : null;
+
+      // Strip internal _nbaPos field before returning
+      const cleanComps = comps.map(({ _nbaPos: _n, ...rest }) => rest);
+
       return {
         name: bb.name, slug: bb.slug, school: bb.school,
         position: bb.position, bigBoardRank: bb.rank,
         mockPickNo: bb.mockPickNo, mockTeam: bb.mockTeam,
-        comps,
+        comps: cleanComps,
         avgWs48: avgWs48 !== null ? Math.round(avgWs48 * 1000) / 1000 : null,
         ws48Coverage: ws48Comps.length,
+        paWs48: avgPaWs48 !== null ? Math.round(avgPaWs48 * 1000) / 1000 : null,
       };
     });
 
-    // 7. Sort by avg WS/48 descending (nulls last)
+    // 7. Sort by position-adjusted WS/48 descending (nulls last)
     entries.sort((a, b) => {
-      if (a.avgWs48 === null && b.avgWs48 === null) return 0;
-      if (a.avgWs48 === null) return 1;
-      if (b.avgWs48 === null) return -1;
-      return b.avgWs48 - a.avgWs48;
+      if (a.paWs48 === null && b.paWs48 === null) return 0;
+      if (a.paWs48 === null) return 1;
+      if (b.paWs48 === null) return -1;
+      return b.paWs48 - a.paWs48;
     });
 
     const result: DraftBoardApiResponse = { entries, updatedAt: new Date().toISOString() };
