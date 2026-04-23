@@ -1,31 +1,30 @@
-// Server-side route: ranks Big Board prospects by average career RAPTOR
+// Server-side route: ranks Big Board prospects by average career BPM
 // of their 10 closest historical college statistical comparisons.
 //
 // Flow:
 //   1. Fetch Big Board from Google Sheets
-//   2. Read historical college stats + RAPTOR lookup + BartTorvik from disk
+//   2. Read historical college stats + BPM lookup + BartTorvik from disk
 //   3. For each Big Board player, find their current-season college stats
 //   4. Run top-10 stat comparison against drafted players 2008+ with BartTorvik
-//      data AND RAPTOR coverage (≥ MIN_RAPTOR_MP). PRPG! primary similarity.
-//   5. Look up each comp's career average RAPTOR (FiveThirtyEight data, 2008-2022).
-//      RAPTOR is already position-neutral — no position adjustment needed.
-//   6. Similarity-weighted average of comp RAPTORs → ranking signal.
-//   7. Return sorted list (best avg RAPTOR first).
+//      data AND BPM coverage (≥ MIN_BPM_MP). PRPG! primary similarity.
+//   5. Look up each comp's career average BPM (Basketball-Reference, through 2024-25).
+//      BPM is already position-neutral — no position adjustment needed.
+//   6. Similarity-weighted average of comp BPMs → ranking signal.
+//   7. Return sorted list (best avg BPM first).
 
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import type {
-  HistoricalPlayer, DraftBoardEntry, DraftBoardApiResponse, RaptorLookup,
+  HistoricalPlayer, DraftBoardEntry, DraftBoardApiResponse, BpmLookup,
   BartTorvikStats,
 } from '@/types/player';
 import { buildDatasetNorms, getTopStatComps, resolveAge } from '@/lib/utils/comparison';
 import type { BigBoardPlayer } from '@/types/bigboard';
 
-// Minimum minutes in RAPTOR dataset for a historical player to qualify as a comp.
-// RAPTOR only covers through 2022, so recent draftees (2022+) naturally have
-// too few minutes and are excluded — their careers aren't established yet.
-const MIN_RAPTOR_MP = 1500;
+// Minimum career minutes in BPM dataset for a player to qualify as a comp.
+// Requires roughly 1.5–2 full NBA seasons of meaningful playing time.
+const MIN_BPM_MP = 2000;
 
 type BartTorvikEntry = {
   name: string;
@@ -49,8 +48,8 @@ const API_KEY  = process.env.GOOGLE_SHEETS_API_KEY;
 let cache: { data: DraftBoardApiResponse; ts: number } | null = null;
 const CACHE_TTL = 5 * 60 * 1000;
 
-// ─── Name normalization (must match build_raptor_lookup.py) ──────────────────
-function normalizeForRaptor(name: string): string {
+// ─── Name normalization (must match build_bpm_lookup.py) ─────────────────────
+function normalizeForBpm(name: string): string {
   return name
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
@@ -243,7 +242,7 @@ export async function GET() {
     }
 
     // 2. Load data files
-    const raptorLookup: RaptorLookup = readJson('raptor_lookup.json');
+    const bpmLookup: BpmLookup = readJson('bpm_lookup.json');
     const bartLookup: BartTorvikLookup = readJson('barttorvik_lookup.json');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const historicalRaw: any[] = readJson('nba_career_stats.json');
@@ -251,16 +250,14 @@ export async function GET() {
     const prospectsRaw: any[]  = readJson('historical_college_stats.json');
 
     // 3. Build comparison pool: drafted players with BartTorvik data AND
-    //    sufficient RAPTOR coverage. RAPTOR covers 2008-2022; players drafted
-    //    after 2022 (college_season 2022+) have too few RAPTOR seasons and are
-    //    naturally excluded — their careers aren't established enough to evaluate.
+    //    sufficient BPM coverage (≥ MIN_BPM_MP career minutes).
     const pool: HistoricalPlayer[] = historicalRaw
       .filter(r => {
         if (r.draft_pick == null) return false;
         if (r.college_season < 2008 || r.college_season >= 2026) return false;
         if (!(`${normalizeForBart(r.name)}|${r.college_season}` in bartLookup)) return false;
-        const raptor = raptorLookup[normalizeForRaptor(r.name)];
-        return raptor != null && raptor.mp >= MIN_RAPTOR_MP;
+        const bpm = bpmLookup[normalizeForBpm(r.name)];
+        return bpm != null && bpm.mp >= MIN_BPM_MP;
       })
       .map(r => toHistoricalPlayer(r, bartLookup));
 
@@ -287,7 +284,7 @@ export async function GET() {
           name: bb.name, slug: bb.slug, school: bb.school,
           position: bb.position, bigBoardRank: bb.rank,
           mockPickNo: bb.mockPickNo, mockTeam: bb.mockTeam,
-          comps: [], avgRaptor: null, raptorCoverage: 0,
+          comps: [], avgBpm: null, bpmCoverage: 0,
         };
       }
 
@@ -301,26 +298,26 @@ export async function GET() {
       );
 
       const comps = topComps.map(c => {
-        const key   = normalizeForRaptor(c.historical_player.name);
-        const entry = raptorLookup[key] ?? null;
+        const key   = normalizeForBpm(c.historical_player.name);
+        const entry = bpmLookup[key] ?? null;
         return {
           name:          c.historical_player.name,
           collegeSeason: c.historical_player.college_season,
           collegeTeam:   c.historical_player.college_team,
           position:      c.historical_player.position ?? '',
           similarity:    c.similarity_score,
-          raptor:        entry ? Math.round(entry.raptor * 1000) / 1000 : null,
-          raptorMp:      entry?.mp      ?? null,
-          raptorSeasons: entry?.seasons ?? null,
+          bpm:        entry ? Math.round(entry.bpm * 1000) / 1000 : null,
+          bpmMp:      entry?.mp      ?? null,
+          bpmSeasons: entry?.seasons ?? null,
         };
       });
 
-      // Similarity-weighted average of comp career RAPTOR.
-      // RAPTOR is already position-neutral — no position adjustment needed.
-      const raptorComps = comps.filter(c => c.raptor !== null);
-      const weightSum   = raptorComps.reduce((s, c) => s + c.similarity, 0);
-      const avgRaptor   = raptorComps.length > 0 && weightSum > 0
-        ? raptorComps.reduce((s, c) => s + c.raptor! * c.similarity, 0) / weightSum
+      // Similarity-weighted average of comp career BPM.
+      // BPM is already position-neutral — no position adjustment needed.
+      const bpmComps  = comps.filter(c => c.bpm !== null);
+      const weightSum = bpmComps.reduce((s, c) => s + c.similarity, 0);
+      const avgBpm    = bpmComps.length > 0 && weightSum > 0
+        ? bpmComps.reduce((s, c) => s + c.bpm! * c.similarity, 0) / weightSum
         : null;
 
       return {
@@ -328,17 +325,17 @@ export async function GET() {
         position: bb.position, bigBoardRank: bb.rank,
         mockPickNo: bb.mockPickNo, mockTeam: bb.mockTeam,
         comps,
-        avgRaptor: avgRaptor !== null ? Math.round(avgRaptor * 1000) / 1000 : null,
-        raptorCoverage: raptorComps.length,
+        avgBpm: avgBpm !== null ? Math.round(avgBpm * 1000) / 1000 : null,
+        bpmCoverage: bpmComps.length,
       };
     });
 
-    // 7. Sort by avg RAPTOR descending (nulls last)
+    // 7. Sort by avg BPM descending (nulls last)
     entries.sort((a, b) => {
-      if (a.avgRaptor === null && b.avgRaptor === null) return 0;
-      if (a.avgRaptor === null) return 1;
-      if (b.avgRaptor === null) return -1;
-      return b.avgRaptor - a.avgRaptor;
+      if (a.avgBpm === null && b.avgBpm === null) return 0;
+      if (a.avgBpm === null) return 1;
+      if (b.avgBpm === null) return -1;
+      return b.avgBpm - a.avgBpm;
     });
 
     const result: DraftBoardApiResponse = { entries, updatedAt: new Date().toISOString() };

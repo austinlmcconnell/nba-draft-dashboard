@@ -74,7 +74,7 @@ export default function MethodologyPage() {
               ['#normalise',   'Z-score normalisation'],
               ['#similarity',  'Distance → similarity score'],
               ['#derived',     'Derived stats (AST/TOV, ORB/36, DRB/36)'],
-              ['#draftboard',  'Draft Board ranking — career WS/48'],
+              ['#draftboard',  'Draft Board ranking — career BPM'],
               ['#statboxes',   'Profile stat box shading'],
             ].map(([href, label]) => (
               <li key={href}><a href={href} className="hover:text-[#4ade80] hover:underline transition-colors">{label}</a></li>
@@ -161,7 +161,7 @@ Examples:
          AND 2008 ≤ college_season < 2026  -- matches BartTorvik coverage
          AND normalized_name+season IN barttorvik_lookup
          AND |prospect_age - player_age| ≤ 1
-         AND vorp_lookup[normalized_name].mp ≥ 1500   -- NBA-established`}</Formula>
+         AND bpm_lookup[normalized_name].mp ≥ 2000    -- NBA-established`}</Formula>
 
           <Sub title="Drafted only">
             <p className="text-sm text-[#9ca3af]">
@@ -189,13 +189,13 @@ Examples:
             </p>
           </Sub>
 
-          <Sub title="Minimum 1,500 career NBA minutes">
+          <Sub title="Minimum 2,000 career NBA minutes">
             <p className="text-sm text-[#9ca3af]">
               Drafted players who never established NBA rotation roles (Cameron
               Bairstow-type careers: drafted, a handful of games, out of the league)
-              have noisy per-possession metrics that would distort the avg-WS/48
-              ranking. 1,500 MP ≈ one season of rotation-level minutes, which is
-              enough sample size for a meaningful career rate.
+              have noisy BPM values that would distort the avg-BPM ranking. 2,000 MP
+              ≈ 1.5–2 seasons of meaningful playing time, which is enough sample size
+              for a reliable career rate.
             </p>
           </Sub>
 
@@ -331,29 +331,28 @@ drb_per36 = (defensive_rebounds_per_game / minutes_per_game) × 36`}</Formula>
         </Section>
 
         {/* ---------------------------------------------------------------- */}
-        <Section id="draftboard" title="Draft Board ranking — career RAPTOR">
+        <Section id="draftboard" title="Draft Board ranking — career BPM">
           <p className="text-[#d1d5db] mb-3">
-            The Draft Board sorts prospects by <strong>average career RAPTOR</strong>
-            of their 10 closest historical comps. RAPTOR (Robust Algorithm using
-            Player Tracking and On/Off Ratings) is FiveThirtyEight&apos;s impact-based
-            metric measured in <em>points per 100 possessions above an average player</em>.
-            Because it is derived from on/off lineup data rather than box-score
-            totals, it is inherently position-neutral — a guard at +2.5 and a center
-            at +2.5 are genuinely equally impactful, with no position adjustment needed.
+            The Draft Board sorts prospects by <strong>average career BPM</strong>
+            of their 10 closest historical comps. BPM (Box Plus-Minus) is
+            Basketball-Reference&apos;s impact metric measured in <em>points per 100
+            possessions above an average player</em>. It is inherently position-neutral
+            — a guard at +2.5 and a center at +2.5 are genuinely equally impactful,
+            with no position adjustment needed. BPM is updated through the current
+            NBA season, so recent draft classes are fully included as comps.
           </p>
           <Formula>{`For each Big Board prospect:
   1. Find 10 closest college statistical comps (PRPG!-primary)
-  2. Look up each comp's career average RAPTOR (raptor_lookup.json)
-     — MP-weighted mean across all seasons in dataset (2008-2022)
-  3. avg_raptor = Σ(comp.raptor × similarity) / Σ(similarity)
-  4. Rank the board by avg_raptor descending`}</Formula>
+  2. Look up each comp's career average BPM (bpm_lookup.json)
+     — MP-weighted mean across all seasons (2006–present, ≥ 2,000 career MP)
+  3. avg_bpm = Σ(comp.bpm × similarity) / Σ(similarity)
+  4. Rank the board by avg_bpm descending`}</Formula>
           <p className="text-[#d1d5db] mb-3">
             Step 3 is <strong>similarity-weighted</strong> — a 90%-match comp
-            contributes proportionally more than a 65% one. RAPTOR data covers
-            2008–2022 (modern on/off version) and 2008–2013 (box-score version for
-            older seasons). Players drafted after 2022 have insufficient career data
-            and are excluded from the comp pool — their NBA trajectories
-            aren&apos;t established enough to predict from.
+            contributes proportionally more than a 65% one. The 2,000-minute
+            threshold ensures comps have established enough of an NBA track record
+            for a reliable career rate (roughly 1.5–2 full seasons of meaningful
+            playing time).
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center">
             {[
@@ -370,9 +369,9 @@ drb_per36 = (defensive_rebounds_per_game / minutes_per_game) × 36`}</Formula>
             ))}
           </div>
           <p className="text-sm text-[#9ca3af] mt-3">
-            Reference points: Nikola Jokić +8.4, LeBron James +7.9, Stephen Curry +7.4,
-            James Harden +6.4, Kevin Durant +4.8, Anthony Davis +5.0, Jamal Murray +1.8,
-            Devin Booker +0.8.
+            Reference points: Nikola Jokić +10.3, LeBron James +8.9, Stephen Curry +6.5,
+            Kevin Durant +6.4, Shai Gilgeous-Alexander +5.6, Jalen Brunson +2.3,
+            Jamal Murray +0.9, Brandin Podziemski +0.3.
           </p>
         </Section>
 

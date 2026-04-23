@@ -172,35 +172,33 @@ export interface ProspectComparisons {
 }
 
 // ---------------------------------------------------------------------------
-// NBA career metric types (FiveThirtyEight RAPTOR)
+// NBA career metric types (Basketball-Reference BPM)
 //
-// RAPTOR (Robust Algorithm using Player Tracking and On/Off Ratings) is an
-// impact-based plus-minus metric measured in points per 100 possessions above
-// average. Unlike WS/48, it is inherently position-neutral — a guard at +2.0
-// is equally impactful to a center at +2.0. No position adjustment needed.
+// BPM (Box Plus-Minus) is an impact metric measured in points per 100
+// possessions above league average. It is position-neutral and is updated
+// through the current NBA season, unlike RAPTOR which stops at 2022.
 //
-// Career RAPTOR = minutes-weighted average across all seasons in the dataset
-// (modern RAPTOR 2014-2022 preferred; historical box-score RAPTOR for 2008-2013).
+// Career BPM = minutes-weighted average across all seasons in the dataset.
 // ---------------------------------------------------------------------------
 
-export interface RaptorEntry {
-  raptor: number;   // career avg RAPTOR total (pts per 100 possessions, MP-weighted)
-  mp: number;       // total minutes in RAPTOR dataset (coverage indicator)
-  seasons: number;  // seasons with RAPTOR data
+export interface BpmEntry {
+  bpm: number;      // career avg BPM (pts per 100 possessions, MP-weighted)
+  mp: number;       // total minutes in BPM dataset (coverage indicator)
+  seasons: number;  // seasons with BPM data
   display: string;  // original display name
 }
 
-export type RaptorLookup = Record<string, RaptorEntry>;  // keyed by normalized name
+export type BpmLookup = Record<string, BpmEntry>;  // keyed by normalized name
 
 export interface DraftComp {
   name: string;
   collegeSeason: number;
   collegeTeam: string;
   position: string;
-  similarity: number;       // 0-100 statistical similarity score
-  raptor: number | null;    // career avg RAPTOR (pts per 100 possessions)
-  raptorMp: number | null;  // minutes covered in RAPTOR data
-  raptorSeasons: number | null;
+  similarity: number;     // 0-100 statistical similarity score
+  bpm: number | null;     // career avg BPM (pts per 100 possessions)
+  bpmMp: number | null;   // minutes covered in BPM data
+  bpmSeasons: number | null;
 }
 
 export interface DraftBoardEntry {
@@ -212,8 +210,8 @@ export interface DraftBoardEntry {
   mockPickNo: number | null;
   mockTeam: string | null;
   comps: DraftComp[];
-  avgRaptor: number | null;   // similarity-weighted avg of comp career RAPTORs
-  raptorCoverage: number;     // how many comps have RAPTOR data
+  avgBpm: number | null;   // similarity-weighted avg of comp career BPMs
+  bpmCoverage: number;     // how many comps have BPM data
 }
 
 export interface DraftBoardApiResponse {

@@ -5,14 +5,14 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import type { DraftBoardEntry, DraftComp, DraftBoardApiResponse } from '@/types/player';
 
-// ─── RAPTOR color helpers ────────────────────────────────────────────────────
-// Career average RAPTOR (pts per 100 possessions above average). Position-neutral.
+// ─── BPM color helpers ───────────────────────────────────────────────────────
+// Career average BPM (pts per 100 possessions above average). Position-neutral.
 //   ≥ +5.0 : All-time elite (Curry, Jokic tier)
 //   ≥ +2.5 : Perennial All-Star
 //   ≥ +0.5 : Good starter
 //   ≥ -1.5 : Rotation player
 //   < -1.5 : Below replacement
-function raptorTextColor(r: number | null): string {
+function bpmTextColor(r: number | null): string {
   if (r === null) return 'text-[#6b7280]';
   if (r >= 5.0)  return 'text-emerald-400';
   if (r >= 2.5)  return 'text-[#4ade80]';
@@ -21,7 +21,7 @@ function raptorTextColor(r: number | null): string {
   return 'text-red-400';
 }
 
-function raptorBarColor(r: number | null): string {
+function bpmBarColor(r: number | null): string {
   if (r === null) return 'bg-[#1f2937]';
   if (r >= 5.0)  return 'bg-emerald-500';
   if (r >= 2.5)  return 'bg-[#22a052]';
@@ -30,10 +30,10 @@ function raptorBarColor(r: number | null): string {
   return 'bg-red-500';
 }
 
-// Map RAPTOR −5…+10 to 0…100% bar width.
-function raptorBarWidth(r: number | null): string {
+// Map BPM −5…+12 to 0…100% bar width.
+function bpmBarWidth(r: number | null): string {
   if (r === null) return '0%';
-  const pct = Math.max(0, Math.min(100, ((r + 5) / 15) * 100));
+  const pct = Math.max(0, Math.min(100, ((r + 5) / 17) * 100));
   return `${pct.toFixed(1)}%`;
 }
 
@@ -58,16 +58,16 @@ function CompRow({ comp, index }: { comp: DraftComp; index: number }) {
         <span className="text-xs text-[#4b5563]">{comp.similarity.toFixed(0)}% sim</span>
       </div>
 
-      {/* RAPTOR bar + value */}
+      {/* BPM bar + value */}
       <div className="w-40 flex items-center gap-2">
         <div className="flex-1 h-1.5 bg-[#1f2937] rounded-full overflow-hidden">
           <div
-            className={`h-full rounded-full transition-all ${raptorBarColor(comp.raptor)}`}
-            style={{ width: raptorBarWidth(comp.raptor) }}
+            className={`h-full rounded-full transition-all ${bpmBarColor(comp.bpm)}`}
+            style={{ width: bpmBarWidth(comp.bpm) }}
           />
         </div>
-        <span className={`text-sm font-black w-14 text-right tabular-nums ${raptorTextColor(comp.raptor)}`}>
-          {comp.raptor !== null ? (comp.raptor >= 0 ? '+' : '') + comp.raptor.toFixed(2) : '—'}
+        <span className={`text-sm font-black w-14 text-right tabular-nums ${bpmTextColor(comp.bpm)}`}>
+          {comp.bpm !== null ? (comp.bpm >= 0 ? '+' : '') + comp.bpm.toFixed(2) : '—'}
         </span>
       </div>
     </div>
@@ -122,7 +122,7 @@ export default function DraftProfilePage() {
   if (isLoading) return <LoadingSkeleton />;
   if (notFound || !entry) return <NotFound />;
 
-  const raptorComps = entry.comps.filter(c => c.raptor !== null);
+  const bpmComps = entry.comps.filter(c => c.bpm !== null);
 
   return (
     <div className="min-h-screen bg-[#0d1117]">
@@ -157,23 +157,23 @@ export default function DraftProfilePage() {
               <p className="text-[#6b7280] text-sm mt-0.5">{entry.school}</p>
             </div>
 
-            {/* Avg RAPTOR display */}
-            {entry.avgRaptor !== null && (
+            {/* Avg BPM display */}
+            {entry.avgBpm !== null && (
               <div className="flex flex-col items-center text-center px-5 py-3 bg-[#0d1117] rounded-xl border border-[#1f2937]">
-                <span className={`text-4xl font-black tabular-nums ${raptorTextColor(entry.avgRaptor)}`}>
-                  {entry.avgRaptor >= 0 ? '+' : ''}{entry.avgRaptor.toFixed(2)}
+                <span className={`text-4xl font-black tabular-nums ${bpmTextColor(entry.avgBpm)}`}>
+                  {entry.avgBpm >= 0 ? '+' : ''}{entry.avgBpm.toFixed(2)}
                 </span>
                 <span className="text-[10px] font-black uppercase tracking-widest text-[#4b5563] mt-1">
-                  Avg Comp RAPTOR
+                  Avg Comp BPM
                 </span>
                 <span className="text-[10px] text-[#374151] mt-0.5">
-                  {entry.raptorCoverage} of {entry.comps.length} comps
+                  {entry.bpmCoverage} of {entry.comps.length} comps
                 </span>
               </div>
             )}
           </div>
 
-          {entry.avgRaptor === null && entry.comps.length === 0 && (
+          {entry.avgBpm === null && entry.comps.length === 0 && (
             <div className="px-6 pb-5">
               <p className="text-sm text-[#6b7280]">
                 No college stats found for this player — they may not be in the 2025–26 database yet.
@@ -194,7 +194,7 @@ export default function DraftProfilePage() {
                   10 closest college statistical comps who were drafted · sorted by similarity
                 </p>
               </div>
-              <span className="text-[10px] text-[#374151] uppercase tracking-wide">Career RAPTOR</span>
+              <span className="text-[10px] text-[#374151] uppercase tracking-wide">Career BPM</span>
             </div>
 
             <div>
@@ -203,16 +203,16 @@ export default function DraftProfilePage() {
               ))}
             </div>
 
-            {/* RAPTOR summary */}
-            {raptorComps.length > 0 && (
+            {/* BPM summary */}
+            {bpmComps.length > 0 && (
               <div className="px-6 py-4 border-t border-[#1f2937] bg-[#0d1117]/50 flex items-center justify-between flex-wrap gap-3">
                 <span className="text-xs text-[#6b7280]">
-                  {entry.raptorCoverage} of {entry.comps.length} comps have RAPTOR data
+                  {entry.bpmCoverage} of {entry.comps.length} comps have BPM data
                 </span>
                 <div className="flex items-center gap-3">
                   <span className="text-xs text-[#6b7280]">Group avg:</span>
-                  <span className={`text-base font-black tabular-nums ${raptorTextColor(entry.avgRaptor)}`}>
-                    {entry.avgRaptor !== null ? (entry.avgRaptor >= 0 ? '+' : '') + entry.avgRaptor.toFixed(2) : '—'}
+                  <span className={`text-base font-black tabular-nums ${bpmTextColor(entry.avgBpm)}`}>
+                    {entry.avgBpm !== null ? (entry.avgBpm >= 0 ? '+' : '') + entry.avgBpm.toFixed(2) : '—'}
                   </span>
                 </div>
               </div>
@@ -220,9 +220,9 @@ export default function DraftProfilePage() {
           </div>
         )}
 
-        {/* RAPTOR scale legend */}
+        {/* BPM scale legend */}
         <div className="bg-[#0d1117] rounded-xl border border-[#1f2937] px-5 py-4">
-          <p className="text-xs font-black uppercase tracking-widest text-[#4b5563] mb-3">RAPTOR Scale</p>
+          <p className="text-xs font-black uppercase tracking-widest text-[#4b5563] mb-3">BPM Scale</p>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
             {[
               { range: '≥ +5.0', label: 'All-time elite',    cls: 'text-emerald-400' },
@@ -238,11 +238,10 @@ export default function DraftProfilePage() {
             ))}
           </div>
           <p className="text-xs text-[#374151] mt-4">
-            RAPTOR (FiveThirtyEight) measures points per 100 possessions above an
-            average player. It combines box-score and on/off data and is inherently
-            position-neutral — a guard at +2.5 and a center at +2.5 are equally
-            impactful. Data covers 2008–2022; players drafted after 2022 do not yet
-            have enough career data to appear.
+            BPM (Box Plus-Minus) measures points per 100 possessions above an
+            average player. It is inherently position-neutral — a guard at +2.5
+            and a center at +2.5 are equally impactful. Data covers NBA seasons
+            through 2024–25 via Basketball-Reference.
           </p>
         </div>
 
