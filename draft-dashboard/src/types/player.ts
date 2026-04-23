@@ -172,36 +172,35 @@ export interface ProspectComparisons {
 }
 
 // ---------------------------------------------------------------------------
-// NBA career metric types (Basketball Reference advanced stats)
+// NBA career metric types (FiveThirtyEight RAPTOR)
 //
-// We store both VORP (cumulative) and WS (cumulative) per player. The Draft
-// Board ranks by career Win Shares per 48 minutes (WS/48 = ws / mp × 48),
-// a rate stat that is not biased by career length — unlike pure cumulative
-// VORP where a long-career star like James Harden would dominate a comp
-// average even when the prospect's other 9 comps are ordinary.
+// RAPTOR (Robust Algorithm using Player Tracking and On/Off Ratings) is an
+// impact-based plus-minus metric measured in points per 100 possessions above
+// average. Unlike WS/48, it is inherently position-neutral — a guard at +2.0
+// is equally impactful to a center at +2.0. No position adjustment needed.
+//
+// Career RAPTOR = minutes-weighted average across all seasons in the dataset
+// (modern RAPTOR 2014-2022 preferred; historical box-score RAPTOR for 2008-2013).
 // ---------------------------------------------------------------------------
 
-export interface VorpEntry {
-  vorp: number;     // career total VORP (summed across seasons)
-  ws: number;       // career total Win Shares (summed across seasons)
-  mp: number;       // total career minutes played
-  seasons: number;  // number of regular seasons with ≥1 MP
-  display: string;  // original display name from dataset
-  pos?: string;     // NBA primary position (PG/SG/SF/PF/C) — used for position-normalizing WS/48
+export interface RaptorEntry {
+  raptor: number;   // career avg RAPTOR total (pts per 100 possessions, MP-weighted)
+  mp: number;       // total minutes in RAPTOR dataset (coverage indicator)
+  seasons: number;  // seasons with RAPTOR data
+  display: string;  // original display name
 }
 
-export type VorpLookup = Record<string, VorpEntry>;  // keyed by normalized name
+export type RaptorLookup = Record<string, RaptorEntry>;  // keyed by normalized name
 
 export interface DraftComp {
   name: string;
   collegeSeason: number;
   collegeTeam: string;
   position: string;
-  similarity: number;   // 0-100 statistical similarity score
-  ws48: number | null;  // career Win Shares per 48 minutes
-  vorp: number | null;  // career total VORP (shown alongside WS/48 for context)
-  nbaMp: number | null; // career NBA minutes
-  nbaSeasons: number | null;
+  similarity: number;       // 0-100 statistical similarity score
+  raptor: number | null;    // career avg RAPTOR (pts per 100 possessions)
+  raptorMp: number | null;  // minutes covered in RAPTOR data
+  raptorSeasons: number | null;
 }
 
 export interface DraftBoardEntry {
@@ -213,9 +212,8 @@ export interface DraftBoardEntry {
   mockPickNo: number | null;
   mockTeam: string | null;
   comps: DraftComp[];
-  avgWs48: number | null;    // raw mean of 10 comps' WS/48 (shown on profile pages)
-  ws48Coverage: number;      // how many of the 10 comps have a WS/48 value
-  paWs48: number | null;     // position-adjusted WS/48 — ranking signal (guards/bigs on same scale)
+  avgRaptor: number | null;   // similarity-weighted avg of comp career RAPTORs
+  raptorCoverage: number;     // how many comps have RAPTOR data
 }
 
 export interface DraftBoardApiResponse {
