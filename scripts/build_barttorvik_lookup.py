@@ -58,6 +58,23 @@ def fetch_season(year: int) -> list[dict]:
     Returns a list of player dicts for the given season.
     The endpoint returns a headerless CSV with 67 columns; we map the ones
     we care about by index.
+
+    Column index reference (verified from getadvstats.php output):
+       0 name             1 team              2 conference
+       3 games            4 min_pct           5 adj_ortg
+       6 usage            7 efg_pct           8 ts_pct
+       9 orb_pct         10 drb_pct          11 ast_pct
+      12 tov_pct         13 ftm              14 fta
+      15 ft_pct          16 two_pm           17 two_pa
+      18 two_pct         19 three_pm         20 three_pa
+      21 three_pct       22 blk_pct          23 stl_pct
+      24 ft_rate         25 class_year       26 height
+      27 num             28 prpg             29 adj_ortg(dup)
+      30 (unknown)       31 year             32 pid
+      33 hometown        34 mp_total         35 (unknown)
+      36 rim_made        37 rim_att          38 mid_made
+      39 mid_att         40 rim_pct          41 mid_pct
+      46 adj_drtg        64 position         (rest unused)
     """
     url = f'https://barttorvik.com/getadvstats.php?year={year}&csv=1'
     resp = requests.get(url, headers=HEADERS, timeout=60)
@@ -67,18 +84,22 @@ def fetch_season(year: int) -> list[dict]:
     if '<html' in body[:200].lower() or '<!doctype' in body[:200].lower():
         raise RuntimeError(f'Got HTML (blocked) for year {year}')
 
+    def f(v):
+        try: return float(v) if v not in ('', None) else None
+        except ValueError: return None
+
+    def i(v):
+        try: return int(v) if v not in ('', None) else 0
+        except ValueError: return 0
+
     reader = csv.reader(StringIO(body))
     out = []
     for row in reader:
         if len(row) < 49:
             continue
-        try:
-            prpg = float(row[28]) if row[28] else None
-            adj_ortg = float(row[5]) if row[5] else None
-            adj_drtg = float(row[46]) if row[46] else None
-        except ValueError:
-            continue
-
+        prpg     = f(row[28])
+        adj_ortg = f(row[5])
+        adj_drtg = f(row[46])
         if prpg is None:
             continue
 
@@ -87,17 +108,44 @@ def fetch_season(year: int) -> list[dict]:
             'team':         row[1],
             'conference':   row[2],
             'season':       year,
-            'class_year':   row[25],   # Fr/So/Jr/Sr
+            'class_year':   row[25],
             'height':       row[26],
-            'games':        int(row[3])   if row[3] else 0,
-            'min_pct':      float(row[4]) if row[4] else 0.0,
+            'games':        i(row[3]),
+            'min_pct':      f(row[4]) or 0.0,
             'prpg':         round(prpg, 3),
             'adj_ortg':     round(adj_ortg, 2) if adj_ortg is not None else None,
             'adj_drtg':     round(adj_drtg, 2) if adj_drtg is not None else None,
-            'usage':        float(row[6]) if row[6] else None,
-            'ts_pct':       float(row[8]) if row[8] else None,
-            'efg_pct':      float(row[7]) if row[7] else None,
-            'position':     row[64] if len(row) > 64 else None,  # e.g. "Wing F"
+            'usage':        f(row[6]),
+            'ts_pct':       f(row[8]),
+            'efg_pct':      f(row[7]),
+            'position':     row[64] if len(row) > 64 else None,
+            # Per-possession rate stats (as percentages, BartTorvik native)
+            'orb_pct':      f(row[9]),
+            'drb_pct':      f(row[10]),
+            'ast_pct':      f(row[11]),
+            'tov_pct':      f(row[12]),
+            'blk_pct':      f(row[22]),
+            'stl_pct':      f(row[23]),
+            'ft_rate':      f(row[24]),
+            # Shooting splits (totals + percentages)
+            'ftm':          i(row[13]),
+            'fta':          i(row[14]),
+            'ft_pct':       f(row[15]),
+            'two_pm':       i(row[16]),
+            'two_pa':       i(row[17]),
+            'two_pct':      f(row[18]),
+            'three_pm':     i(row[19]),
+            'three_pa':     i(row[20]),
+            'three_pct':    f(row[21]),
+            # Shot location splits (HoopMath-derived) — rim vs 2pt jumper (mid)
+            'rim_made':     i(row[36]) if len(row) > 36 else 0,
+            'rim_att':      i(row[37]) if len(row) > 37 else 0,
+            'mid_made':     i(row[38]) if len(row) > 38 else 0,
+            'mid_att':      i(row[39]) if len(row) > 39 else 0,
+            'rim_pct':      f(row[40]) if len(row) > 40 else None,
+            'mid_pct':      f(row[41]) if len(row) > 41 else None,
+            # Total minutes played (for per-40 derivations)
+            'mp_total':     f(row[34]) if len(row) > 34 else None,
         })
     return out
 

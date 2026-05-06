@@ -41,7 +41,7 @@ export const dynamic = 'force-dynamic';
 
 // ─── Google Sheets config (mirrors /api/big-board) ───────────────────────────
 const SHEET_ID = process.env.BIG_BOARD_SHEET_ID ?? '1X0l92tV3ZPAiWsJ_-NEINBtVv50kYix7s4EbKHK-XxM';
-const RANGE    = 'Sheet1!A2:M200';
+const RANGE    = 'Sheet1!A2:N200';
 const API_KEY  = process.env.GOOGLE_SHEETS_API_KEY;
 
 // ─── In-memory cache (5-minute TTL) ──────────────────────────────────────────
@@ -112,6 +112,8 @@ function parseBigBoardRow(row: string[]): BigBoardPlayer | null {
     biggestWeakness: (row[10] ?? '').trim(),
     mockPickNo:      row[11] ? parseInt(row[11]) || null : null,
     mockTeam:        (row[12] ?? '').trim() || null,
+    athleticism:     ((['Bad','Below Average','Average','Above Average','Great'] as const)
+                      .find(v => v === (row[13] ?? '').trim()) ?? null),
   };
 }
 

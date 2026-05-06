@@ -3,14 +3,22 @@
 // Returns Austin's ranked big board data as JSON.
 
 import { NextResponse } from 'next/server';
-import type { BigBoardPlayer, BigBoardApiResponse } from '@/types/bigboard';
+import type { BigBoardPlayer, BigBoardApiResponse, AthleticismRating } from '@/types/bigboard';
+
+const ATHLETICISM_VALUES: Exclude<AthleticismRating, null>[] = [
+  'Bad', 'Below Average', 'Average', 'Above Average', 'Great',
+];
+function parseAthleticism(raw: string | undefined): AthleticismRating {
+  const v = (raw ?? '').trim();
+  return (ATHLETICISM_VALUES as string[]).includes(v) ? (v as AthleticismRating) : null;
+}
 
 // Force dynamic so Next.js never pre-renders or ISR-caches this route.
 // The client already polls every 60 s; server-side caching just adds lag.
 export const dynamic = 'force-dynamic';
 
 const SHEET_ID = process.env.BIG_BOARD_SHEET_ID ?? '1X0l92tV3ZPAiWsJ_-NEINBtVv50kYix7s4EbKHK-XxM';
-const RANGE    = 'Sheet1!A2:M200'; // skip header row; allow up to 200 prospects
+const RANGE    = 'Sheet1!A2:N200'; // skip header row; allow up to 200 prospects
 const API_KEY  = process.env.GOOGLE_SHEETS_API_KEY;
 
 function slugify(name: string): string {
@@ -40,6 +48,7 @@ function parseRow(row: string[]): BigBoardPlayer | null {
     biggestWeakness: (row[10] ?? '').trim(),
     mockPickNo:      row[11] ? parseInt(row[11]) || null : null,
     mockTeam:        (row[12] ?? '').trim() || null,
+    athleticism:     parseAthleticism(row[13]),
   };
 }
 
