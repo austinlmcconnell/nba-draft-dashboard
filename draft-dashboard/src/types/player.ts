@@ -172,36 +172,33 @@ export interface ProspectComparisons {
 }
 
 // ---------------------------------------------------------------------------
-// NBA career metric types (Basketball Reference advanced stats)
+// NBA career metric types (Basketball-Reference BPM)
 //
-// We store both VORP (cumulative) and WS (cumulative) per player. The Draft
-// Board ranks by career Win Shares per 48 minutes (WS/48 = ws / mp × 48),
-// a rate stat that is not biased by career length — unlike pure cumulative
-// VORP where a long-career star like James Harden would dominate a comp
-// average even when the prospect's other 9 comps are ordinary.
+// BPM (Box Plus-Minus) is an impact metric measured in points per 100
+// possessions above league average. It is position-neutral and is updated
+// through the current NBA season, unlike RAPTOR which stops at 2022.
+//
+// Career BPM = minutes-weighted average across all seasons in the dataset.
 // ---------------------------------------------------------------------------
 
-export interface VorpEntry {
-  vorp: number;     // career total VORP (summed across seasons)
-  ws: number;       // career total Win Shares (summed across seasons)
-  mp: number;       // total career minutes played
-  seasons: number;  // number of regular seasons with ≥1 MP
-  display: string;  // original display name from dataset
-  pos?: string;     // NBA primary position (PG/SG/SF/PF/C) — used for position-normalizing WS/48
+export interface BpmEntry {
+  bpm: number;      // career avg BPM (pts per 100 possessions, MP-weighted)
+  mp: number;       // total minutes in BPM dataset (coverage indicator)
+  seasons: number;  // seasons with BPM data
+  display: string;  // original display name
 }
 
-export type VorpLookup = Record<string, VorpEntry>;  // keyed by normalized name
+export type BpmLookup = Record<string, BpmEntry>;  // keyed by normalized name
 
 export interface DraftComp {
   name: string;
   collegeSeason: number;
   collegeTeam: string;
   position: string;
-  similarity: number;   // 0-100 statistical similarity score
-  ws48: number | null;  // career Win Shares per 48 minutes
-  vorp: number | null;  // career total VORP (shown alongside WS/48 for context)
-  nbaMp: number | null; // career NBA minutes
-  nbaSeasons: number | null;
+  similarity: number;     // 0-100 statistical similarity score
+  bpm: number | null;     // career avg BPM (pts per 100 possessions)
+  bpmMp: number | null;   // minutes covered in BPM data
+  bpmSeasons: number | null;
 }
 
 export interface DraftBoardEntry {
@@ -213,9 +210,8 @@ export interface DraftBoardEntry {
   mockPickNo: number | null;
   mockTeam: string | null;
   comps: DraftComp[];
-  avgWs48: number | null;    // raw mean of 10 comps' WS/48 (shown on profile pages)
-  ws48Coverage: number;      // how many of the 10 comps have a WS/48 value
-  paWs48: number | null;     // position-adjusted WS/48 — ranking signal (guards/bigs on same scale)
+  avgBpm: number | null;   // similarity-weighted avg of comp career BPMs
+  bpmCoverage: number;     // how many comps have BPM data
 }
 
 export interface DraftBoardApiResponse {

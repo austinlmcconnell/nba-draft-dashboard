@@ -5,35 +5,35 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import type { DraftBoardEntry, DraftComp, DraftBoardApiResponse } from '@/types/player';
 
-// ─── WS/48 color helpers ────────────────────────────────────────────────────
-// Career Win Shares per 48 minutes. League average ≈ 0.100; stars ≈ 0.200+.
-//   ≥ 0.200 : superstar tier
-//   ≥ 0.150 : All-Star / high-end starter
-//   ≥ 0.100 : league-average starter
-//   ≥ 0.050 : rotation player
-//   <  0.050: below rotation / fringe
-function ws48TextColor(r: number | null): string {
+// ─── BPM color helpers ───────────────────────────────────────────────────────
+// Career average BPM (pts per 100 possessions above average). Position-neutral.
+//   ≥ +5.0 : All-time elite (Curry, Jokic tier)
+//   ≥ +2.5 : Perennial All-Star
+//   ≥ +0.5 : Good starter
+//   ≥ -1.5 : Rotation player
+//   < -1.5 : Below replacement
+function bpmTextColor(r: number | null): string {
   if (r === null) return 'text-[#6b7280]';
-  if (r >= 0.200) return 'text-emerald-400';
-  if (r >= 0.150) return 'text-[#4ade80]';
-  if (r >= 0.100) return 'text-[#9ca3af]';
-  if (r >= 0.050) return 'text-amber-400';
+  if (r >= 5.0)  return 'text-emerald-400';
+  if (r >= 2.5)  return 'text-[#4ade80]';
+  if (r >= 0.5)  return 'text-[#9ca3af]';
+  if (r >= -1.5) return 'text-amber-400';
   return 'text-red-400';
 }
 
-function ws48BarColor(r: number | null): string {
+function bpmBarColor(r: number | null): string {
   if (r === null) return 'bg-[#1f2937]';
-  if (r >= 0.200) return 'bg-emerald-500';
-  if (r >= 0.150) return 'bg-[#22a052]';
-  if (r >= 0.100) return 'bg-[#4b5563]';
-  if (r >= 0.050) return 'bg-amber-500';
+  if (r >= 5.0)  return 'bg-emerald-500';
+  if (r >= 2.5)  return 'bg-[#22a052]';
+  if (r >= 0.5)  return 'bg-[#4b5563]';
+  if (r >= -1.5) return 'bg-amber-500';
   return 'bg-red-500';
 }
 
-// Map WS/48 values −0.05…+0.25 to 0…100% bar width.
-function ws48BarWidth(r: number | null): string {
+// Map BPM −5…+12 to 0…100% bar width.
+function bpmBarWidth(r: number | null): string {
   if (r === null) return '0%';
-  const pct = Math.max(0, Math.min(100, ((r + 0.05) / 0.30) * 100));
+  const pct = Math.max(0, Math.min(100, ((r + 5) / 17) * 100));
   return `${pct.toFixed(1)}%`;
 }
 
@@ -58,16 +58,16 @@ function CompRow({ comp, index }: { comp: DraftComp; index: number }) {
         <span className="text-xs text-[#4b5563]">{comp.similarity.toFixed(0)}% sim</span>
       </div>
 
-      {/* WS/48 bar + value */}
+      {/* BPM bar + value */}
       <div className="w-40 flex items-center gap-2">
         <div className="flex-1 h-1.5 bg-[#1f2937] rounded-full overflow-hidden">
           <div
-            className={`h-full rounded-full transition-all ${ws48BarColor(comp.ws48)}`}
-            style={{ width: ws48BarWidth(comp.ws48) }}
+            className={`h-full rounded-full transition-all ${bpmBarColor(comp.bpm)}`}
+            style={{ width: bpmBarWidth(comp.bpm) }}
           />
         </div>
-        <span className={`text-sm font-black w-14 text-right tabular-nums ${ws48TextColor(comp.ws48)}`}>
-          {comp.ws48 !== null ? comp.ws48.toFixed(3) : '—'}
+        <span className={`text-sm font-black w-14 text-right tabular-nums ${bpmTextColor(comp.bpm)}`}>
+          {comp.bpm !== null ? (comp.bpm >= 0 ? '+' : '') + comp.bpm.toFixed(2) : '—'}
         </span>
       </div>
     </div>
@@ -122,7 +122,7 @@ export default function DraftProfilePage() {
   if (isLoading) return <LoadingSkeleton />;
   if (notFound || !entry) return <NotFound />;
 
-  const ws48Comps = entry.comps.filter(c => c.ws48 !== null);
+  const bpmComps = entry.comps.filter(c => c.bpm !== null);
 
   return (
     <div className="min-h-screen bg-[#0d1117]">
@@ -157,23 +157,23 @@ export default function DraftProfilePage() {
               <p className="text-[#6b7280] text-sm mt-0.5">{entry.school}</p>
             </div>
 
-            {/* Avg WS/48 display */}
-            {entry.avgWs48 !== null && (
+            {/* Avg BPM display */}
+            {entry.avgBpm !== null && (
               <div className="flex flex-col items-center text-center px-5 py-3 bg-[#0d1117] rounded-xl border border-[#1f2937]">
-                <span className={`text-4xl font-black tabular-nums ${ws48TextColor(entry.avgWs48)}`}>
-                  {entry.avgWs48.toFixed(3)}
+                <span className={`text-4xl font-black tabular-nums ${bpmTextColor(entry.avgBpm)}`}>
+                  {entry.avgBpm >= 0 ? '+' : ''}{entry.avgBpm.toFixed(2)}
                 </span>
                 <span className="text-[10px] font-black uppercase tracking-widest text-[#4b5563] mt-1">
-                  Avg Comp WS/48
+                  Avg Comp BPM
                 </span>
                 <span className="text-[10px] text-[#374151] mt-0.5">
-                  {entry.ws48Coverage} of {entry.comps.length} comps
+                  {entry.bpmCoverage} of {entry.comps.length} comps
                 </span>
               </div>
             )}
           </div>
 
-          {entry.avgWs48 === null && entry.comps.length === 0 && (
+          {entry.avgBpm === null && entry.comps.length === 0 && (
             <div className="px-6 pb-5">
               <p className="text-sm text-[#6b7280]">
                 No college stats found for this player — they may not be in the 2025–26 database yet.
@@ -194,7 +194,7 @@ export default function DraftProfilePage() {
                   10 closest college statistical comps who were drafted · sorted by similarity
                 </p>
               </div>
-              <span className="text-[10px] text-[#374151] uppercase tracking-wide">Career WS/48</span>
+              <span className="text-[10px] text-[#374151] uppercase tracking-wide">Career BPM</span>
             </div>
 
             <div>
@@ -203,18 +203,16 @@ export default function DraftProfilePage() {
               ))}
             </div>
 
-            {/* WS/48 summary */}
-            {ws48Comps.length > 0 && (
+            {/* BPM summary */}
+            {bpmComps.length > 0 && (
               <div className="px-6 py-4 border-t border-[#1f2937] bg-[#0d1117]/50 flex items-center justify-between flex-wrap gap-3">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs text-[#6b7280]">
-                    {entry.ws48Coverage} of {entry.comps.length} comps have WS/48 data
-                  </span>
-                </div>
+                <span className="text-xs text-[#6b7280]">
+                  {entry.bpmCoverage} of {entry.comps.length} comps have BPM data
+                </span>
                 <div className="flex items-center gap-3">
                   <span className="text-xs text-[#6b7280]">Group avg:</span>
-                  <span className={`text-base font-black tabular-nums ${ws48TextColor(entry.avgWs48)}`}>
-                    {entry.avgWs48 !== null ? entry.avgWs48.toFixed(3) : '—'}
+                  <span className={`text-base font-black tabular-nums ${bpmTextColor(entry.avgBpm)}`}>
+                    {entry.avgBpm !== null ? (entry.avgBpm >= 0 ? '+' : '') + entry.avgBpm.toFixed(2) : '—'}
                   </span>
                 </div>
               </div>
@@ -222,16 +220,16 @@ export default function DraftProfilePage() {
           </div>
         )}
 
-        {/* What WS/48 means */}
+        {/* BPM scale legend */}
         <div className="bg-[#0d1117] rounded-xl border border-[#1f2937] px-5 py-4">
-          <p className="text-xs font-black uppercase tracking-widest text-[#4b5563] mb-3">WS/48 Scale</p>
+          <p className="text-xs font-black uppercase tracking-widest text-[#4b5563] mb-3">BPM Scale</p>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
             {[
-              { range: '≥ 0.200', label: 'Superstar',              cls: 'text-emerald-400' },
-              { range: '≥ 0.150', label: 'All-Star Starter',       cls: 'text-[#4ade80]' },
-              { range: '≥ 0.100', label: 'Starter (league avg)',   cls: 'text-[#9ca3af]' },
-              { range: '≥ 0.050', label: 'Rotation',               cls: 'text-amber-400' },
-              { range: '< 0.050', label: 'Below rotation',         cls: 'text-red-400' },
+              { range: '≥ +5.0', label: 'All-time elite',    cls: 'text-emerald-400' },
+              { range: '≥ +2.5', label: 'Perennial All-Star', cls: 'text-[#4ade80]' },
+              { range: '≥ +0.5', label: 'Good starter',       cls: 'text-[#9ca3af]' },
+              { range: '≥ −1.5', label: 'Rotation player',    cls: 'text-amber-400' },
+              { range: '< −1.5', label: 'Below replacement',  cls: 'text-red-400' },
             ].map(({ range, label, cls }) => (
               <div key={range} className="text-center">
                 <p className={`text-sm font-black ${cls}`}>{range}</p>
@@ -240,10 +238,10 @@ export default function DraftProfilePage() {
             ))}
           </div>
           <p className="text-xs text-[#374151] mt-4">
-            Win Shares per 48 minutes (Basketball Reference) is a position-neutral
-            rate stat that credits offensive and defensive production without
-            rewarding career length — so a long-career star doesn&apos;t dominate
-            the 10-comp average.
+            BPM (Box Plus-Minus) measures points per 100 possessions above an
+            average player. It is inherently position-neutral — a guard at +2.5
+            and a center at +2.5 are equally impactful. Data covers NBA seasons
+            through 2024–25 via Basketball-Reference.
           </p>
         </div>
 

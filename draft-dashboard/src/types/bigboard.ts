@@ -2,7 +2,10 @@
 // These types represent data read from Austin's Google Sheet Big Board.
 // Columns: Rank | Name | Draft Age | School/Country | Position | Height |
 //          Weight | Wingspan | NBA Comparison | Biggest Skill |
-//          Biggest Weakness | My Mock Pick No. | My Mock Team
+//          Biggest Weakness | My Mock Pick No. | My Mock Team | Athleticism
+
+export type AthleticismRating =
+  | 'Bad' | 'Below Average' | 'Average' | 'Above Average' | 'Great' | null;
 
 export interface BigBoardPlayer {
   rank: number;
@@ -19,6 +22,7 @@ export interface BigBoardPlayer {
   biggestWeakness: string;
   mockPickNo: number | null;
   mockTeam: string | null;
+  athleticism: AthleticismRating; // manual eye-test rating in column N
 }
 
 // Supplementary config stored in /public/data/big-board-config.json

@@ -1,71 +1,30 @@
-// Server-side route: ranks Big Board prospects by average career WS/48
+// Server-side route: ranks Big Board prospects by average career BPM
 // of their 10 closest historical college statistical comparisons.
 //
 // Flow:
 //   1. Fetch Big Board from Google Sheets
-//   2. Read historical college stats + NBA career lookup + BartTorvik from disk
+//   2. Read historical college stats + BPM lookup + BartTorvik from disk
 //   3. For each Big Board player, find their current-season college stats
 //   4. Run top-10 stat comparison against drafted players 2008+ with BartTorvik
-//      data AND a minimum 1,500 career NBA minutes (filters noise from
-//      cup-of-coffee NBA careers). PRPG! primary similarity.
-//   5. Compute career WS/48 = career_ws / career_mp × 48 for each comp, then
-//      average those across the 10 comps → ranking signal. WS/48 is a rate
-//      stat, so a long-career star like Harden doesn't dominate the average.
-//   6. Return sorted list (best avg WS/48 first).
+//      data AND BPM coverage (≥ MIN_BPM_MP). PRPG! primary similarity.
+//   5. Look up each comp's career average BPM (Basketball-Reference, through 2024-25).
+//      BPM is already position-neutral — no position adjustment needed.
+//   6. Similarity-weighted average of comp BPMs → ranking signal.
+//   7. Return sorted list (best avg BPM first).
 
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import type {
-  HistoricalPlayer, DraftBoardEntry, DraftBoardApiResponse, VorpLookup,
+  HistoricalPlayer, DraftBoardEntry, DraftBoardApiResponse, BpmLookup,
   BartTorvikStats,
 } from '@/types/player';
 import { buildDatasetNorms, getTopStatComps, resolveAge } from '@/lib/utils/comparison';
 import type { BigBoardPlayer } from '@/types/bigboard';
 
-// Minimum career NBA minutes required for a historical player to appear as
-// a comp. Roughly one season of rotation-level play. Filters out draftees
-// who never established themselves in the league (Cameron Bairstow, etc.)
-// whose sample-sized career metrics would distort the avg-VORP ranking.
-const MIN_NBA_MP = 1500;
-
-// ─── Position group helpers ───────────────────────────────────────────────────
-type PosGroup = 'PG' | 'SG' | 'SF' | 'PF' | 'C';
-const POS_GROUPS: PosGroup[] = ['PG', 'SG', 'SF', 'PF', 'C'];
-
-function toPosGroup(pos: string): PosGroup {
-  const p = (pos || '').split('-')[0].toUpperCase().trim() as PosGroup;
-  return POS_GROUPS.includes(p) ? p : 'SF'; // SF as neutral fallback
-}
-
-interface PosNorms {
-  byPos: Record<PosGroup, { mean: number; std: number }>;
-  overall: { mean: number; std: number };
-}
-
-function buildPosNorms(vorpLookup: VorpLookup, minMp: number): PosNorms {
-  const grouped: Record<PosGroup, number[]> = { PG: [], SG: [], SF: [], PF: [], C: [] };
-
-  for (const entry of Object.values(vorpLookup)) {
-    if (entry.mp < minMp || !entry.pos) continue;
-    const ws48 = (entry.ws / entry.mp) * 48;
-    if (!isFinite(ws48)) continue;
-    grouped[toPosGroup(entry.pos)].push(ws48);
-  }
-
-  const calcStats = (vals: number[]) => {
-    if (vals.length === 0) return { mean: 0.085, std: 0.045 };
-    const mean = vals.reduce((s, v) => s + v, 0) / vals.length;
-    const std  = Math.sqrt(vals.reduce((s, v) => s + (v - mean) ** 2, 0) / vals.length);
-    return { mean, std: Math.max(std, 0.001) };
-  };
-
-  const all = Object.values(grouped).flat();
-  return {
-    byPos:   { PG: calcStats(grouped.PG), SG: calcStats(grouped.SG), SF: calcStats(grouped.SF), PF: calcStats(grouped.PF), C: calcStats(grouped.C) },
-    overall: calcStats(all),
-  };
-}
+// Minimum career minutes in BPM dataset for a player to qualify as a comp.
+// Requires roughly 1.5–2 full NBA seasons of meaningful playing time.
+const MIN_BPM_MP = 2000;
 
 type BartTorvikEntry = {
   name: string;
@@ -82,19 +41,21 @@ export const dynamic = 'force-dynamic';
 
 // ─── Google Sheets config (mirrors /api/big-board) ───────────────────────────
 const SHEET_ID = process.env.BIG_BOARD_SHEET_ID ?? '1X0l92tV3ZPAiWsJ_-NEINBtVv50kYix7s4EbKHK-XxM';
-const RANGE    = 'Sheet1!A2:M200';
+const RANGE    = 'Sheet1!A2:N200';
 const API_KEY  = process.env.GOOGLE_SHEETS_API_KEY;
 
 // ─── In-memory cache (5-minute TTL) ──────────────────────────────────────────
 let cache: { data: DraftBoardApiResponse; ts: number } | null = null;
 const CACHE_TTL = 5 * 60 * 1000;
 
-// ─── Name normalization (must match build_vorp_lookup.py) ────────────────────
-function normalizeForVorp(name: string): string {
+// ─── Name normalization (must match build_bpm_lookup.py) ─────────────────────
+function normalizeForBpm(name: string): string {
   return name
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
     .toLowerCase()
     .replace(/[''`]/g, '')
-    .replace(/\s+(jr|sr|ii|iii|iv|v)\.?\s*$/i, '')
+    .replace(/\b(jr\.?|sr\.?|ii|iii|iv)\b/g, '')
     .replace(/[^a-z\s]/g, '')
     .replace(/\s+/g, ' ')
     .trim();
@@ -151,6 +112,8 @@ function parseBigBoardRow(row: string[]): BigBoardPlayer | null {
     biggestWeakness: (row[10] ?? '').trim(),
     mockPickNo:      row[11] ? parseInt(row[11]) || null : null,
     mockTeam:        (row[12] ?? '').trim() || null,
+    athleticism:     ((['Bad','Below Average','Average','Above Average','Great'] as const)
+                      .find(v => v === (row[13] ?? '').trim()) ?? null),
   };
 }
 
@@ -281,41 +244,30 @@ export async function GET() {
     }
 
     // 2. Load data files
-    const vorpLookup: VorpLookup = readJson('vorp_lookup.json');
+    const bpmLookup: BpmLookup = readJson('bpm_lookup.json');
     const bartLookup: BartTorvikLookup = readJson('barttorvik_lookup.json');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const historicalRaw: any[] = readJson('nba_career_stats.json');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const prospectsRaw: any[]  = readJson('historical_college_stats.json');
 
-    // 3. Build comparison pool: drafted players 2008-present with BartTorvik
-    //    data AND at least MIN_NBA_MP career minutes in the VORP lookup.
-    //    2008 is the earliest BartTorvik season (matches PRPG! coverage).
-    //    Restricting to drafted players removes mid-major statistical
-    //    doppelgangers whose careers diverged from scouted prospects, and the
-    //    MP floor filters out draftees who never established NBA rotation roles.
+    // 3. Build comparison pool: drafted players with BartTorvik data AND
+    //    sufficient BPM coverage (≥ MIN_BPM_MP career minutes).
     const pool: HistoricalPlayer[] = historicalRaw
       .filter(r => {
         if (r.draft_pick == null) return false;
         if (r.college_season < 2008 || r.college_season >= 2026) return false;
         if (!(`${normalizeForBart(r.name)}|${r.college_season}` in bartLookup)) return false;
-        const vorp = vorpLookup[normalizeForVorp(r.name)];
-        return vorp != null && vorp.mp >= MIN_NBA_MP;
+        const bpm = bpmLookup[normalizeForBpm(r.name)];
+        return bpm != null && bpm.mp >= MIN_BPM_MP;
       })
       .map(r => toHistoricalPlayer(r, bartLookup));
 
-    // 4. Build norms from the full historical pool (not just the pool subset)
-    //    so z-scores stay calibrated across the whole dataset
+    // 4. Build norms from the full historical pool so z-scores are calibrated
     const fullPool: HistoricalPlayer[] = historicalRaw
       .filter(r => r.college_season < 2026)
       .map(r => toHistoricalPlayer(r, bartLookup));
     const norms = buildDatasetNorms(fullPool);
-
-    // 4b. Build position-group WS/48 norms so guards and bigs are ranked on
-    //     a level playing field. Centers structurally average ~0.121 WS/48 vs
-    //     guards at ~0.070 — a gap of >1 standard deviation. Without adjustment,
-    //     big-man prospects always outscore guard prospects on the board.
-    const posNorms = buildPosNorms(vorpLookup, MIN_NBA_MP);
 
     // 5. Current-season prospects (for finding Big Board players' stats)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -334,7 +286,7 @@ export async function GET() {
           name: bb.name, slug: bb.slug, school: bb.school,
           position: bb.position, bigBoardRank: bb.rank,
           mockPickNo: bb.mockPickNo, mockTeam: bb.mockTeam,
-          comps: [], avgWs48: null, ws48Coverage: 0, paWs48: null,
+          comps: [], avgBpm: null, bpmCoverage: 0,
         };
       }
 
@@ -348,69 +300,44 @@ export async function GET() {
       );
 
       const comps = topComps.map(c => {
-        const key   = normalizeForVorp(c.historical_player.name);
-        const entry = vorpLookup[key] ?? null;
-        const ws48  = entry && entry.mp > 0
-          ? (entry.ws / entry.mp) * 48
-          : null;
+        const key   = normalizeForBpm(c.historical_player.name);
+        const entry = bpmLookup[key] ?? null;
         return {
-          name:         c.historical_player.name,
+          name:          c.historical_player.name,
           collegeSeason: c.historical_player.college_season,
-          collegeTeam:  c.historical_player.college_team,
-          position:     c.historical_player.position ?? '',
-          similarity:   c.similarity_score,
-          ws48:        ws48 !== null ? Math.round(ws48 * 1000) / 1000 : null,
-          vorp:        entry?.vorp    ?? null,
-          nbaMp:       entry?.mp      ?? null,
-          nbaSeasons:  entry?.seasons ?? null,
-          // NBA position from vorp_lookup — needed for position normalization
-          _nbaPos:     entry?.pos ?? '',
+          collegeTeam:   c.historical_player.college_team,
+          position:      c.historical_player.position ?? '',
+          similarity:    c.similarity_score,
+          bpm:        entry ? Math.round(entry.bpm * 1000) / 1000 : null,
+          bpmMp:      entry?.mp      ?? null,
+          bpmSeasons: entry?.seasons ?? null,
         };
       });
 
-      // Similarity-weighted average of raw comp WS/48 (for display on profiles)
-      const ws48Comps = comps.filter(c => c.ws48 !== null);
-      const weightSum = ws48Comps.reduce((s, c) => s + c.similarity, 0);
-      const avgWs48 = ws48Comps.length > 0 && weightSum > 0
-        ? ws48Comps.reduce((s, c) => s + c.ws48! * c.similarity, 0) / weightSum
+      // Similarity-weighted average of comp career BPM.
+      // BPM is already position-neutral — no position adjustment needed.
+      const bpmComps  = comps.filter(c => c.bpm !== null);
+      const weightSum = bpmComps.reduce((s, c) => s + c.similarity, 0);
+      const avgBpm    = bpmComps.length > 0 && weightSum > 0
+        ? bpmComps.reduce((s, c) => s + c.bpm! * c.similarity, 0) / weightSum
         : null;
-
-      // Position-adjusted WS/48 — ranking signal. Each comp's raw WS/48 is
-      // z-scored within its NBA position group (centers and guards have very
-      // different baselines), then converted back to overall WS/48 units so
-      // the display numbers stay familiar. A guard comp at +1.5σ and a center
-      // comp at +1.5σ both contribute the same position-adjusted value.
-      const paComps = ws48Comps.map(c => {
-        const grp = toPosGroup(c._nbaPos || c.position);
-        const { mean: gMean, std: gStd } = posNorms.byPos[grp];
-        const z = (c.ws48! - gMean) / gStd;
-        return { ...c, paWs48: posNorms.overall.mean + z * posNorms.overall.std };
-      });
-      const paWeightSum = paComps.reduce((s, c) => s + c.similarity, 0);
-      const avgPaWs48 = paComps.length > 0 && paWeightSum > 0
-        ? paComps.reduce((s, c) => s + c.paWs48 * c.similarity, 0) / paWeightSum
-        : null;
-
-      // Strip internal _nbaPos field before returning
-      const cleanComps = comps.map(({ _nbaPos: _n, ...rest }) => rest);
 
       return {
         name: bb.name, slug: bb.slug, school: bb.school,
         position: bb.position, bigBoardRank: bb.rank,
         mockPickNo: bb.mockPickNo, mockTeam: bb.mockTeam,
-        comps: cleanComps,
-        avgWs48: avgWs48 !== null ? Math.round(avgWs48 * 1000) / 1000 : null,
-        ws48Coverage: ws48Comps.length,
-        paWs48: avgPaWs48 !== null ? Math.round(avgPaWs48 * 1000) / 1000 : null,
+        comps,
+        avgBpm: avgBpm !== null ? Math.round(avgBpm * 1000) / 1000 : null,
+        bpmCoverage: bpmComps.length,
       };
     });
 
-    // 7. Sort by position-adjusted WS/48 descending (nulls last)
+    // 7. Sort by avg BPM descending (nulls last)
     entries.sort((a, b) => {
-      if (a.paWs48 === null && b.paWs48 === null) return 0;
-      if (a.paWs48 === null) return 1;
-      if (b.paWs48 === null) return -1;
-      return b.paWs48 - a.paWs48;
+      if (a.avgBpm === null && b.avgBpm === null) return 0;
+      if (a.avgBpm === null) return 1;
+      if (b.avgBpm === null) return -1;
+      return b.avgBpm - a.avgBpm;
     });
 
     const result: DraftBoardApiResponse = { entries, updatedAt: new Date().toISOString() };

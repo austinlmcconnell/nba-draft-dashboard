@@ -74,7 +74,7 @@ export default function MethodologyPage() {
               ['#normalise',   'Z-score normalisation'],
               ['#similarity',  'Distance → similarity score'],
               ['#derived',     'Derived stats (AST/TOV, ORB/36, DRB/36)'],
-              ['#draftboard',  'Draft Board ranking — career WS/48'],
+              ['#draftboard',  'Draft Board ranking — career BPM'],
               ['#statboxes',   'Profile stat box shading'],
             ].map(([href, label]) => (
               <li key={href}><a href={href} className="hover:text-[#4ade80] hover:underline transition-colors">{label}</a></li>
@@ -161,7 +161,7 @@ Examples:
          AND 2008 ≤ college_season < 2026  -- matches BartTorvik coverage
          AND normalized_name+season IN barttorvik_lookup
          AND |prospect_age - player_age| ≤ 1
-         AND vorp_lookup[normalized_name].mp ≥ 1500   -- NBA-established`}</Formula>
+         AND bpm_lookup[normalized_name].mp ≥ 2000    -- NBA-established`}</Formula>
 
           <Sub title="Drafted only">
             <p className="text-sm text-[#9ca3af]">
@@ -189,13 +189,13 @@ Examples:
             </p>
           </Sub>
 
-          <Sub title="Minimum 1,500 career NBA minutes">
+          <Sub title="Minimum 2,000 career NBA minutes">
             <p className="text-sm text-[#9ca3af]">
               Drafted players who never established NBA rotation roles (Cameron
               Bairstow-type careers: drafted, a handful of games, out of the league)
-              have noisy per-possession metrics that would distort the avg-WS/48
-              ranking. 1,500 MP ≈ one season of rotation-level minutes, which is
-              enough sample size for a meaningful career rate.
+              have noisy BPM values that would distort the avg-BPM ranking. 2,000 MP
+              ≈ 1.5–2 seasons of meaningful playing time, which is enough sample size
+              for a reliable career rate.
             </p>
           </Sub>
 
@@ -331,59 +331,36 @@ drb_per36 = (defensive_rebounds_per_game / minutes_per_game) × 36`}</Formula>
         </Section>
 
         {/* ---------------------------------------------------------------- */}
-        <Section id="draftboard" title="Draft Board ranking — position-adjusted WS/48">
+        <Section id="draftboard" title="Draft Board ranking — career BPM">
           <p className="text-[#d1d5db] mb-3">
-            The Draft Board sorts prospects by <strong>position-adjusted career
-            WS/48</strong> of their 10 closest historical comps. Raw WS/48 has a
-            structural position bias — centers average ~0.121 WS/48 while guards
-            average ~0.070, a gap of over one standard deviation. Without
-            adjustment, big-man prospects would always outscore guard prospects
-            on the board even when the guard is equally projectable.
+            The Draft Board sorts prospects by <strong>average career BPM</strong>
+            of their 10 closest historical comps. BPM (Box Plus-Minus) is
+            Basketball-Reference&apos;s impact metric measured in <em>points per 100
+            possessions above an average player</em>. It is inherently position-neutral
+            — a guard at +2.5 and a center at +2.5 are genuinely equally impactful,
+            with no position adjustment needed. BPM is updated through the current
+            NBA season, so recent draft classes are fully included as comps.
           </p>
           <Formula>{`For each Big Board prospect:
   1. Find 10 closest college statistical comps (PRPG!-primary)
-  2. Look up each comp's career WS, MP, and NBA position
-  3. comp.ws48 = comp.ws / comp.mp × 48  (raw rate)
-  4. z = (comp.ws48 − position_group_mean) / position_group_std
-  5. pa_ws48 = overall_mean + z × overall_std  (normalized to common scale)
-  6. avg_pa_ws48 = Σ(pa_ws48 × similarity) / Σ(similarity)
-  7. Rank the board by avg_pa_ws48 descending`}</Formula>
+  2. Look up each comp's career average BPM (bpm_lookup.json)
+     — MP-weighted mean across all seasons (2006–present, ≥ 2,000 career MP)
+  3. avg_bpm = Σ(comp.bpm × similarity) / Σ(similarity)
+  4. Rank the board by avg_bpm descending`}</Formula>
           <p className="text-[#d1d5db] mb-3">
-            Step 4–5 z-scores each comp within its NBA position group (PG, SG, SF,
-            PF, or C), then converts back to WS/48 units using the overall
-            population mean and standard deviation. A guard comp at +1.5σ above
-            the guard average contributes the same PA WS/48 as a center comp at
-            +1.5σ above the center average — guards and bigs are judged on equal
-            footing. Step 6 is <strong>similarity-weighted</strong>: a 90%-match
-            comp counts more than a 65% one.
-          </p>
-          <p className="text-[#d1d5db] mb-2">
-            Position group baselines (drafted players, ≥1,500 NBA MP):
-          </p>
-          <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 text-center mb-3">
-            {[
-              { pos: 'PG',  avg: '0.073' },
-              { pos: 'SG',  avg: '0.066' },
-              { pos: 'SF',  avg: '0.077' },
-              { pos: 'PF',  avg: '0.092' },
-              { pos: 'C',   avg: '0.121' },
-            ].map(({ pos, avg }) => (
-              <div key={pos} className="p-3 bg-[#0d1117] rounded-lg border border-[#1f2937]">
-                <p className="text-sm font-black text-[#9ca3af]">{pos}</p>
-                <p className="text-[10px] text-[#4b5563] mt-0.5">avg {avg}</p>
-              </div>
-            ))}
-          </div>
-          <p className="text-[#d1d5db] mb-2">
-            PA WS/48 scale (anchored to overall mean ≈ 0.085):
+            Step 3 is <strong>similarity-weighted</strong> — a 90%-match comp
+            contributes proportionally more than a 65% one. The 2,000-minute
+            threshold ensures comps have established enough of an NBA track record
+            for a reliable career rate (roughly 1.5–2 full seasons of meaningful
+            playing time).
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center">
             {[
-              { range: '≥ 0.140', label: 'Star comps',      cls: 'text-emerald-400' },
-              { range: '≥ 0.095', label: 'Above average',   cls: 'text-[#4ade80]' },
-              { range: '≥ 0.075', label: 'Near average',    cls: 'text-[#9ca3af]' },
-              { range: '≥ 0.055', label: 'Below average',   cls: 'text-amber-400' },
-              { range: '< 0.055', label: 'Fringe careers',  cls: 'text-red-400' },
+              { range: '≥ +3.0', label: 'Star comp group',    cls: 'text-emerald-400' },
+              { range: '≥ +1.5', label: 'Starter tier',        cls: 'text-[#4ade80]' },
+              { range: '≥  0.0', label: 'Positive impact',     cls: 'text-[#9ca3af]' },
+              { range: '≥ −1.5', label: 'Rotation level',      cls: 'text-amber-400' },
+              { range: '< −1.5', label: 'Below replacement',   cls: 'text-red-400' },
             ].map(({ range, label, cls }) => (
               <div key={range} className="p-3 bg-[#0d1117] rounded-lg border border-[#1f2937]">
                 <p className={`text-sm font-black ${cls}`}>{range}</p>
@@ -392,8 +369,9 @@ drb_per36 = (defensive_rebounds_per_game / minutes_per_game) × 36`}</Formula>
             ))}
           </div>
           <p className="text-sm text-[#9ca3af] mt-3">
-            Individual prospect profiles still show each comp&apos;s raw WS/48 for
-            context. Only the board-level ranking uses the position-adjusted value.
+            Reference points: Nikola Jokić +10.3, LeBron James +8.9, Stephen Curry +6.5,
+            Kevin Durant +6.4, Shai Gilgeous-Alexander +5.6, Jalen Brunson +2.3,
+            Jamal Murray +0.9, Brandin Podziemski +0.3.
           </p>
         </Section>
 
