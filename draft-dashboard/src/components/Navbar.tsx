@@ -8,6 +8,7 @@ import { Logo } from '@/components/Logo';
 const NAV_LINKS = [
   { href: '/big-board',   label: 'My Big Board'     },
   { href: '/draft',       label: 'Draft Board'      },
+  { href: '/evaluate',    label: 'Evaluation'       },
   { href: '/methodology', label: 'Methodology'      },
   { href: '/about',       label: 'About'            },
 ];
