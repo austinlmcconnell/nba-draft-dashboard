@@ -47,6 +47,18 @@ const ATHLETICISM_SCALE: Record<string, number> = {
   'Bad': 1, 'Below Average': 2, 'Average': 3, 'Above Average': 4, 'Great': 5,
 };
 
+// ─── Sort types ──────────────────────────────────────────────────────────────
+type SortKey =
+  | 'rank' | 'school'
+  | 'rimPts40' | 'rimFgPct' | 'rimShare'
+  | 'midPts40' | 'midFgPct' | 'midShare'
+  | 'threePts40' | 'threeFgPct'
+  | 'astPct' | 'orbPct'
+  | 'stlPct' | 'blkPct' | 'drbPct'
+  | 'heightInches' | 'weightPounds' | 'wingspanInches'
+  | 'athleticism' | 'draftAge';
+type SortDir = 'asc' | 'desc';
+
 // ─── Compute pool stats for one numeric field ────────────────────────────────
 type NumericKey = keyof Pick<
   ProspectEvalEntry,
@@ -84,11 +96,33 @@ function MetricCell({ value, z, format = 'num1', suffix = '' }: {
 }
 
 // ─── Header cell ─────────────────────────────────────────────────────────────
-function HeaderCell({ label, sub }: { label: string; sub?: string }) {
+function HeaderCell({ label, sub, sk, sort, onSort }: {
+  label: string;
+  sub?: string;
+  sk?: SortKey;
+  sort?: { key: SortKey; dir: SortDir } | null;
+  onSort?: (k: SortKey) => void;
+}) {
+  const active = sk !== undefined && sort?.key === sk;
+  const dir = active ? sort!.dir : null;
   return (
-    <th className="px-3 py-3 text-center text-[10px] font-black uppercase tracking-wider text-[#9ca3af] border-b border-[#1f2937] whitespace-nowrap align-bottom">
-      {label}
-      {sub && <div className="text-[9px] text-[#4b5563] font-semibold normal-case tracking-normal mt-0.5">{sub}</div>}
+    <th
+      onClick={sk !== undefined && onSort ? () => onSort(sk) : undefined}
+      className={[
+        'px-3 py-3 text-center text-[10px] font-black uppercase tracking-wider border-b border-[#1f2937] whitespace-nowrap align-bottom',
+        sk !== undefined ? 'cursor-pointer select-none hover:text-[#f9fafb]' : '',
+        active ? 'text-[#4ade80]' : 'text-[#9ca3af]',
+      ].join(' ')}
+    >
+      <div className="flex flex-col items-center gap-0.5">
+        <span>{label}</span>
+        {sub && <span className="text-[9px] text-[#4b5563] font-semibold normal-case tracking-normal">{sub}</span>}
+        {sk !== undefined && (
+          <span className={`text-[8px] leading-none ${active ? 'text-[#4ade80]' : 'text-[#374151]'}`}>
+            {dir === 'desc' ? '▼' : dir === 'asc' ? '▲' : '⬍'}
+          </span>
+        )}
+      </div>
     </th>
   );
 }
@@ -109,6 +143,14 @@ export default function EvaluatePage() {
   const [updatedAt, setUpdatedAt] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sort, setSort] = useState<{ key: SortKey; dir: SortDir } | null>(null);
+
+  const handleSort = useCallback((key: SortKey) => {
+    setSort(prev => prev?.key === key
+      ? { key, dir: prev.dir === 'desc' ? 'asc' : 'desc' }
+      : { key, dir: 'desc' }
+    );
+  }, []);
 
   const load = useCallback(async () => {
     try {
@@ -195,6 +237,29 @@ export default function EvaluatePage() {
     };
   }, [entries]);
 
+  const sortedEntries = useMemo(() => {
+    if (!sort) return entries;
+    const { key, dir } = sort;
+    const mul = dir === 'desc' ? -1 : 1;
+    return [...entries].sort((a, b) => {
+      let av: number | string | null, bv: number | string | null;
+      if (key === 'school') {
+        av = a.school; bv = b.school;
+      } else if (key === 'athleticism') {
+        av = a.athleticism ? ATHLETICISM_SCALE[a.athleticism] : null;
+        bv = b.athleticism ? ATHLETICISM_SCALE[b.athleticism] : null;
+      } else {
+        av = a[key] as number | null;
+        bv = b[key] as number | null;
+      }
+      if (av === null && bv === null) return 0;
+      if (av === null) return 1;   // nulls always last
+      if (bv === null) return -1;
+      if (typeof av === 'string') return mul * (av as string).localeCompare(bv as string);
+      return mul * ((av as number) - (bv as number));
+    });
+  }, [entries, sort]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#0d1117] flex items-center justify-center">
@@ -258,30 +323,35 @@ export default function EvaluatePage() {
                 </tr>
                 {/* Metric row */}
                 <tr className="bg-[#0d1117]">
-                  <th className="px-3 py-3 text-left text-[10px] font-black uppercase tracking-wider text-[#9ca3af] border-b border-[#1f2937] whitespace-nowrap">Rank · Name</th>
-                  <HeaderCell label="School" />
-                  <HeaderCell label="Rim" sub="pts/40" />
-                  <HeaderCell label="Rim" sub="FG%" />
-                  <HeaderCell label="Rim" sub="Share" />
-                  <HeaderCell label="Mid" sub="pts/40" />
-                  <HeaderCell label="Mid" sub="FG%" />
-                  <HeaderCell label="Mid" sub="Share" />
-                  <HeaderCell label="3PT" sub="pts/40" />
-                  <HeaderCell label="3PT" sub="3P%" />
-                  <HeaderCell label="Pass" sub="AST%" />
-                  <HeaderCell label="O Reb" sub="ORB%" />
-                  <HeaderCell label="STL%" />
-                  <HeaderCell label="BLK%" />
-                  <HeaderCell label="D Reb" sub="DRB%" />
-                  <HeaderCell label="Height" sub="vs pos" />
-                  <HeaderCell label="Weight" sub="vs pos" />
-                  <HeaderCell label="Wing" sub="inches" />
-                  <HeaderCell label="Athl" sub="eye test" />
-                  <HeaderCell label="Age" sub="draft" />
+                  <th
+                    onClick={() => handleSort('rank')}
+                    className={`px-3 py-3 text-left text-[10px] font-black uppercase tracking-wider border-b border-[#1f2937] whitespace-nowrap cursor-pointer select-none hover:text-[#f9fafb] ${sort?.key === 'rank' ? 'text-[#4ade80]' : 'text-[#9ca3af]'}`}
+                  >
+                    Rank · Name {sort?.key === 'rank' ? (sort.dir === 'desc' ? '▼' : '▲') : <span className="text-[#374151]">⬍</span>}
+                  </th>
+                  <HeaderCell label="School"  sk="school"     sort={sort} onSort={handleSort} />
+                  <HeaderCell label="Rim"     sub="pts/40"    sk="rimPts40"    sort={sort} onSort={handleSort} />
+                  <HeaderCell label="Rim"     sub="FG%"       sk="rimFgPct"    sort={sort} onSort={handleSort} />
+                  <HeaderCell label="Rim"     sub="Share"     sk="rimShare"    sort={sort} onSort={handleSort} />
+                  <HeaderCell label="Mid"     sub="pts/40"    sk="midPts40"    sort={sort} onSort={handleSort} />
+                  <HeaderCell label="Mid"     sub="FG%"       sk="midFgPct"    sort={sort} onSort={handleSort} />
+                  <HeaderCell label="Mid"     sub="Share"     sk="midShare"    sort={sort} onSort={handleSort} />
+                  <HeaderCell label="3PT"     sub="pts/40"    sk="threePts40"  sort={sort} onSort={handleSort} />
+                  <HeaderCell label="3PT"     sub="3P%"       sk="threeFgPct"  sort={sort} onSort={handleSort} />
+                  <HeaderCell label="Pass"    sub="AST%"      sk="astPct"      sort={sort} onSort={handleSort} />
+                  <HeaderCell label="O Reb"   sub="ORB%"      sk="orbPct"      sort={sort} onSort={handleSort} />
+                  <HeaderCell label="STL%"                    sk="stlPct"      sort={sort} onSort={handleSort} />
+                  <HeaderCell label="BLK%"                    sk="blkPct"      sort={sort} onSort={handleSort} />
+                  <HeaderCell label="D Reb"   sub="DRB%"      sk="drbPct"      sort={sort} onSort={handleSort} />
+                  <HeaderCell label="Height"  sub="vs pos"    sk="heightInches"  sort={sort} onSort={handleSort} />
+                  <HeaderCell label="Weight"  sub="vs pos"    sk="weightPounds"  sort={sort} onSort={handleSort} />
+                  <HeaderCell label="Wing"    sub="inches"    sk="wingspanInches" sort={sort} onSort={handleSort} />
+                  <HeaderCell label="Athl"    sub="eye test"  sk="athleticism" sort={sort} onSort={handleSort} />
+                  <HeaderCell label="Age"     sub="draft"     sk="draftAge"    sort={sort} onSort={handleSort} />
                 </tr>
               </thead>
               <tbody>
-                {entries.map(e => {
+                {sortedEntries.map(e => {
                   const m = numericMeans;
                   const z = (k: NumericKey) => {
                     const v = e[k] as number | null;
