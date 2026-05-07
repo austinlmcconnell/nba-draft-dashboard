@@ -50,8 +50,8 @@ const ATHLETICISM_SCALE: Record<string, number> = {
 // ─── Compute pool stats for one numeric field ────────────────────────────────
 type NumericKey = keyof Pick<
   ProspectEvalEntry,
-  'rimPts40' | 'midPts40' | 'threePts40' | 'astPct' | 'orbPct' |
-  'stlPct' | 'blkPct' | 'drbPct' | 'wingspanInches'
+  'rimPts40' | 'rimFgPct' | 'midPts40' | 'midFgPct' | 'threePts40' | 'threeFgPct' |
+  'astPct' | 'orbPct' | 'stlPct' | 'blkPct' | 'drbPct' | 'wingspanInches'
 >;
 
 function meanSd(values: (number | null | undefined)[]): { mean: number; sd: number } {
@@ -136,8 +136,8 @@ export default function EvaluatePage() {
   const statsPool = useMemo(() => entries.filter(e => e.hasStats), [entries]);
   const numericMeans = useMemo(() => {
     const keys: NumericKey[] = [
-      'rimPts40', 'midPts40', 'threePts40', 'astPct', 'orbPct',
-      'stlPct', 'blkPct', 'drbPct', 'wingspanInches',
+      'rimPts40', 'rimFgPct', 'midPts40', 'midFgPct', 'threePts40', 'threeFgPct',
+      'astPct', 'orbPct', 'stlPct', 'blkPct', 'drbPct', 'wingspanInches',
     ];
     const out: Record<string, { mean: number; sd: number }> = {};
     for (const k of keys) {
@@ -311,15 +311,15 @@ export default function EvaluatePage() {
 
                       {/* Offense — Rim */}
                       <MetricCell value={e.rimPts40} z={z('rimPts40')} format="num1" />
-                      <MetricCell value={e.rimFgPct} z={z('rimPts40')} format="num1" suffix="%" />
+                      <MetricCell value={e.rimFgPct} z={z('rimFgPct')} format="num1" suffix="%" />
                       <MetricCell value={e.rimShare} z={null} format="num1" suffix="%" />
                       {/* Mid */}
                       <MetricCell value={e.midPts40} z={z('midPts40')} format="num1" />
-                      <MetricCell value={e.midFgPct} z={z('midPts40')} format="num1" suffix="%" />
+                      <MetricCell value={e.midFgPct} z={z('midFgPct')} format="num1" suffix="%" />
                       <MetricCell value={e.midShare} z={null} format="num1" suffix="%" />
                       {/* 3PT */}
                       <MetricCell value={e.threePts40} z={z('threePts40')} format="num1" />
-                      <MetricCell value={e.threeFgPct} z={z('threePts40')} format="num1" suffix="%" />
+                      <MetricCell value={e.threeFgPct} z={z('threeFgPct')} format="num1" suffix="%" />
                       {/* Passing + ORB */}
                       <MetricCell value={e.astPct} z={z('astPct')} format="num1" suffix="%" />
                       <MetricCell value={e.orbPct} z={z('orbPct')} format="num1" suffix="%" />

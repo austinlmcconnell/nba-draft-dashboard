@@ -143,15 +143,11 @@ function ptsPer40(made: number, value: number, totalMin: number | null): number 
   return Math.round(((made * value * 40) / totalMin) * 100) / 100;
 }
 
-// Total minutes played: prefer mp_total, fall back to games × inferred mpg.
+// Total minutes played: min_pct is % of 40-min game time the player appeared.
+// Column 34 (mp_total) turns out to store a ~0-100 efficiency index, not minutes.
 function totalMinutes(s: ProspectStatsRow): number | null {
-  if (s.mp_total && s.mp_total > 0) return s.mp_total;
-  // min_pct is % of available team mins played (0-100). Each game = 40 team mins
-  // per player slot × 5 slots = 200 player-mins available. min_pct alone gives
-  // approximate fraction but without team game count we can't precisely back
-  // into minutes. Approximation: min_pct% of (games × 40) ≈ player minutes.
   if (s.games > 0 && s.min_pct > 0) {
-    return Math.round(s.games * 40 * (s.min_pct / 100));
+    return s.games * 40 * (s.min_pct / 100);
   }
   return null;
 }
