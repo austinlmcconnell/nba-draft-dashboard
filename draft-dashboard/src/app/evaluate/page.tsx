@@ -12,13 +12,35 @@ function zScore(value: number, mean: number, sd: number): number {
   return (value - mean) / sd;
 }
 
-function shadeForZ(z: number | null): string {
-  if (z === null) return 'bg-[#0d1117] text-[#374151]';
-  if (z >= 1.5)  return 'bg-emerald-900/60 text-emerald-200';
-  if (z >= 0.5)  return 'bg-emerald-900/30 text-emerald-300';
-  if (z >= -0.5) return 'bg-[#1a2332] text-[#9ca3af]';
-  if (z >= -1.5) return 'bg-amber-900/30 text-amber-300';
-  return 'bg-red-900/40 text-red-300';
+// Continuous gradient: dark green → lighter green → lighter yellow → darker yellow → lighter red → dark red
+type Stop = { t: number; bH: number; bS: number; bL: number; tH: number; tS: number; tL: number };
+const Z_STOPS: Stop[] = [
+  { t: 0.00, bH: 0,   bS: 70, bL: 14, tH: 0,   tS: 80, tL: 70 }, // dark red
+  { t: 0.25, bH: 8,   bS: 60, bL: 20, tH: 5,   tS: 70, tL: 65 }, // lighter red
+  { t: 0.42, bH: 35,  bS: 75, bL: 18, tH: 38,  tS: 90, tL: 68 }, // darker yellow
+  { t: 0.58, bH: 55,  bS: 75, bL: 22, tH: 52,  tS: 90, tL: 78 }, // lighter yellow
+  { t: 0.75, bH: 128, bS: 45, bL: 18, tH: 130, tS: 65, tL: 65 }, // lighter green
+  { t: 1.00, bH: 145, bS: 65, bL: 14, tH: 142, tS: 80, tL: 72 }, // dark green
+];
+
+function colorForZ(z: number | null): React.CSSProperties {
+  if (z === null) return { background: 'transparent', color: '#374151' };
+  // Map z ∈ [-2, +2] → t ∈ [0, 1] where 1 = best
+  const t = Math.max(0, Math.min(1, (z + 2) / 4));
+  let lo = Z_STOPS[0], hi = Z_STOPS[Z_STOPS.length - 1];
+  for (let i = 0; i < Z_STOPS.length - 1; i++) {
+    if (t >= Z_STOPS[i].t && t <= Z_STOPS[i + 1].t) {
+      lo = Z_STOPS[i]; hi = Z_STOPS[i + 1];
+      break;
+    }
+  }
+  const range = hi.t - lo.t;
+  const u = range === 0 ? 0 : (t - lo.t) / range;
+  const lr = (a: number, b: number) => Math.round(a + (b - a) * u);
+  return {
+    background: `hsl(${lr(lo.bH, hi.bH)}, ${lr(lo.bS, hi.bS)}%, ${lr(lo.bL, hi.bL)}%)`,
+    color:      `hsl(${lr(lo.tH, hi.tH)}, ${lr(lo.tS, hi.tS)}%, ${lr(lo.tL, hi.tL)}%)`,
+  };
 }
 
 const ATHLETICISM_SCALE: Record<string, number> = {
@@ -54,8 +76,9 @@ function MetricCell({ value, z, format = 'num1', suffix = '' }: {
     : format === 'int'  ? `${Math.round(value)}`
     : value.toFixed(1);
   return (
-    <td className={`px-3 py-2 text-center text-xs font-bold tabular-nums whitespace-nowrap ${shadeForZ(z)}`}>
-      {value !== null ? display + suffix : <span className="text-[#374151]">—</span>}
+    <td className="px-3 py-2 text-center text-xs font-bold tabular-nums whitespace-nowrap"
+        style={colorForZ(z)}>
+      {value !== null ? display + suffix : <span style={{ color: '#374151' }}>—</span>}
     </td>
   );
 }
@@ -308,8 +331,9 @@ export default function EvaluatePage() {
                       <MetricCell value={e.heightInches} z={sz.hZ} format="int" suffix={'″'} />
                       <MetricCell value={e.weightPounds} z={sz.wZ} format="int" />
                       <MetricCell value={e.wingspanInches} z={z('wingspanInches')} format="int" suffix={'″'} />
-                      <td className={`px-3 py-2 text-center text-xs font-bold whitespace-nowrap ${shadeForZ(athZ)}`}>
-                        {e.athleticism ?? <span className="text-[#374151]">—</span>}
+                      <td className="px-3 py-2 text-center text-xs font-bold whitespace-nowrap"
+                          style={colorForZ(athZ)}>
+                        {e.athleticism ?? <span style={{ color: '#374151' }}>—</span>}
                       </td>
                       {/* Age */}
                       <MetricCell value={e.draftAge} z={ageZ} format="num1" />
@@ -324,13 +348,13 @@ export default function EvaluatePage() {
             <p className="text-[10px] text-[#374151]">
               {entries.length} prospects · {statsPool.length} with 2025-26 college stats · click a name for full comp breakdown
             </p>
-            <div className="flex items-center gap-3 text-[10px] uppercase tracking-wider">
-              <span className="text-[#374151]">Z-score:</span>
-              <span className="px-2 py-0.5 rounded bg-emerald-900/60 text-emerald-200 font-black">≥ +1.5</span>
-              <span className="px-2 py-0.5 rounded bg-emerald-900/30 text-emerald-300 font-black">≥ +0.5</span>
-              <span className="px-2 py-0.5 rounded bg-[#1a2332] text-[#9ca3af] font-black">±0.5</span>
-              <span className="px-2 py-0.5 rounded bg-amber-900/30 text-amber-300 font-black">≥ −1.5</span>
-              <span className="px-2 py-0.5 rounded bg-red-900/40 text-red-300 font-black">&lt; −1.5</span>
+            <div className="flex items-center gap-2 text-[10px]">
+              <span className="text-[#374151] uppercase tracking-wider">Z-score:</span>
+              <span className="text-[#374151]">best</span>
+              <div className="w-36 h-3.5 rounded" style={{
+                background: 'linear-gradient(to right, hsl(145,65%,14%), hsl(128,45%,18%), hsl(55,75%,22%), hsl(35,75%,18%), hsl(8,60%,20%), hsl(0,70%,14%))'
+              }} />
+              <span className="text-[#374151]">worst</span>
             </div>
           </div>
         </div>
